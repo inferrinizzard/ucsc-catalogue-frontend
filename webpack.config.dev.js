@@ -20,8 +20,8 @@ module.exports = {
 
   module: {
     rules: [
-      // load .ts and .tsx via 'awesome-typescript-loader'
-      { test: /\.tsx?$/, loader: 'awesome-typescript-loader' },
+      // load .ts and .tsx via 'ts-loader'
+      { test: /\.tsx?$/, loader: 'ts-loader' },
 
       // use source-map-loader
       { enforce: 'pre', test: /\.js$/, loader: 'source-map-loader' },

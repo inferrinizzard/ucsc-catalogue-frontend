@@ -1,4 +1,9 @@
 import * as React from 'react';
+import styled from 'styled-components';
+
+const Liner = styled.div`
+	background:blue;
+`;
 
 export interface AppProps {
 }
@@ -8,7 +13,7 @@ export interface AppState {
  
 class App extends React.Component<AppProps, AppState> {
 	render() { 
-		return (<p>Hello from the app</p>);
+		return (<Liner>Hello from the app</Liner>);
 	}
 }
  
