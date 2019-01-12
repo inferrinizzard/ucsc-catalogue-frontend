@@ -9,7 +9,7 @@ import styled from 'styled-components';
 export interface ClassCardProps {}
 export interface ClassCardState {}
 
-const StyleCard = styled(Card)`
+const StyleCard = styled(Card)<any>`
 	margin: .5em;
 	min-width: 200px;
 `;

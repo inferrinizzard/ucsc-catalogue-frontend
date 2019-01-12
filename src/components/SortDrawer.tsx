@@ -19,7 +19,7 @@ export interface SortDrawerState{}
 
 const linerWidth = 30;
 const Spacer = styled.div`margin-top: ${linerWidth}px;`;
-const Section = styled(Paper)`
+const Section = styled(Paper)<any>`
 	margin: .3em;
 	padding: .2em;
 `;

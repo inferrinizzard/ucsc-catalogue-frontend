@@ -8,7 +8,7 @@ import Divider from '@material-ui/core/Divider';
 import Collapse from '@material-ui/core/Collapse';
 import styled from 'styled-components';
 
-const StyleCard = styled(Card)`margin: .5em;`;
+const StyleCard = styled(Card)<any>`margin: .5em;`;
 const Block = styled.div`
 	display: inline-block;
 	width: 50%;
