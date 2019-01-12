@@ -10,7 +10,7 @@ const Block = styled.div`
 
 export interface TextBlockProps {
   text: string;
-  type: TypographyProps;
+  type: TypographyProps['variant'];
 }
 
 const TextBlock: React.SFC<TextBlockProps> = props => {
