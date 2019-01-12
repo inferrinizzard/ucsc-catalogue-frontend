@@ -14,7 +14,7 @@ const ge = {
   'PR-S': 'Service Learning',
   C2: 'Composition',
   C1: 'Composition',
-  DC: 'Disciplinary Communication'
+  DC: 'Disciplinary Communication',
 };
 
 export default ge;
