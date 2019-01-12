@@ -25,7 +25,7 @@ export interface Course {
   name: string;
   number: number;
   settings: Setting[];
-  capacity: number;
+  capacity: number | null;
   instructor: Instructor;
   subject: string;
 }
