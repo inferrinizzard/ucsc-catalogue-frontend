@@ -3,33 +3,32 @@ import Card from "@material-ui/core/Card";
 import CardHeader from "@material-ui/core/CardHeader";
 import CardMedia from "@material-ui/core/CardMedia";
 import CardContent from "@material-ui/core/CardContent";
-import Divider from "@material-ui/core/Divider";
 import Collapse from "@material-ui/core/Collapse";
 import styled from "styled-components";
 
 import TextBlock from "./TextBlock";
 
-export interface EnrollCardProps {}
-export interface EnrollCardState {}
-
 const StyleCard = styled(Card)<any>`
 	margin: 0.5em;
 `;
 
-class EnrollCard extends React.Component<EnrollCardProps, EnrollCardState> {
+export interface GradesCardProps {}
+export interface GradesCardState {}
+
+class GradesCard extends React.Component<GradesCardProps, GradesCardState> {
 	render() {
 		return (
 			<StyleCard>
-				<CardHeader title="Enrollment" />
+				<CardHeader title="Grades" />
 				<CardMedia />
-				<div>graph goes here</div>
+				<div>chart goes here</div>
 				<CardContent>
-					<TextBlock text="Enrolled: " type={"h5"} />
-					<TextBlock text="Waitlisted: " type={"h5"} />
+					<TextBlock text="Grade: " type={"h5"} />
+					<TextBlock text="Wuh: " type={"h5"} />
 				</CardContent>
 			</StyleCard>
 		);
 	}
 }
 
-export default EnrollCard;
+export default GradesCard;
