@@ -6,13 +6,8 @@ import CardContent from '@material-ui/core/CardContent';
 import Typography from '@material-ui/core/Typography';
 import styled from 'styled-components';
 
-export interface ClassCardProps {
-	
-}
- 
-export interface ClassCardState {
-	
-}
+export interface ClassCardProps {}
+export interface ClassCardState {}
 
 const StyleCard = styled(Card)`
 	margin: .5em;

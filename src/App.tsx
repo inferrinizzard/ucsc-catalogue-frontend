@@ -1,7 +1,10 @@
 import * as React from 'react';
 import styled from 'styled-components';
-import ClassCard from './components/ClassCard'
-import Drawer from '@material-ui/core/Drawer'
+import Drawer from '@material-ui/core/Drawer';
+
+import ClassCard from './components/ClassCard';
+import SortDrawer from './components/SortDrawer';
+import CourseDrawer from './components/CourseDrawer';
 
 const Liner = styled.div`
 	width: 100%;
@@ -13,17 +16,20 @@ const Liner = styled.div`
 const TopLiner = styled(Liner)`top: 0;`;
 const BottomLiner = styled(Liner)`bottom: 0;`;
 
-const drawerWidth = 240;
+const sortWidth = 400; //open width
+//add bool for when courseDrawer is open, toggle as such
+//same for when sorting is closed/open
 const linerWidth = 30;
 
 const Main = styled.div`
 	margin-top: ${linerWidth}px;
-	margin-left: ${drawerWidth}px;
-	width: calc(100% - ${drawerWidth}px);
+	margin-left: ${sortWidth}px;
+	width: calc(100% - ${sortWidth}px);
 `;
 
+//width: calc(100% - ${sortWidth+courseDrawerWidth}px);
+
 export interface AppProps {}
- 
 export interface AppState {}
  
 class App extends React.Component<AppProps, AppState> {
@@ -31,16 +37,12 @@ class App extends React.Component<AppProps, AppState> {
 		return (<React.Fragment>
 			<TopLiner>UCSC-Catalogue</TopLiner>
 			<div>
-				<Drawer open={true} variant="permanent">
-					<h2>sorting</h2>
-				</Drawer>
+				<SortDrawer />
 				<Main>
 					<ClassCard />
 					<ClassCard />
 				</Main>
-				<Drawer anchor="right" variant="persistent">
-					<h2>depth</h2>
-				</Drawer>
+				<CourseDrawer />
 			</div>
 			<BottomLiner>About</BottomLiner>
 			</React.Fragment>);
