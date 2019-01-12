@@ -34,34 +34,86 @@ function convertCourse(
     section: c.s,
     name: c.n,
     number: c.num,
-    settings: c.loct.map(x => ({
-      day: x.t.day,
-      time: x.t.time,
-      location: x.loc,
-    })),
+    settings: !!c.loct
+      ? c.loct
+          .filter(x => x.loc && x.t)
+          .map(x => ({
+            day: x.t.day,
+            time: x.t.time,
+            location: x.loc,
+          }))
+      : null,
     capacity: c.cap,
-    instructor: {
-      display: c.ins.d,
-      first: c.ins.f,
-      last: c.ins.l,
-      middle: c.ins.m,
-    },
+    instructor: c.ins
+      ? {
+          display: c.ins.d,
+          first: c.ins.f,
+          last: c.ins.l,
+          middle: c.ins.m,
+        }
+      : null,
     subject,
   };
 }
 
+function convertTracking(
+  rawResults: {
+    termId: string;
+    courseNum: number;
+    date: number;
+    status: model.EnrollmentStatus;
+    avail: 0;
+    cap: number;
+    enrolled: number;
+    waitCap: number;
+    waitTotal: number;
+    sections: {
+      cap: number;
+      num: number;
+      sec: string;
+      wait: number;
+      status: string;
+      enrolled: number;
+      waitTotal: number;
+    }[];
+  }[]
+): model.CourseEnrollment[] {
+  return rawResults.map<model.CourseEnrollment>(x => ({
+    termId: x.termId,
+    courseNum: x.courseNum,
+    date: x.date,
+    status: x.status,
+    available: x.avail,
+    capacity: x.cap,
+    enrolled: x.enrolled,
+    waitlistCapacity: x.waitCap,
+    waitlistTotal: x.waitTotal,
+    sections: x.sections.map<model.SectionEnrollment>(s => ({
+      capacity: s.cap,
+      number: s.num,
+      name: s.sec,
+      waitlist: s.wait,
+      status: s.status,
+      enrolled: s.enrolled,
+      waitlistCapacity: s.waitTotal,
+    })),
+  }));
+}
+
 class _API {
   private endpoint = 'https://andromeda.miragespace.net/slugsurvival';
-  public async courses(termId: string): Promise<model.CourseList> {
+  public async courses(termId: string): Promise<model.Course[]> {
     const res = (await ky
       .get(`${this.endpoint}/data/fetch/terms/${termId}.json`)
-      .json()) as any;
-    return Object.entries<any[]>(res).reduce(
-      (prev, [subject, rawCourse]) => ({
-        ...prev,
-        convertCourse(rawCourse, subject);,
-      }),
-      {}
+      .json()) as any[];
+    return Object.entries(res).reduce<model.Course[]>(
+      (prev, [subject, rawCourses]) => {
+        return [
+          ...prev,
+          ...rawCourses.map((x: any) => convertCourse(x, subject)),
+        ];
+      },
+      []
     );
   }
   public async tracking(
@@ -78,9 +130,10 @@ class _API {
     if (!res.ok) {
       throw new Error('Error fetching tracking data');
     }
-    return res as model.CourseEnrollment[];
+    return convertTracking(res.results);
   }
 }
 
 const API = new _API();
+(window as any)['API'] = API; // TODO: remove it
 export default API;

@@ -24,14 +24,10 @@ export interface Course {
   section: string;
   name: string;
   number: number;
-  settings: Setting[];
+  settings: Setting[] | null;
   capacity: number | null;
-  instructor: Instructor;
+  instructor: Instructor | null;
   subject: string;
-}
-
-export interface CourseList {
-  [CourseId: string]: Course;
 }
 
 export type EnrollmentStatus = 'Wait List' | 'Open' | 'Closed' | string;
