@@ -47,6 +47,7 @@
   "dependencies": {
     "@material-ui/core": "^3.8.3",
     "css-loader": "^1.0.0",
+    "ky": "^0.6.0",
     "react": "^16.6.0",
     "react-dom": "^16.6.0",
     "react-redux": "^5.1.1",
