@@ -1,9 +1,9 @@
-interface Term {
+export interface Term {
   code: string;
   name: string;
 }
 
-interface Setting {
+export interface Setting {
   day: string[];
   time: {
     start: string;
@@ -12,14 +12,14 @@ interface Setting {
   location: string;
 }
 
-interface Instructor {
+export interface Instructor {
   display: string[];
   first: string;
   last: string;
   middle?: string;
 }
 
-interface Course {
+export interface Course {
   code: string;
   section: string;
   name: string;
@@ -30,13 +30,13 @@ interface Course {
   subject: string;
 }
 
-interface CourseList {
+export interface CourseList {
   [CourseId: string]: Course;
 }
 
-type EnrollmentStatus = 'Wait List' | 'Open' | 'Closed' | string;
+export type EnrollmentStatus = 'Wait List' | 'Open' | 'Closed' | string;
 
-interface SectionEnrollment {
+export interface SectionEnrollment {
   capacity: number;
   number: number;
   name: string;
@@ -46,7 +46,7 @@ interface SectionEnrollment {
   waitlistCapacity: number;
 }
 
-interface CourseEnrollment {
+export interface CourseEnrollment {
   termId: string;
   courseNum: number;
   date: number;
