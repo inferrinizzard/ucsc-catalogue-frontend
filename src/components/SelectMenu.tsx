@@ -22,9 +22,16 @@ class SelectMenu extends React.Component<SelectMenuProps, SelectMenuState> {
 	handleOpen = () => {
 		this.setState({...this.state, open: true});
 	};
-
-	handleMenuItemClick = (event, index: int) => {
+	handleClose = (
+		event: React.MouseEvent<HTMLElement, MouseEvent>,
+		index: int
+	) => {
 		this.setState({open: false, selectedIndex: index});
+	};
+
+	state = {
+		open: false,
+		selectedIndex: 0,
 	};
 
 	render() {
@@ -44,7 +51,7 @@ class SelectMenu extends React.Component<SelectMenuProps, SelectMenuState> {
 						<MenuItem
 							key={option}
 							selected={index == this.state.selectedIndex}
-							onClick={event => this.handleMenuItemClick(event, index)}>
+							onClick={event => this.handleClose(event, index)}>
 							{option}
 						</MenuItem>
 					))}
