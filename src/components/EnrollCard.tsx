@@ -10,26 +10,20 @@ import styled from 'styled-components';
 
 export interface EnrollCardProps {}
 export interface EnrollCardState {}
- 
+
 class EnrollCard extends React.Component<EnrollCardProps, EnrollCardState> {
-	render() { 
-		return (
-			<Card>
-				<CardHeader
-					title="Enrollment"
-				/>
-				<CardMedia />
-				<CardContent>
-					<Typography>
-						Enrolled:
-					</Typography>
-					<Typography>
-						Waitlisted:
-					</Typography>
-				</CardContent>
-			</Card>
-		);
-	}
+  render() {
+    return (
+      <Card>
+        <CardHeader title="Enrollment" />
+        <CardMedia />
+        <CardContent>
+          <Typography>Enrolled:</Typography>
+          <Typography>Waitlisted:</Typography>
+        </CardContent>
+      </Card>
+    );
+  }
 }
- 
+
 export default EnrollCard;
