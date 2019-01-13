@@ -1,13 +1,9 @@
 import * as React from 'react';
 import styled from 'styled-components';
-import Button from '@material-ui/core/Button';
-import Chip from '@material-ui/core/Chip';
 import Divider from '@material-ui/core/Divider';
 import Drawer from '@material-ui/core/Drawer';
-import Fade from '@material-ui/core/Fade';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
-import Paper from '@material-ui/core/Paper';
+import Card from '@material-ui/core/Card';
+import CardHeader from '@material-ui/core/CardHeader';
 
 import SearchBar from './SearchBar';
 import SelectMenu from './SelectMenu';
@@ -21,7 +17,7 @@ const linerWidth = 30;
 const Spacer = styled.div`
   margin-top: ${linerWidth}px;
 `;
-const Section = styled(Paper)<any>`
+const Section = styled(Card)<any>`
   margin: 0.3em;
   padding: 0.2em;
 `;
@@ -35,9 +31,11 @@ class SortDrawer extends React.Component<SortDrawerProps, SortDrawerState> {
           <SearchBar />
         </Section>
         <Section>
+					<CardHeader title="Sorting"/>
           <SelectMenu />
         </Section>
         <Section>
+					<CardHeader title="Filter"/>
           {/* which quarter, default to current */}
           <FilterMenu />
           <Divider />

@@ -10,7 +10,7 @@ export interface ProfCardState {}
 
 const StyleCard = styled(Card)<any>`
   margin: 0.5em;
-  margin-left: 0.25em;
+  margin-right: 0.25em;
 `;
 
 class ProfCard extends React.Component<ProfCardProps, ProfCardState> {

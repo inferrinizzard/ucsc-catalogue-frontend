@@ -9,7 +9,8 @@ export interface FilterMenuProps {
   // filters: string[];
 }
 export interface FilterMenuState {
-  anchorEl: object;
+  anchorEl: HTMLElement;
+  open: bool;
   filters: string[];
   activeFilters: string[];
 }
@@ -17,23 +18,32 @@ export interface FilterMenuState {
 class FilterMenu extends React.Component<FilterMenuProps, FilterMenuState> {
   state = {
     anchorEl: null,
+    open: false,
     filters: ['test'],
-    activeFilters: ['chip', 'snask'],
+    activeFilters: ['A', 'B', 'C', 'D'],
   };
 
-  handleRemoveActiveFilter = (index: int) => {
+  handleRemoveActiveFilter = (activeFilter: string) => {
     this.setState({
       ...this.state,
-      activeFilters: this.state.activeFilters.slice(index, 1),
+      activeFilters: this.state.activeFilters.filter(c => c !== activeFilter),
     });
   };
 
-  handleClick = () => {
-    this.setState({ ...this.state, anchorEl: event.currentTarget });
+  handleAddActiveFilter = (filter: string) => {
+    this.setState({
+      ...this.state,
+      activeFilters: this.state.activeFilters.concat([filter]),
+    });
+    this.handleClose();
+  };
+
+  handleClick = (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
+    this.setState({ ...this.state, anchorEl: event.currentTarget, open: true });
   };
 
   handleClose = () => {
-    this.setState({ ...this.state, anchorEl: null });
+    this.setState({ ...this.state, anchorEl: null, open: false });
   };
 
   render() {
@@ -42,33 +52,36 @@ class FilterMenu extends React.Component<FilterMenuProps, FilterMenuState> {
         <Button
           aria-owns={open ? 'fade-menu' : undefined}
           aria-haspopup="true"
-          onClick={this.handleClick}
+          onClick={event => this.handleClick(event)}
         >
           Button Name
         </Button>
         <Menu
-          open={false}
+          id="fade-menu"
+          open={this.state.open}
+          onClose={this.handleClose}
           anchorEl={this.state.anchorEl}
           TransitionComponent={Fade}
         >
           {/* map to major list/other options in state */}
-          {this.state.filters.map((filter, index) => {
+          {this.state.filters.map((filter, index) => (
             <MenuItem
-              // onClick={this.handleCloseAndChip}
-              onClick={this.handleClose}
+              key={filter}
+              // selected={}
+              onClick={event => this.handleAddActiveFilter}
             >
               {filter}
-            </MenuItem>;
-          })}
+            </MenuItem>
+          ))}
         </Menu>
         <div>
-          {this.state.activeFilters.map((activeFilter, index) => {
+          {this.state.activeFilters.map((activeFilter, index) => (
             <Chip
+              key={activeFilter}
               label={activeFilter}
-              onDelete={event => this.handleRemoveActiveFilter(index)}
-            />;
-          })}
-          <Chip label="Test" />
+              onDelete={event => this.handleRemoveActiveFilter(activeFilter)}
+            />
+          ))}
         </div>
       </React.Fragment>
     );

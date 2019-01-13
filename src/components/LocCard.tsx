@@ -10,7 +10,7 @@ export interface LocCardState {}
 
 const StyleCard = styled(Card)<any>`
   margin: 0.5em;
-  margin-right: 0.25em;
+  margin-left: 0.25em;
 `;
 
 class LocCard extends React.Component<LocCardProps, LocCardState> {
