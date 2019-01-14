@@ -8,12 +8,11 @@ import Divider from '@material-ui/core/Divider';
 import Collapse from '@material-ui/core/Collapse';
 import styled from 'styled-components';
 
+import TextBlock from './TextBlock';
+
 const StyleCard = styled(Card)<any>`
   margin: 0.5em;
-`;
-const Block = styled.div`
-  display: inline-block;
-  width: 50%;
+  overflow: visible !important;
 `;
 
 export interface DescCardProps {
@@ -24,8 +23,8 @@ export interface DescCardProps {
   //   number: number;
   //   capacity: number | null;
   //   // instructor: Instructor | null;
-	// 	subject: string;
-	// 	description: string;
+  // 	subject: string;
+  // 	description: string;
   //   day: string[];
   //   time: {
   //     start: string;
@@ -47,37 +46,25 @@ const DescCard: React.SFC<DescCardProps> = props => {
       <CardMedia />
       <Divider />
       <CardContent>
-        <Block>
-          <Typography>Grade Average</Typography>
-        </Block>
-        <Block>
-          <Typography>Unit count, course code</Typography>
-          {/* <Typography>{props.courseData.credits+" "+props.courseData.number}}</Typography> */}
-        </Block>
+        <TextBlock type="body2" text={'Grade Average'} />
+        <TextBlock type="body2" text={'Unit count, course code'} />
+        {/* <TextBlock type="body2" text={props.courseData.credits+" "+props.courseData.number} /> */}
         <div />
-        <Block>
-          <Typography>Number Enrolled</Typography>
-          {/* <Typography>{props.courseData.}</Typography> */}
-        </Block>
-        <Block>
-          <Typography>Number Waitlist</Typography>
-        </Block>
+        <TextBlock type="body2" text={'Number Enrolled'} />
+        {/* <TextBlock type="body2" text={props.courseData.} /> */}
+        <TextBlock type="body2" text={'Number Waitlist'} />
         <div />
-        <Block>
-          <Typography>Date and Time, class type</Typography>
-          {/* <Typography>{props.courseData.day}</Typography> */}
-        </Block>
-        <Block>
-          <Typography>Professor</Typography>
-          {/* <Typography>{props.courseData.instructor.display}</Typography> */}
-        </Block>
+        <TextBlock type="body2" text={'Date and Time, class type'} />
+        {/* <TextBlock type="body2" text={props.courseData.day} /> */}
+        <TextBlock type="body2" text={'Professor'} />
+        {/* <TextBlock type="body2" text={props.courseData.instructor.display} /> */}
         <Divider />
-        <div>
+        <Collapse>
           <Typography>Description: {'{}'}</Typography>
           {/* <Typography>Description: {props.courseData.description}</Typography> */}
           <Typography>Prereqs: {'{}'}</Typography>
           {/* <Typography>Prereqs: {props.courseData.prereq}</Typography> */}
-        </div>
+        </Collapse>
       </CardContent>
     </StyleCard>
   );

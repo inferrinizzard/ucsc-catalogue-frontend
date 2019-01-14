@@ -11,7 +11,7 @@ import FilterMenu from './FilterMenu';
 import { Select } from '@material-ui/core';
 
 export interface SortDrawerProps {
-	sort: (type:int)=>void
+  sort: (type: number) => void;
 }
 export interface SortDrawerState {}
 
@@ -34,7 +34,7 @@ class SortDrawer extends React.Component<SortDrawerProps, SortDrawerState> {
         </Section>
         <Section>
           <CardHeader title="Sorting" />
-          <SelectMenu sort={this.props.sort}/>
+          <SelectMenu sort={this.props.sort} />
         </Section>
         <Section>
           <CardHeader title="Filter" />

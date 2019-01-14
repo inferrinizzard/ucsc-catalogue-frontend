@@ -9,16 +9,16 @@ export interface FilterMenuProps {
   // filters: string[];
 }
 export interface FilterMenuState {
-	name: string;
-  anchorEl: HTMLElement;
-  open: bool;
+  name: string;
+  anchorEl: HTMLElement | null;
+  open: boolean;
   filters: string[];
   activeFilters: string[];
 }
 
 class FilterMenu extends React.Component<FilterMenuProps, FilterMenuState> {
   state = {
-		name: "Letter",
+    name: 'Letter',
     anchorEl: null,
     open: false,
     filters: ['test'],

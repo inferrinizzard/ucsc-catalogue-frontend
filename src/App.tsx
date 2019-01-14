@@ -36,6 +36,7 @@ const Main = styled.div`
 export interface AppProps {}
 export interface AppState {
   courses: Class[];
+  drawerOpen: boolean;
 }
 
 export type Class = { course: string; name: string; grade: string };
@@ -47,22 +48,25 @@ class App extends React.Component<AppProps, AppState> {
       { course: 'AMS 5', name: 'Statistics', grade: 'B' },
       { course: 'AMS 7', name: 'smth else', grade: 'A' },
     ],
+    drawerOpen: false,
   };
 
-  sortCourses = (type: int) => {
-    var courseTemp: Class[] = [];
+  sortCourses = (type: number) => {
+    let courseTemp: Class[] = [];
     switch (type) {
       case 0:
-        courseTemp = []
+        courseTemp = ([] as Class[])
           .concat(this.state.courses)
-          .sort((a, b) =>
+          .sort((a: Class, b: Class) =>
             a.course > b.course ? 1 : a.course < b.course ? -1 : 0
           );
         break;
       case 2:
-        courseTemp = []
+        courseTemp = ([] as Class[])
           .concat(this.state.courses)
-          .sort((a, b) => (a.grade > b.grade ? 1 : a.grade < b.grade ? -1 : 0));
+          .sort((a: Class, b: Class) =>
+            a.grade > b.grade ? 1 : a.grade < b.grade ? -1 : 0
+          );
         break;
       default:
         courseTemp = this.state.courses;
@@ -70,6 +74,13 @@ class App extends React.Component<AppProps, AppState> {
     }
     this.setState({ ...this.state, courses: courseTemp });
   };
+
+  openDetail = () => {
+    this.setState({
+      ...this.state,
+      drawerOpen: this.state.drawerOpen ? this.state.drawerOpen : true,
+    });
+  }
 
   render() {
     return (
@@ -79,10 +90,14 @@ class App extends React.Component<AppProps, AppState> {
           <SortDrawer sort={this.sortCourses} />
           <Main>
             {this.state.courses.map((course, index) => (
-              <ClassCard key={index} courseData={course} />
+              <ClassCard
+                key={index}
+                courseData={course}
+                openDetail={this.openDetail}
+              />
             ))}
           </Main>
-          <CourseDrawer />
+          <CourseDrawer open={this.state.drawerOpen} />
         </div>
         <BottomLiner>About</BottomLiner>
       </React.Fragment>

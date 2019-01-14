@@ -11,6 +11,7 @@ export interface ProfCardState {}
 const StyleCard = styled(Card)<any>`
   margin: 0.5em;
   margin-right: 0.25em;
+  overflow: visible !important;
 `;
 
 class ProfCard extends React.Component<ProfCardProps, ProfCardState> {

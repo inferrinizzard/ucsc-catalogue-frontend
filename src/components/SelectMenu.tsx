@@ -6,11 +6,11 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 
 export interface SelectMenuProps {
-  sort: (type: int) => void;
+  sort: (type: number) => void;
 }
 export interface SelectMenuState {
-  open: bool;
-  selectedIndex: int;
+  open: boolean;
+  selectedIndex: number;
 }
 
 const options = [
@@ -26,7 +26,7 @@ class SelectMenu extends React.Component<SelectMenuProps, SelectMenuState> {
   };
   handleClose = (
     event: React.MouseEvent<HTMLElement, MouseEvent>,
-    index: int
+    index: number
   ) => {
     this.setState({ open: false, selectedIndex: index });
     this.props.sort(index);

@@ -10,6 +10,7 @@ import TextBlock from './TextBlock';
 
 const StyleCard = styled(Card)<any>`
   margin: 0.5em;
+  overflow: visible !important;
 `;
 
 export interface GradesCardProps {}

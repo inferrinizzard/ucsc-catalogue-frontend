@@ -10,6 +10,7 @@ export interface MajorCardState {}
 
 const StyleCard = styled(Card)<any>`
   margin: 0.5em 0.25em;
+  overflow: visible !important;
 `;
 
 class MajorCard extends React.Component<MajorCardProps, MajorCardState> {

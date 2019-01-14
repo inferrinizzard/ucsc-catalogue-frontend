@@ -11,6 +11,7 @@ const StyleCard = styled(Card)<any>`
 `;
 
 export interface ClassCardProps {
+  openDetail: () => void;
   courseData: {
     course: string;
     name: string;
@@ -22,7 +23,7 @@ const ClassCard: React.SFC<ClassCardProps> = props => {
   return (
     <React.Fragment>
       <StyleCard>
-        <CardActionArea>
+        <CardActionArea action={props.openDetail}>
           <CardContent>
             <Typography gutterBottom variant="h5" component="h2">
               {props.courseData.course}

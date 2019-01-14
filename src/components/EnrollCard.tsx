@@ -21,6 +21,7 @@ export interface EnrollCardProps {
 
 const StyleCard = styled(Card)<any>`
   margin: 0.5em;
+  overflow: visible !important;
 `;
 
 const EnrollCard: React.SFC<EnrollCardProps> = () => {
