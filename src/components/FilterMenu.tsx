@@ -9,6 +9,7 @@ export interface FilterMenuProps {
   // filters: string[];
 }
 export interface FilterMenuState {
+	name: string;
   anchorEl: HTMLElement;
   open: bool;
   filters: string[];
@@ -17,6 +18,7 @@ export interface FilterMenuState {
 
 class FilterMenu extends React.Component<FilterMenuProps, FilterMenuState> {
   state = {
+		name: "Letter",
     anchorEl: null,
     open: false,
     filters: ['test'],
@@ -54,7 +56,7 @@ class FilterMenu extends React.Component<FilterMenuProps, FilterMenuState> {
           aria-haspopup="true"
           onClick={event => this.handleClick(event)}
         >
-          Button Name
+          {this.state.name}
         </Button>
         <Menu
           id="fade-menu"
@@ -63,7 +65,6 @@ class FilterMenu extends React.Component<FilterMenuProps, FilterMenuState> {
           anchorEl={this.state.anchorEl}
           TransitionComponent={Fade}
         >
-          {/* map to major list/other options in state */}
           {this.state.filters.map((filter, index) => (
             <MenuItem
               key={filter}

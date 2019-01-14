@@ -31,11 +31,11 @@ class SortDrawer extends React.Component<SortDrawerProps, SortDrawerState> {
           <SearchBar />
         </Section>
         <Section>
-					<CardHeader title="Sorting"/>
+          <CardHeader title="Sorting" />
           <SelectMenu />
         </Section>
         <Section>
-					<CardHeader title="Filter"/>
+          <CardHeader title="Filter" />
           {/* which quarter, default to current */}
           <FilterMenu />
           <Divider />

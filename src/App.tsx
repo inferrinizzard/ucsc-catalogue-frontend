@@ -34,9 +34,18 @@ const Main = styled.div`
 //width: calc(100% - ${sortWidth+courseDrawerWidth}px);
 
 export interface AppProps {}
-export interface AppState {}
+export interface AppState {
+  courses: object;
+}
 
 class App extends React.Component<AppProps, AppState> {
+  state = {
+    courses: {
+      a: { course: 'AMS 3', name: 'smth', grade: 'A' },
+      b: { course: 'AMS 5', name: 'Statistics', grade: 'B' },
+      c: { course: 'AMS 7', name: 'smth else', grade: 'C' },
+    },
+  };
   render() {
     return (
       <React.Fragment>
@@ -44,8 +53,12 @@ class App extends React.Component<AppProps, AppState> {
         <div>
           <SortDrawer />
           <Main>
-            <ClassCard />
-            <ClassCard />
+            {Object.keys(this.state.courses).map((key: string) => (
+              <ClassCard key={key} courseData={this.state.courses[key]} />
+            ))}
+            <ClassCard courseData={this.state.courses.a} />
+            <ClassCard courseData={this.state.courses.b} />
+            <ClassCard courseData={this.state.courses.c} />
           </Main>
           <CourseDrawer />
         </div>

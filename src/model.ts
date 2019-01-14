@@ -28,6 +28,11 @@ export interface Course {
   capacity: number | null;
   instructor: Instructor | null;
   subject: string;
+  // description: string;
+  // type: string;
+  // credits: number;
+  // ge: string[] | null;
+  // prereq?: string;
 }
 
 export type EnrollmentStatus = 'Wait List' | 'Open' | 'Closed' | string;
