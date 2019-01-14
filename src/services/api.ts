@@ -1,59 +1,12 @@
 import ky from 'ky';
 
-import * as model from '../model';
+import * as model from '../models/course.model';
+import * as ApiResponseModel from '../models/api.model';
 
 function convertAndMergeCourse(
   subject: string,
-  t: {
-    // data from terms api
-    c: string;
-    l: string;
-    n: string;
-    s: string;
-    cap: number | null;
-    ins: {
-      d: string[];
-      f: string;
-      l: string;
-      m?: string;
-    };
-    num: number;
-    loct: {
-      t: {
-        day: string[];
-        time: {
-          end: string;
-          start: string;
-        };
-      };
-      loc: string;
-    }[];
-  },
-  c: {
-    // data from courses api
-    ty: string;
-    cr: number;
-    ge: string[];
-    re: string;
-    com: any[];
-    sec: {
-      num: number;
-      sec: string;
-      loct: {
-        t: {
-          day: string[];
-          time: {
-            start: string;
-            end: string;
-          };
-        };
-        loc: string;
-      }[];
-      ins: string;
-      cap: number;
-    }[];
-    desc: string;
-  }
+  t: ApiResponseModel.TermsApiCourse,
+  c: ApiResponseModel.CourseApiCourse
 ): model.Course {
   return {
     code: t.c,
@@ -104,26 +57,7 @@ function convertAndMergeCourse(
 }
 
 function convertTracking(
-  rawResults: {
-    termId: string;
-    courseNum: number;
-    date: number;
-    status: model.EnrollmentStatus;
-    avail: 0;
-    cap: number;
-    enrolled: number;
-    waitCap: number;
-    waitTotal: number;
-    sections: {
-      cap: number;
-      num: number;
-      sec: string;
-      wait: number;
-      status: string;
-      enrolled: number;
-      waitTotal: number;
-    }[];
-  }[]
+  rawResults: ApiResponseModel.trackingApiData[]
 ): model.CourseEnrollment[] {
   return rawResults.map<model.CourseEnrollment>(x => ({
     termId: x.termId,
@@ -150,10 +84,14 @@ function convertTracking(
 class _API {
   private endpoint = 'https://andromeda.miragespace.net/slugsurvival';
   public async courses(termId: string): Promise<model.Course[]> {
-    const [termsData, coursesData] = (await Promise.all([
-      ky.get(`${this.endpoint}/data/fetch/terms/${termId}.json`).json(),
-      ky.get(`${this.endpoint}/data/fetch/courses/${termId}.json`).json(),
-    ])) as any[][];
+    const [termsData, coursesData] = await Promise.all([
+      ky
+        .get(`${this.endpoint}/data/fetch/terms/${termId}.json`)
+        .json() as Promise<ApiResponseModel.TermsApiResponse>,
+      ky
+        .get(`${this.endpoint}/data/fetch/courses/${termId}.json`)
+        .json() as Promise<ApiResponseModel.CoursesApiResponse>,
+    ]);
     return Object.entries(termsData).reduce<model.Course[]>(
       (prev, [subject, rawTermCourses]) => {
         return [

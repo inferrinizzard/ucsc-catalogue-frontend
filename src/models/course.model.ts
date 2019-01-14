@@ -29,7 +29,7 @@ export interface Section {
 
 export interface Course {
   code: string; // code in the subject e.g. 80T
-  classSection: string; // 
+  classSection: string; //
   name: string;
   description: string;
   type: string; // Lecture, Studio, etc.
