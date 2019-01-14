@@ -35,7 +35,7 @@ export interface Course {
   type: string; // Lecture, Studio, etc.
   credit: number; // number of credits
   ge: string[];
-  requirements: string | null;
+  prerequirements: string | null;
   combinedSections: string[]; // Array of course Number (in string)
   sections: Section[];
   number: number;
