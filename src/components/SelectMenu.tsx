@@ -5,7 +5,9 @@ import ListItemText from '@material-ui/core/ListItemText';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 
-export interface SelectMenuProps {}
+export interface SelectMenuProps {
+  sort: (type: int) => void;
+}
 export interface SelectMenuState {
   open: bool;
   selectedIndex: int;
@@ -27,6 +29,7 @@ class SelectMenu extends React.Component<SelectMenuProps, SelectMenuState> {
     index: int
   ) => {
     this.setState({ open: false, selectedIndex: index });
+    this.props.sort(index);
   };
 
   state = {

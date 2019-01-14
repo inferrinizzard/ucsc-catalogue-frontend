@@ -35,30 +35,52 @@ const Main = styled.div`
 
 export interface AppProps {}
 export interface AppState {
-  courses: object;
+  courses: Class[];
 }
+
+export type Class = { course: string; name: string; grade: string };
 
 class App extends React.Component<AppProps, AppState> {
   state = {
-    courses: {
-      a: { course: 'AMS 3', name: 'smth', grade: 'A' },
-      b: { course: 'AMS 5', name: 'Statistics', grade: 'B' },
-      c: { course: 'AMS 7', name: 'smth else', grade: 'C' },
-    },
+    courses: [
+      { course: 'AMS 3', name: 'smth', grade: 'C' },
+      { course: 'AMS 5', name: 'Statistics', grade: 'B' },
+      { course: 'AMS 7', name: 'smth else', grade: 'A' },
+    ],
   };
+
+  sortCourses = (type: int) => {
+    var courseTemp: Class[] = [];
+    switch (type) {
+      case 0:
+        courseTemp = []
+          .concat(this.state.courses)
+          .sort((a, b) =>
+            a.course > b.course ? 1 : a.course < b.course ? -1 : 0
+          );
+        break;
+      case 2:
+        courseTemp = []
+          .concat(this.state.courses)
+          .sort((a, b) => (a.grade > b.grade ? 1 : a.grade < b.grade ? -1 : 0));
+        break;
+      default:
+        courseTemp = this.state.courses;
+        break;
+    }
+    this.setState({ ...this.state, courses: courseTemp });
+  };
+
   render() {
     return (
       <React.Fragment>
         <TopLiner>UCSC-Catalogue</TopLiner>
         <div>
-          <SortDrawer />
+          <SortDrawer sort={this.sortCourses} />
           <Main>
-            {Object.keys(this.state.courses).map((key: string) => (
-              <ClassCard key={key} courseData={this.state.courses[key]} />
+            {this.state.courses.map((course, index) => (
+              <ClassCard key={index} courseData={course} />
             ))}
-            <ClassCard courseData={this.state.courses.a} />
-            <ClassCard courseData={this.state.courses.b} />
-            <ClassCard courseData={this.state.courses.c} />
           </Main>
           <CourseDrawer />
         </div>
