@@ -7,5 +7,5 @@ import App from './App';
 
 const root = document.querySelector('#root');
 ReactDOM.render(<App />, root);
-API.courses('2190').then(console.log);
-API.tracking(42674, '2190').then(console.log);
+// API.courses('2190').then(console.log);
+// API.tracking(42674, '2190').then(console.log);

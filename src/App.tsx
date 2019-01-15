@@ -86,8 +86,8 @@ class App extends React.Component<AppProps, AppState> {
     });
 	};
 	
-	setDrawerWidth = () =>{
-
+	setDrawerWidth = (val:number) =>{
+		this.setState({...this.state, drawerWidth:val});
 	}
 
   render() {
