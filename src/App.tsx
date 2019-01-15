@@ -4,27 +4,18 @@ import styled from 'styled-components';
 import Main from './components/Main';
 import SortDrawer from './components/SortDrawer';
 import CourseDrawer from './components/CourseDrawer';
+import BottomLiner from './components/BottomLiner';
 
 const Liner = styled.div`
   width: 100%;
   background: #5d92dd;
   z-index: 1201;
-  position: fixed;
-`;
-
-const TopLiner = styled(Liner)`
+	position: fixed;
   top: 0;
 `;
-const BottomLiner = styled(Liner)`
-  bottom: 0;
-`;
 
-const drawerWidth = 300; //open width
-//add bool for when courseDrawer is open, toggle as such
-//same for when sorting is closed/open
+const drawerWidth = 300;
 const linerWidth = 30;
-
-//width: calc(100% - ${drawerWidth+courseDrawerWidth}px);
 
 export interface AppProps {}
 export interface AppState {
@@ -32,6 +23,7 @@ export interface AppState {
 	drawerOpen: boolean;
 	linerWidth: number;
 	drawerWidth: number;
+	linerOpen: boolean;
 }
 
 export type Class = { course: string; name: string; grade: string };
@@ -46,6 +38,7 @@ class App extends React.Component<AppProps, AppState> {
 		drawerOpen: false,
 		linerWidth: 30,
 		drawerWidth: 300,
+		linerOpen: false,
   };
 
   sortCourses = (type: number) => {
@@ -85,6 +78,20 @@ class App extends React.Component<AppProps, AppState> {
       drawerOpen: false,
     });
 	};
+
+  openLiner = () => {
+    this.setState({
+      ...this.state,
+      linerOpen: true,
+    });
+  };
+
+  closeLiner = () => {
+    this.setState({
+      ...this.state,
+      linerOpen: false,
+    });
+	};
 	
 	setDrawerWidth = (val:number) =>{
 		this.setState({...this.state, drawerWidth:val});
@@ -93,7 +100,7 @@ class App extends React.Component<AppProps, AppState> {
   render() {
     return (
       <React.Fragment>
-        <TopLiner>UCSC-Catalogue</TopLiner>
+        <Liner>UCSC-Catalogue</Liner>
         <div>
 					<SortDrawer 
 						sort={this.sortCourses} 
@@ -112,7 +119,11 @@ class App extends React.Component<AppProps, AppState> {
             closeDetail={this.closeDetail}
           />
         </div>
-        <BottomLiner>About</BottomLiner>
+				<BottomLiner 
+					open={this.state.linerOpen} 
+					openLiner={this.openLiner}
+					closeLiner={this.closeLiner}
+				>About</BottomLiner>
       </React.Fragment>
     );
   }

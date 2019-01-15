@@ -6,7 +6,7 @@ import CardContent from '@material-ui/core/CardContent';
 import Collapse from '@material-ui/core/Collapse';
 import styled from 'styled-components';
 
-import TextBlock from './TextBlock';
+import TextBlock from '../TextBlock';
 
 const StyleCard = styled(Card)<any>`
   margin: 0.5em;

@@ -4,12 +4,12 @@ import Drawer from '@material-ui/core/Drawer';
 import Paper from '@material-ui/core/Paper';
 import Fab from '@material-ui/core/Fab';
 
-import DescCard from './DescCard';
-import EnrollCard from './EnrollCard';
-import GradesCard from './GradesCard';
-import ProfCard from './ProfCard';
-import MajorCard from './MajorCard';
-import LocCard from './LocCard';
+import DescCard from './Cards/DescCard';
+import EnrollCard from './Cards/EnrollCard';
+import GradesCard from './Cards/GradesCard';
+import ProfCard from './Cards/ProfCard';
+import MajorCard from './Cards/MajorCard';
+import LocCard from './Cards/LocCard';
 
 export interface CourseDrawerProps {
   open: boolean;
