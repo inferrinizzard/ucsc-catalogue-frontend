@@ -1,41 +1,21 @@
 import ky from 'ky';
 
-import * as model from '../model';
+import * as model from '../models/course.model';
+import * as ApiResponseModel from '../models/api.model';
 
-function convertCourse(
-  c: {
-    c: string;
-    l: string;
-    n: string;
-    s: string;
-    cap: number | null;
-    ins: {
-      d: string[];
-      f: string;
-      l: string;
-      m?: string;
-    };
-    num: number;
-    loct: {
-      t: {
-        day: string[];
-        time: {
-          end: string;
-          start: string;
-        };
-      };
-      loc: string;
-    }[];
-  },
-  subject: string
+function convertAndMergeCourse(
+  subject: string,
+  t: ApiResponseModel.TermsApiCourse,
+  c: ApiResponseModel.CourseApiCourse
 ): model.Course {
   return {
-    code: c.c,
-    section: c.s,
-    name: c.n,
-    number: c.num,
-    settings: !!c.loct
-      ? c.loct
+    code: t.c,
+    classSection: t.s,
+    name: t.n,
+    description: c.desc,
+    number: t.num,
+    settings: !!t.loct
+      ? t.loct
           .filter(x => x.loc && x.t)
           .map(x => ({
             day: x.t.day,
@@ -43,40 +23,41 @@ function convertCourse(
             location: x.loc,
           }))
       : null,
-    capacity: c.cap,
-    instructor: c.ins
+    capacity: t.cap,
+    instructor: t.ins
       ? {
-          display: c.ins.d,
-          first: c.ins.f,
-          last: c.ins.l,
-          middle: c.ins.m,
+          display: t.ins.d,
+          first: t.ins.f,
+          last: t.ins.l,
+          middle: t.ins.m,
         }
       : null,
     subject,
+    type: c.ty,
+    credit: c.cr,
+    ge: c.ge,
+    prerequirements: c.re,
+    combinedSections: c.com,
+    sections: c.sec.map<model.Section>(s => ({
+      number: s.num,
+      classSection: s.sec,
+      settings: !!t.loct
+        ? t.loct
+            .filter(x => x.loc && x.t)
+            .map(x => ({
+              day: x.t.day,
+              time: x.t.time,
+              location: x.loc,
+            }))
+        : null,
+      instructor: s.ins,
+      capacity: s.cap,
+    })),
   };
 }
 
 function convertTracking(
-  rawResults: {
-    termId: string;
-    courseNum: number;
-    date: number;
-    status: model.EnrollmentStatus;
-    avail: 0;
-    cap: number;
-    enrolled: number;
-    waitCap: number;
-    waitTotal: number;
-    sections: {
-      cap: number;
-      num: number;
-      sec: string;
-      wait: number;
-      status: string;
-      enrolled: number;
-      waitTotal: number;
-    }[];
-  }[]
+  rawResults: ApiResponseModel.trackingApiData[]
 ): model.CourseEnrollment[] {
   return rawResults.map<model.CourseEnrollment>(x => ({
     termId: x.termId,
@@ -103,14 +84,21 @@ function convertTracking(
 class _API {
   private endpoint = 'https://andromeda.miragespace.net/slugsurvival';
   public async courses(termId: string): Promise<model.Course[]> {
-    const res = (await ky
-      .get(`${this.endpoint}/data/fetch/terms/${termId}.json`)
-      .json()) as any[];
-    return Object.entries(res).reduce<model.Course[]>(
-      (prev, [subject, rawCourses]) => {
+    const [termsData, coursesData] = await Promise.all([
+      ky
+        .get(`${this.endpoint}/data/fetch/terms/${termId}.json`)
+        .json() as Promise<ApiResponseModel.TermsApiResponse>,
+      ky
+        .get(`${this.endpoint}/data/fetch/courses/${termId}.json`)
+        .json() as Promise<ApiResponseModel.CoursesApiResponse>,
+    ]);
+    return Object.entries(termsData).reduce<model.Course[]>(
+      (prev, [subject, rawTermCourses]) => {
         return [
           ...prev,
-          ...rawCourses.map((x: any) => convertCourse(x, subject)),
+          ...rawTermCourses.map((x: any) =>
+            convertAndMergeCourse(subject, x, coursesData[x.num])
+          ),
         ];
       },
       []
