@@ -13,6 +13,7 @@ import LocCard from './LocCard';
 
 export interface CourseDrawerProps {
   open: boolean;
+  closeDetail: () => void;
 }
 export interface CourseDrawerState {}
 
@@ -24,12 +25,18 @@ const ScrollDrawer = styled(({ width, ...other }) => (
   <Drawer classes={{ paper: 'paper' }} {...other} />
 ))<any>`
   & .paper {
-		width: 50%;
+    width: 50%;
   }
 `;
 const Third = styled.span`
   width: 33.3%;
   display: inline-block;
+`;
+
+const FloatButton = styled(Fab)<any>`
+  position: sticky !important;
+  bottom: 25px;
+  left: 85%;
 `;
 
 class CourseDrawer extends React.Component<
@@ -59,10 +66,7 @@ class CourseDrawer extends React.Component<
             <LocCard />
           </Third>
         </div>
-        <Fab>butt</Fab>
-        Lorem ipsum dolor sit, amet consectetur adipisicing elit. Necessitatibus
-        aspernatur quia doloremque iure veniam facere rerum quas dolor tempore
-        id in, itaque a accusantium modi amet aut sapiente eum ducimus?
+        <FloatButton onClick={this.props.closeDetail}>BACK</FloatButton>
       </ScrollDrawer>
     );
   }

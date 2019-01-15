@@ -1,8 +1,7 @@
 import * as React from 'react';
 import styled from 'styled-components';
-import Drawer from '@material-ui/core/Drawer';
 
-import ClassCard from './components/ClassCard';
+import Main from './components/Main';
 import SortDrawer from './components/SortDrawer';
 import CourseDrawer from './components/CourseDrawer';
 
@@ -20,16 +19,10 @@ const BottomLiner = styled(Liner)`
   bottom: 0;
 `;
 
-const sortWidth = 400; //open width
+const sortWidth = 300; //open width
 //add bool for when courseDrawer is open, toggle as such
 //same for when sorting is closed/open
 const linerWidth = 30;
-
-const Main = styled.div`
-  margin-top: ${linerWidth}px;
-  margin-left: ${sortWidth}px;
-  width: calc(100% - ${sortWidth}px);
-`;
 
 //width: calc(100% - ${sortWidth+courseDrawerWidth}px);
 
@@ -78,26 +71,34 @@ class App extends React.Component<AppProps, AppState> {
   openDetail = () => {
     this.setState({
       ...this.state,
-      drawerOpen: this.state.drawerOpen ? this.state.drawerOpen : true,
+      drawerOpen: true,
     });
-  }
+  };
+
+  closeDetail = () => {
+    this.setState({
+      ...this.state,
+      drawerOpen: false,
+    });
+  };
 
   render() {
     return (
       <React.Fragment>
         <TopLiner>UCSC-Catalogue</TopLiner>
         <div>
-          <SortDrawer sort={this.sortCourses} />
-          <Main>
-            {this.state.courses.map((course, index) => (
-              <ClassCard
-                key={index}
-                courseData={course}
-                openDetail={this.openDetail}
-              />
-            ))}
-          </Main>
-          <CourseDrawer open={this.state.drawerOpen} />
+          <SortDrawer sort={this.sortCourses} open={!this.state.drawerOpen} />
+          <Main
+            courses={this.state.courses}
+            open={this.state.drawerOpen}
+            linerWidth={30}
+            sortWidth={200}
+            openDetail={this.openDetail}
+          />
+          <CourseDrawer
+            open={this.state.drawerOpen}
+            closeDetail={this.closeDetail}
+          />
         </div>
         <BottomLiner>About</BottomLiner>
       </React.Fragment>

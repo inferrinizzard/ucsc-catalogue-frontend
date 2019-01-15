@@ -43,7 +43,7 @@ const DescCard: React.SFC<DescCardProps> = props => {
     <StyleCard>
       {/* <CardHeader title={props.courseData.subject+" "+props.courseData.code} subheader={this.props.courseData.name} /> */}
       <CardHeader title="AMS 5" subheader="Statistics" />
-      <CardMedia />
+      {/* <CardMedia /> */}
       <Divider />
       <CardContent>
         <TextBlock type="body2" text={'Grade Average'} />
@@ -59,12 +59,12 @@ const DescCard: React.SFC<DescCardProps> = props => {
         <TextBlock type="body2" text={'Professor'} />
         {/* <TextBlock type="body2" text={props.courseData.instructor.display} /> */}
         <Divider />
-        <Collapse>
+        <div>
           <Typography>Description: {'{}'}</Typography>
           {/* <Typography>Description: {props.courseData.description}</Typography> */}
           <Typography>Prereqs: {'{}'}</Typography>
           {/* <Typography>Prereqs: {props.courseData.prereq}</Typography> */}
-        </Collapse>
+        </div>
       </CardContent>
     </StyleCard>
   );

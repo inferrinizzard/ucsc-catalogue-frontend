@@ -19,7 +19,7 @@ class LocCard extends React.Component<LocCardProps, LocCardState> {
     return (
       <StyleCard>
         <CardHeader title="Location" />
-        <CardMedia />
+        {/* <CardMedia /> */}
         <div>image goes here</div>
         <CardContent>
           <div>reqs</div>

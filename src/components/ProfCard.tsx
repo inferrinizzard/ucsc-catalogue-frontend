@@ -19,7 +19,7 @@ class ProfCard extends React.Component<ProfCardProps, ProfCardState> {
     return (
       <StyleCard>
         <CardHeader title="Professor" />
-        <CardMedia />
+        {/* <CardMedia /> */}
         <div>image goes here</div>
         <CardContent>
           <div>name</div>

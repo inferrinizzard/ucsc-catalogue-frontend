@@ -28,7 +28,7 @@ const EnrollCard: React.SFC<EnrollCardProps> = () => {
   return (
     <StyleCard>
       <CardHeader title="Enrollment" />
-      <CardMedia />
+      {/* <CardMedia /> */}
       <div>graph goes here</div>
       <CardContent>
         <TextBlock text="Enrolled: " type={'h5'} />

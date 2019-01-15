@@ -12,6 +12,7 @@ import { Select } from '@material-ui/core';
 
 export interface SortDrawerProps {
   sort: (type: number) => void;
+  open: boolean;
 }
 export interface SortDrawerState {}
 
@@ -27,7 +28,7 @@ const Section = styled(Card)<any>`
 class SortDrawer extends React.Component<SortDrawerProps, SortDrawerState> {
   render() {
     return (
-      <Drawer open={false} variant="permanent">
+      <Drawer open={this.props.open} variant="permanent">
         <Spacer />
         <Section>
           <SearchBar />

@@ -8,6 +8,7 @@ import styled from 'styled-components';
 const StyleCard = styled(Card)<any>`
   margin: 0.5em;
   min-width: 200px;
+  display: inline-block;
 `;
 
 export interface ClassCardProps {
@@ -21,20 +22,18 @@ export interface ClassCardProps {
 
 const ClassCard: React.SFC<ClassCardProps> = props => {
   return (
-    <React.Fragment>
-      <StyleCard>
-        <CardActionArea action={props.openDetail}>
-          <CardContent>
-            <Typography gutterBottom variant="h5" component="h2">
-              {props.courseData.course}
-            </Typography>
-            <Typography component="p">
-              {props.courseData.name + ' ' + props.courseData.grade}
-            </Typography>
-          </CardContent>
-        </CardActionArea>
-      </StyleCard>
-    </React.Fragment>
+    <StyleCard>
+      <CardActionArea onClick={props.openDetail}>
+        <CardContent>
+          <Typography gutterBottom variant="h5" component="h2">
+            {props.courseData.course}
+          </Typography>
+          <Typography component="p">
+            {props.courseData.name + ' ' + props.courseData.grade}
+          </Typography>
+        </CardContent>
+      </CardActionArea>
+    </StyleCard>
   );
 };
 

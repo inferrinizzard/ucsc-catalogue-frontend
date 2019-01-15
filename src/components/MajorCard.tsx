@@ -18,7 +18,7 @@ class MajorCard extends React.Component<MajorCardProps, MajorCardState> {
     return (
       <StyleCard>
         <CardHeader title="Major" />
-        <CardMedia />
+        {/* <CardMedia /> */}
         <div>image goes here</div>
         <CardContent>
           <div>reqs</div>

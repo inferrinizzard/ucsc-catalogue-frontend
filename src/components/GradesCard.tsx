@@ -21,7 +21,7 @@ class GradesCard extends React.Component<GradesCardProps, GradesCardState> {
     return (
       <StyleCard>
         <CardHeader title="Grades" />
-        <CardMedia />
+        {/* <CardMedia /> */}
         <div>chart goes here</div>
         <CardContent>
           <TextBlock text="Grade: " type={'h5'} />
