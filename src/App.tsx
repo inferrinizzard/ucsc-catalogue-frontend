@@ -19,17 +19,19 @@ const BottomLiner = styled(Liner)`
   bottom: 0;
 `;
 
-const sortWidth = 300; //open width
+const drawerWidth = 300; //open width
 //add bool for when courseDrawer is open, toggle as such
 //same for when sorting is closed/open
 const linerWidth = 30;
 
-//width: calc(100% - ${sortWidth+courseDrawerWidth}px);
+//width: calc(100% - ${drawerWidth+courseDrawerWidth}px);
 
 export interface AppProps {}
 export interface AppState {
   courses: Class[];
-  drawerOpen: boolean;
+	drawerOpen: boolean;
+	linerWidth: number;
+	drawerWidth: number;
 }
 
 export type Class = { course: string; name: string; grade: string };
@@ -41,7 +43,9 @@ class App extends React.Component<AppProps, AppState> {
       { course: 'AMS 5', name: 'Statistics', grade: 'B' },
       { course: 'AMS 7', name: 'smth else', grade: 'A' },
     ],
-    drawerOpen: false,
+		drawerOpen: false,
+		linerWidth: 30,
+		drawerWidth: 300,
   };
 
   sortCourses = (type: number) => {
@@ -80,20 +84,28 @@ class App extends React.Component<AppProps, AppState> {
       ...this.state,
       drawerOpen: false,
     });
-  };
+	};
+	
+	setDrawerWidth = () =>{
+
+	}
 
   render() {
     return (
       <React.Fragment>
         <TopLiner>UCSC-Catalogue</TopLiner>
         <div>
-          <SortDrawer sort={this.sortCourses} open={!this.state.drawerOpen} />
+					<SortDrawer 
+						sort={this.sortCourses} 
+						open={!this.state.drawerOpen} 
+						setDrawerWidth={this.setDrawerWidth}
+					/>
           <Main
             courses={this.state.courses}
             open={this.state.drawerOpen}
-            linerWidth={30}
-            sortWidth={200}
-            openDetail={this.openDetail}
+            linerWidth={this.state.linerWidth}
+            drawerWidth={this.state.drawerWidth}
+						openDetail={this.openDetail}
           />
           <CourseDrawer
             open={this.state.drawerOpen}

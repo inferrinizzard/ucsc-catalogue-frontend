@@ -12,9 +12,13 @@ import { Select } from '@material-ui/core';
 
 export interface SortDrawerProps {
   sort: (type: number) => void;
-  open: boolean;
+	open: boolean;
+	setDrawerWidth: ()=>void;
+	drawerWidth: number;
 }
-export interface SortDrawerState {}
+export interface SortDrawerState {
+	width: React.RefObject<HTMLElement>;
+}
 
 const linerWidth = 30;
 const Spacer = styled.div`
@@ -26,6 +30,9 @@ const Section = styled(Card)<any>`
 `;
 
 class SortDrawer extends React.Component<SortDrawerProps, SortDrawerState> {
+	state = {
+		width: this.props.drawerWidth;
+	};
   render() {
     return (
       <Drawer open={this.props.open} variant="permanent">
