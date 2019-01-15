@@ -33,7 +33,7 @@ const MainDiv = styled.div<MainDivProps>`
 
 const Main: React.SFC<MainProps & MainDivProps> = props => {
   return (
-    <MainDiv>
+    <MainDiv {...props}>
       {props.courses.map((course, index) => (
         <ClassCard
           key={index}
