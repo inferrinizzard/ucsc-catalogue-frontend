@@ -19,10 +19,25 @@ export interface Instructor {
   middle?: string;
 }
 
+export interface Section {
+  number: number; // class number
+  classSection: string; // class section e.g. 01A
+  settings: Setting[] | null;
+  instructor: string; // this is a string
+  capacity: number;
+}
+
 export interface Course {
-  code: string;
-  section: string;
+  code: string; // code in the subject e.g. 80T
+  classSection: string; //
   name: string;
+  description: string;
+  type: string; // Lecture, Studio, etc.
+  credit: number; // number of credits
+  ge: string[];
+  prerequirements: string | null;
+  combinedSections: string[]; // Array of course Number (in string)
+  sections: Section[];
   number: number;
   settings: Setting[] | null;
   capacity: number | null;
@@ -38,13 +53,13 @@ export interface Course {
 export type EnrollmentStatus = 'Wait List' | 'Open' | 'Closed' | string;
 
 export interface SectionEnrollment {
-  capacity: number;
-  number: number;
-  name: string;
-  waitlist: number;
-  status: EnrollmentStatus;
-  enrolled: number;
-  waitlistCapacity: number;
+  capacity: number; // capacity of the section
+  number: number; // section id
+  name: string; // name of section e.g. 01A
+  waitlist: number; // number of people on the waitlist
+  status: EnrollmentStatus; // status
+  enrolled: number; // number of people enrolled
+  waitlistCapacity: number; // number of people that can be on the waitlist
 }
 
 export interface CourseEnrollment {
