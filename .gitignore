@@ -84,3 +84,6 @@ node_modules/
 
 # Dist
 dist
+
+#reference scripts
+components/*.jsx

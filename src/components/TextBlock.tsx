@@ -1,6 +1,6 @@
 import * as React from 'react';
-import Typography from '@material-ui/Core/Typography';
-import { TypographyProps } from '@material-ui/Core/Typography';
+import Typography from '@material-ui/core/Typography';
+import { TypographyProps } from '@material-ui/core/Typography';
 import styled from 'styled-components';
 
 const Block = styled.div`

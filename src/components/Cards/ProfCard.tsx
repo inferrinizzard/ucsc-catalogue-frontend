@@ -10,7 +10,8 @@ export interface ProfCardState {}
 
 const StyleCard = styled(Card)<any>`
   margin: 0.5em;
-  margin-left: 0.25em;
+  margin-right: 0.25em;
+  overflow: visible !important;
 `;
 
 class ProfCard extends React.Component<ProfCardProps, ProfCardState> {
@@ -18,7 +19,7 @@ class ProfCard extends React.Component<ProfCardProps, ProfCardState> {
     return (
       <StyleCard>
         <CardHeader title="Professor" />
-        <CardMedia />
+        {/* <CardMedia /> */}
         <div>image goes here</div>
         <CardContent>
           <div>name</div>

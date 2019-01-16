@@ -3,32 +3,30 @@ import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
 import CardMedia from '@material-ui/core/CardMedia';
 import CardContent from '@material-ui/core/CardContent';
-import Collapse from '@material-ui/core/Collapse';
 import styled from 'styled-components';
 
-import TextBlock from './TextBlock';
+export interface LocCardProps {}
+export interface LocCardState {}
 
 const StyleCard = styled(Card)<any>`
   margin: 0.5em;
+  margin-left: 0.25em;
+  overflow: visible !important;
 `;
 
-export interface GradesCardProps {}
-export interface GradesCardState {}
-
-class GradesCard extends React.Component<GradesCardProps, GradesCardState> {
+class LocCard extends React.Component<LocCardProps, LocCardState> {
   render() {
     return (
       <StyleCard>
-        <CardHeader title="Grades" />
-        <CardMedia />
-        <div>chart goes here</div>
+        <CardHeader title="Location" />
+        {/* <CardMedia /> */}
+        <div>image goes here</div>
         <CardContent>
-          <TextBlock text="Grade: " type={'h5'} />
-          <TextBlock text="Wuh: " type={'h5'} />
+          <div>reqs</div>
         </CardContent>
       </StyleCard>
     );
   }
 }
 
-export default GradesCard;
+export default LocCard;

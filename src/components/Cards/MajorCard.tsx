@@ -10,6 +10,7 @@ export interface MajorCardState {}
 
 const StyleCard = styled(Card)<any>`
   margin: 0.5em 0.25em;
+  overflow: visible !important;
 `;
 
 class MajorCard extends React.Component<MajorCardProps, MajorCardState> {
@@ -17,7 +18,7 @@ class MajorCard extends React.Component<MajorCardProps, MajorCardState> {
     return (
       <StyleCard>
         <CardHeader title="Major" />
-        <CardMedia />
+        {/* <CardMedia /> */}
         <div>image goes here</div>
         <CardContent>
           <div>reqs</div>
