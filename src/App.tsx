@@ -24,9 +24,11 @@ export interface AppState {
 	linerWidth: number;
 	drawerWidth: number;
 	linerOpen: boolean;
+	filters: Filter[];
 }
 
 export type Class = { course: string; name: string; grade: string };
+export type Filter = { type: string; filter: string;};
 
 class App extends React.Component<AppProps, AppState> {
   state = {
@@ -39,6 +41,7 @@ class App extends React.Component<AppProps, AppState> {
 		linerWidth: 30,
 		drawerWidth: 300,
 		linerOpen: false,
+		filters: [],
   };
 
   sortCourses = (type: number) => {
