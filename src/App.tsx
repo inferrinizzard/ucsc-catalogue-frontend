@@ -42,18 +42,16 @@ class App extends React.Component<AppProps, AppState> {
   };
 
   sortCourses = (type: number) => {
-    let courseTemp: Class[] = [];
+    let courseTemp: Class[] = ([] as Class[]);
     switch (type) {
       case 0:
-        courseTemp = ([] as Class[])
-          .concat(this.state.courses)
+        courseTemp.concat(this.state.courses)
           .sort((a: Class, b: Class) =>
             a.course > b.course ? 1 : a.course < b.course ? -1 : 0
           );
         break;
       case 2:
-        courseTemp = ([] as Class[])
-          .concat(this.state.courses)
+        courseTemp.concat(this.state.courses)
           .sort((a: Class, b: Class) =>
             a.grade > b.grade ? 1 : a.grade < b.grade ? -1 : 0
           );
