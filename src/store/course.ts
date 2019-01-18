@@ -1,25 +1,16 @@
-import { createStore, Action } from 'redux';
+import { Action } from 'redux';
 import * as APIModel from '../models/course.model';
-import * as CourseAPI from '../services/api';
 
 export interface CourseState {
   loading: boolean;
-  drawerOpen: boolean;
-  linerOpen: boolean;
-  drawerWidth: number;
-  linerWidth: number;
   filters: Filter[];
-  sort: string;
+  sort: keyof APIModel.Course;
   courses: APIModel.Course[];
 }
-export type Filter = { type: string; filter: string };
+export type Filter = { type: keyof APIModel.Course; filter: string };
 
 const initialState: CourseState = {
   loading: true,
-  drawerOpen: false,
-  linerOpen: false,
-  drawerWidth: 300,
-  linerWidth: 35,
   filters: [],
   sort: 'code',
   courses: [],
@@ -55,9 +46,9 @@ export const fetchSuccessAction = (
 
 interface SortAction extends Action {
   type: ActionTypes.SORT;
-  sort: string;
+  sort: keyof APIModel.Course;
 }
-export const SortAction = (sort: string): SortAction => ({
+export const SortAction = (sort: keyof APIModel.Course): SortAction => ({
   type: ActionTypes.SORT,
   sort,
 });
@@ -71,41 +62,56 @@ export const FilterAction = (filter: Filter): FilterAction => ({
   filter,
 });
 
-// interface UpdateAction extends Action {
-//   type: ActionTypes.UPDATE;
-//   update: any;
-// }
-// export const UpdateAction = (update): UpdateAction => ({
-//   type: ActionTypes.UPDATE,
-//   update,
-// });
-
 export type CourseActions =
   | FetchAction
   | FetchSuccessAction
   | SortAction
   | FilterAction;
-export default function reducer(
+export default function courseReducer(
   state: CourseState = initialState,
   action: CourseActions
 ): CourseState {
   switch (action.type) {
+    case ActionTypes.FETCH_API:
+      return { ...state, loading: true };
+    case ActionTypes.FETCH_API_SUCCESS:
+      return { ...state, loading: false };
     case ActionTypes.SORT:
-      return { ...state, courses: Sort(state, state['sort']) };
+      return {
+        ...state,
+        sort: action.sort,
+        courses: Sort(state, action.sort),
+      };
     case ActionTypes.FILTER:
-      return { ...state, courses: Filter(state, state['filters']) };
+      return {
+        ...state,
+        filters: state.filters.concat([action.filter]),
+        courses: Filter(state, state['filters']),
+      };
     //alters course state, how to restore after filter removed?
     default:
       return state;
   }
 }
 
-function Sort(state: CourseState, sort: string) {
+function Sort(state: CourseState, sort: keyof APIModel.Course) {
   return ([] as APIModel.Course[])
     .concat(state.courses)
-    .sort((a: APIModel.Course, b: APIModel.Course) =>
-      a[sort] > b[sort] ? 1 : a[sort] < b[sort] ? -1 : 0
-    );
+    .sort((a: APIModel.Course, b: APIModel.Course) => InnerSort(a, b, sort));
+}
+
+function InnerSort(
+  a: APIModel.Course,
+  b: APIModel.Course,
+  sort: keyof APIModel.Course
+) {
+  const left = a[sort];
+  const right = b[sort];
+  if (left && right) {
+    if (left > right) return 1;
+    if (left < right) return -1;
+  }
+  return 0;
 }
 
 function Filter(state: CourseState, filters: Filter[]) {

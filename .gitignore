@@ -86,4 +86,7 @@ node_modules/
 dist
 
 #reference scripts
-components/*.jsx
+*.jsx
+src/store/post.ts
+src/store/store.ts
+src/store/store2.ts
