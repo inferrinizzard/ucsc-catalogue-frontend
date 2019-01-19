@@ -88,10 +88,14 @@ export default function courseReducer(
       };
     case ActionTypes.FILTER:
       let hasFilter: boolean = false;
-      state.filters.forEach(f => (hasFilter = f === action.filter ? true : hasFilter));
+      state.filters.forEach(
+        f => (hasFilter = f === action.filter ? true : hasFilter)
+      );
       return {
         ...state,
-        filters: hasFilter ? [...state.filters].splice(state.filters.indexOf(action.filter),1) : [...state.filters, action.filter],
+        filters: hasFilter
+          ? [...state.filters].splice(state.filters.indexOf(action.filter), 1)
+          : [...state.filters, action.filter],
         courses: Filter(state, [...state['filters'], action.filter]),
       };
     default:

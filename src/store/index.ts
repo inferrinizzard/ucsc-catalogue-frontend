@@ -6,7 +6,11 @@ import CourseReducer, {
   CourseActions,
   CourseEpics,
 } from './course';
-import { combineEpics, createEpicMiddleware, EpicMiddleware } from 'redux-observable';
+import {
+  combineEpics,
+  createEpicMiddleware,
+  EpicMiddleware,
+} from 'redux-observable';
 import logger from 'redux-logger';
 
 const rootReducer = combineReducers({
