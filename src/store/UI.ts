@@ -72,9 +72,9 @@ export default function UIReducer(
 ): UIState {
   switch (action.type) {
     case ActionTypes.OPEN_DRAWER:
-      return { ...state, drawerOpen: true };
+      return { ...state, drawerOpen: action.open };
     case ActionTypes.OPEN_LINER:
-      return { ...state, linerOpen: true };
+      return { ...state, linerOpen: action.open };
     case ActionTypes.UPDATE_DRAWER:
       return { ...state, drawerWidth: action.width };
     case ActionTypes.UPDATE_LINER:

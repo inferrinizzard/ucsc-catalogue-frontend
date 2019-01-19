@@ -1,16 +1,31 @@
-import { combineReducers, Action } from 'redux';
+import { createStore, combineReducers, Action, applyMiddleware } from 'redux';
 
 import UIReducer, { UIState, UIActions } from './UI';
-import CourseReducer, { CourseState, CourseActions } from './course';
+import CourseReducer, {
+  CourseState,
+  CourseActions,
+  CourseEpics,
+} from './course';
+import { combineEpics, createEpicMiddleware } from 'redux-observable';
+import logger from 'redux-logger';
 
-export default combineReducers({
+const rootReducer = combineReducers({
   UIReducer,
   CourseReducer,
 });
 
-export type AppState = {
+const rootEpic = combineEpics(CourseEpics);
+const epicMiddleware = createEpicMiddleware();
+
+type AppState = {
   UI: UIState;
-  course: CourseState;
+  courses: CourseState;
 };
 
 export type ReduxAction = UIActions | CourseActions | Action;
+
+export const configureStore = () =>
+  createStore(rootReducer, applyMiddleware(epicMiddleware, logger));
+export default configureStore();
+
+epicMiddleware.run(rootEpic);

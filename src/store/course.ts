@@ -1,5 +1,8 @@
 import { Action } from 'redux';
 import * as APIModel from '../models/course.model';
+import API from '../services/api';
+import { Epic, combineEpics } from 'redux-observable';
+import { filter, map, switchMap, delay } from 'rxjs/operators';
 
 export interface CourseState {
   loading: boolean;
@@ -83,12 +86,13 @@ export default function courseReducer(
         courses: Sort(state, action.sort),
       };
     case ActionTypes.FILTER:
+      let hasFilter: boolean = false;
+      state.filters.forEach(f => (hasFilter = f === action.filter ? true : hasFilter));
       return {
         ...state,
-        filters: state.filters.concat([action.filter]),
-        courses: Filter(state, state['filters']),
+        filters: hasFilter ? [...state.filters].splice(state.filters.indexOf(action.filter),1) : [...state.filters, action.filter],
+        courses: Filter(state, [...state['filters'], action.filter]),
       };
-    //alters course state, how to restore after filter removed?
     default:
       return state;
   }
@@ -123,3 +127,14 @@ function Filter(state: CourseState, filters: Filter[]) {
   );
   return courseTemp;
 }
+
+const fetchCoursesEpic: Epic<CourseActions> = action$ =>
+  action$.pipe(
+    filter(action => action.type === ActionTypes.FETCH_API),
+    map(action => action as FetchAction),
+    // map(action => action.eventId),
+    switchMap(() => API.courses('2190')),
+    map(courses => fetchSuccessAction(courses))
+  );
+
+export const CourseEpics = combineEpics(fetchCoursesEpic);
