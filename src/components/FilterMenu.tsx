@@ -10,7 +10,7 @@ import { Course, Filter } from '../models/course.model';
 
 export interface FilterMenuProps {
   filter: (f: Filter) => void;
-  category: typeof Course;
+  category: keyof Course | string;
 }
 export interface FilterMenuState {
   anchorEl: HTMLElement | null;
@@ -27,21 +27,6 @@ class FilterMenu extends React.Component<FilterMenuProps, FilterMenuState> {
     activeFilters: [],
     widthRef: React.createRef<HTMLElement>(),
     width: 0,
-  };
-
-  handleRemoveActiveFilter = (activeFilter: Filter) => {
-    this.setState({
-      ...this.state,
-      activeFilters: this.state.activeFilters.filter(c => c !== activeFilter),
-    });
-  };
-
-  handleAddActiveFilter = (filter: Filter) => {
-    this.setState({
-      ...this.state,
-      activeFilters: this.state.activeFilters.concat([filter]),
-    });
-    this.handleClose();
   };
 
   handleClick = (event: React.MouseEvent<HTMLElement, MouseEvent>) => {

@@ -66,7 +66,7 @@ class SortDrawer extends React.Component<SortDrawerProps, SortDrawerState> {
             <FilterMenu filter={this.props.filter} category={'term'} />
             <Divider />
             {/* department/major */}
-            <FilterMenu filter={this.props.filter} category={'department'} />
+            <FilterMenu filter={this.props.filter} category={'subject'} />
             <Divider />
             {/* Category */}
             <FilterMenu filter={this.props.filter} category={'cat'} />

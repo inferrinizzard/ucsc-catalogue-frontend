@@ -51,7 +51,8 @@ function convertAndMergeCourse(
             }))
         : null,
       instructor: s.ins,
-      capacity: s.cap,
+			capacity: s.cap,
+			// subjectCode: subject + ' ' + t.c;
     })),
   };
 }

@@ -23,48 +23,53 @@ export interface DescCardProps {
 const DescCard: React.SFC<DescCardProps> = props => {
   return (
     <StyleCard>
-      {/* <CardHeader
-        title={props.courseData.subject + ' ' + props.courseData.code}
-        subheader={this.props.courseData.name}
-      /> */}
-      <CardHeader title="AMS 5" subheader="Statistics" />
+      {props.courseData && (
+        <CardHeader
+          title={props.courseData.subject + ' ' + props.courseData.code}
+          subheader={props.courseData.name}
+        />
+      )}
       {/* <CardMedia /> */}
-      <Divider />
-      <CardContent>
-        <TextBlock type="body2" text={'Grade Average'} />
-        {/* <TextBlock type="body2" text={'Unit count, course code'} /> */}
-        <TextBlock
-          type="body2"
-          text={'credits, number'}
-          // text={props.courseData.credits + ' ' + props.courseData.number}
-        />
-        <div />
-        <TextBlock type="body2" text={'Number Enrolled'} />
-        {/* <TextBlock type="body2" text={props.courseData.} /> */}
-        <TextBlock type="body2" text={'Number Waitlist'} />
-        <div />
-        <TextBlock type="body2" text={'Date and Time, class type'} />
-        {/* <TextBlock type="body2" text={props.courseData.day} /> */}
-        {/* <TextBlock type="body2" text={'Professor'} /> */}
-        <TextBlock
-          type="body2"
-          text={'instructor'}
-          // text={
-          //   props.courseData.instructor.first +
-          //   ' ' +
-          //   props.courseData.instructor.middle +
-          //   ' ' +
-          //   props.courseData.instructor.last
-          // }
-        />
-        <Divider />
-        <div>
-          <Typography>Description: {'{}'}</Typography>
-          {/* <Typography>Description: {props.courseData.description}</Typography> */}
-          <Typography>Prereqs: {'{}'}</Typography>
-          {/* <Typography>Prereqs: {props.courseData.prerequirements}</Typography> */}
-        </div>
-      </CardContent>
+      <Divider />'
+      {props.courseData && (
+        <CardContent>
+          <TextBlock type="body2" text={'Grade Average'} />
+          {/* <TextBlock type="body2" text={'Unit count, course code'} /> */}
+          <TextBlock
+            type="body2"
+            text={
+              'Credits: ' +
+              props.courseData.credit +
+              ' Course Number:' +
+              props.courseData.number
+            }
+          />
+          <div />
+          <TextBlock type="body2" text={'Number Enrolled'} />
+          {/* <TextBlock type="body2" text={props.courseData.} /> */}
+          <TextBlock type="body2" text={'Number Waitlist'} />
+          <div />
+          <TextBlock type="body2" text={'Date and Time, class type'} />
+          {/* <TextBlock type="body2" text={props.courseData.day} /> */}
+          <TextBlock
+            type="body2"
+            text={
+              props.courseData.instructor
+                ? props.courseData.instructor.first +
+                  ' ' +
+                  props.courseData.instructor.middle
+                  ? props.courseData.instructor.middle + ' '
+                  : '' + props.courseData.instructor.last
+                : 'STAFF'
+            }
+          />
+          <Divider />
+          <div>
+            <Typography>Description: {props.courseData.description}</Typography>
+            <Typography>Prereqs: {props.courseData.prerequirements}</Typography>
+          </div>
+        </CardContent>
+      )}
     </StyleCard>
   );
 };
