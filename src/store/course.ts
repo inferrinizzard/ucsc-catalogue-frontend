@@ -79,7 +79,7 @@ export default function courseReducer(
     case ActionTypes.FETCH_API:
       return { ...state, loading: true };
     case ActionTypes.FETCH_API_SUCCESS:
-      return { ...state, loading: false };
+      return { ...state, loading: false, courses: action.data };
     case ActionTypes.SORT:
       return {
         ...state,
