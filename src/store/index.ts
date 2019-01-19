@@ -6,21 +6,16 @@ import CourseReducer, {
   CourseActions,
   CourseEpics,
 } from './course';
-import { combineEpics, createEpicMiddleware } from 'redux-observable';
+import { combineEpics, createEpicMiddleware, EpicMiddleware } from 'redux-observable';
 import logger from 'redux-logger';
 
 const rootReducer = combineReducers({
-  UIReducer,
-  CourseReducer,
+  UI: UIReducer,
+  course: CourseReducer,
 });
 
-const rootEpic = combineEpics(CourseEpics);
+const rootEpic = combineEpics(CourseEpics) as any;
 const epicMiddleware = createEpicMiddleware();
-
-type AppState = {
-  UI: UIState;
-  courses: CourseState;
-};
 
 export type ReduxAction = UIActions | CourseActions | Action;
 

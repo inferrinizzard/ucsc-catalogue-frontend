@@ -70,6 +70,7 @@ export type CourseActions =
   | FetchSuccessAction
   | SortAction
   | FilterAction;
+
 export default function courseReducer(
   state: CourseState = initialState,
   action: CourseActions
@@ -128,7 +129,7 @@ function Filter(state: CourseState, filters: Filter[]) {
   return courseTemp;
 }
 
-const fetchCoursesEpic: Epic<CourseActions> = action$ =>
+const fetchCoursesEpic: Epic<CourseActions> = (action$, state$) =>
   action$.pipe(
     filter(action => action.type === ActionTypes.FETCH_API),
     map(action => action as FetchAction),
