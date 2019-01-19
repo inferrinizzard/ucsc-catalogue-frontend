@@ -9,9 +9,10 @@ import RootRef from '@material-ui/core/RootRef';
 import SearchBar from './SearchBar';
 import SelectMenu from './SelectMenu';
 import FilterMenu from './FilterMenu';
+import { Course } from '../models/course.model';
 
 export interface SortDrawerProps {
-  sort: (type: number) => void;
+  sort: (type: keyof Course) => void;
   open: boolean;
   setDrawerWidth: (val: number) => void;
 }

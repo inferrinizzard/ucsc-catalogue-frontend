@@ -11,7 +11,7 @@ import CourseDrawer from './components/CourseDrawer';
 import BottomLiner from './components/BottomLiner';
 
 import { Course, Filter } from './models/course.model';
-import { fetchAction } from './store/course';
+import { fetchAction, SortAction } from './store/course';
 
 const Liner = styled.div`
   width: 100%;
@@ -30,7 +30,8 @@ interface PropsFromStore {
 }
 
 interface PropsToDispatch {
-  load: () => void
+  load: () => void,
+  sort: (n: keyof Course) => void
 }
 
 type AppProps = PropsFromStore & PropsToDispatch;
@@ -54,28 +55,8 @@ class App extends React.Component<AppProps, AppState> {
     this.props.load();
   }
 
-  sortCourses = (type: number) => {
-    /*
-    let courseTemp: Class[] = ([] as Class[]);
-    switch (type) {
-      case 0:
-        courseTemp.concat(this.state.courses)
-          .sort((a: Class, b: Class) =>
-            a.course > b.course ? 1 : a.course < b.course ? -1 : 0
-          );
-        break;
-      case 2:
-        courseTemp.concat(this.state.courses)
-          .sort((a: Class, b: Class) =>
-            a.grade > b.grade ? 1 : a.grade < b.grade ? -1 : 0
-          );
-        break;
-      default:
-        courseTemp = this.state.courses;
-        break;
-    }
-    this.setState({ ...this.state, courses: courseTemp });
-    */
+  sortCourses = (type: keyof Course) => {
+    this.props.sort(type);
   };
 
   openDetail = () => {
@@ -151,7 +132,8 @@ const mapStateToProps = (state: ReduxState): PropsFromStore => ({
 const mapDispatchToProps = (
   dispatch: Dispatch<ReduxAction>
 ): PropsToDispatch => ({
-  load: () => dispatch(fetchAction())
+  load: () => dispatch(fetchAction()),
+  sort: key => dispatch(SortAction(key))
 });
 
 export default connect(

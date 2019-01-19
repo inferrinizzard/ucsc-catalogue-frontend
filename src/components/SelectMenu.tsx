@@ -4,21 +4,20 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
+import { Course } from '../models/course.model';
 
 export interface SelectMenuProps {
-  sort: (type: number) => void;
+  sort: (type: keyof Course) => void;
 }
 export interface SelectMenuState {
   open: boolean;
-  selectedIndex: number;
 }
 
-const options = [
-  'Course Name',
-  'Number Enrolled',
-  'Grade Average',
-  'Prof Rating',
-];
+const keyNameMap: { [K in keyof Course]?: string } = {
+  name: 'Course Name',
+  capacity: 'Capacity',
+  type: 'Type',
+};
 
 class SelectMenu extends React.Component<SelectMenuProps, SelectMenuState> {
   handleOpen = () => {
@@ -26,10 +25,10 @@ class SelectMenu extends React.Component<SelectMenuProps, SelectMenuState> {
   };
   handleClose = (
     event: React.MouseEvent<HTMLElement, MouseEvent>,
-    index: number
+    key: keyof Course
   ) => {
-    this.setState({ open: false, selectedIndex: index });
-    this.props.sort(index);
+    this.props.sort(key);
+    this.setState({ ...this.state, open: false });
   };
 
   state = {
@@ -47,10 +46,22 @@ class SelectMenu extends React.Component<SelectMenuProps, SelectMenuState> {
             aria-controls="lock-menu"
             onClick={this.handleOpen}
           >
-            <ListItemText primary={options[this.state.selectedIndex]} />
+            {
+              //<ListItemText primary={options[this.state.selectedIndex]} />}
+            }
           </ListItem>
         </List>
         <Menu open={this.state.open}>
+          {(Object.keys(keyNameMap) as (keyof Course)[]).map((key, index) => (
+            <MenuItem
+              key={key}
+              selected={index == this.state.selectedIndex}
+              onClick={event => this.handleClose(event, key)}
+            >
+              {keyNameMap[key]}
+            </MenuItem>
+          ))}
+          {/*}
           {options.map((option, index) => (
             <MenuItem
               key={option}
@@ -59,7 +70,7 @@ class SelectMenu extends React.Component<SelectMenuProps, SelectMenuState> {
             >
               {option}
             </MenuItem>
-          ))}
+          ))}*/}
         </Menu>
       </React.Fragment>
     );
