@@ -27,6 +27,7 @@ const linerWidth = 30;
 interface PropsFromStore {
   courses: Course[];
   filters: Filter[];
+  sortKey: keyof Course;
 }
 
 interface PropsToDispatch {
@@ -98,6 +99,7 @@ class App extends React.Component<AppProps, AppState> {
         <div>
           <SortDrawer
             sort={this.sortCourses}
+            sortKey={this.props.sortKey}
             open={!this.state.drawerOpen}
             setDrawerWidth={this.setDrawerWidth}
           />
@@ -128,6 +130,7 @@ class App extends React.Component<AppProps, AppState> {
 const mapStateToProps = (state: ReduxState): PropsFromStore => ({
   courses: state.course.courses,
   filters: state.course.filters,
+  sortKey: state.course.sort
 });
 const mapDispatchToProps = (
   dispatch: Dispatch<ReduxAction>

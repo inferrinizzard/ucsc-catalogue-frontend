@@ -8,6 +8,7 @@ import { Course } from '../models/course.model';
 
 export interface SelectMenuProps {
   sort: (type: keyof Course) => void;
+  sortKey: keyof Course;
 }
 export interface SelectMenuState {
   open: boolean;
@@ -51,14 +52,15 @@ class SelectMenu extends React.Component<SelectMenuProps, SelectMenuState> {
             }
           </ListItem>
         </List>
+        {this.props.sortKey}
         <Menu open={this.state.open}>
           {(Object.keys(keyNameMap) as (keyof Course)[]).map((key, index) => (
             <MenuItem
               key={key}
-              selected={index == this.state.selectedIndex}
+              selected={key === this.props.sortKey}
               onClick={event => this.handleClose(event, key)}
             >
-              {keyNameMap[key]}
+              {keyNameMap[key]} {key}
             </MenuItem>
           ))}
           {/*}

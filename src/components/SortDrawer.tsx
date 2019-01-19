@@ -13,6 +13,7 @@ import { Course } from '../models/course.model';
 
 export interface SortDrawerProps {
   sort: (type: keyof Course) => void;
+  sortKey: keyof Course;
   open: boolean;
   setDrawerWidth: (val: number) => void;
 }
@@ -48,7 +49,7 @@ class SortDrawer extends React.Component<SortDrawerProps, SortDrawerState> {
           </Section>
           <Section>
             <CardHeader title="Sorting" />
-            <SelectMenu sort={this.props.sort} />
+            <SelectMenu sort={this.props.sort} sortKey={this.props.sortKey} />
           </Section>
           <Section>
             <CardHeader title="Filter" />
