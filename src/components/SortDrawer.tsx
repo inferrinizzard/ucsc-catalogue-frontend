@@ -9,17 +9,17 @@ import RootRef from '@material-ui/core/RootRef';
 import SearchBar from './SearchBar';
 import SelectMenu from './SelectMenu';
 import FilterMenu from './FilterMenu';
-import { Course } from '../models/course.model';
+import { Course, Filter } from '../models/course.model';
 
 export interface SortDrawerProps {
   sort: (type: keyof Course) => void;
   sortKey: keyof Course;
   open: boolean;
   setDrawerWidth: (val: number) => void;
+  filter: (f: Filter) => void;
 }
 export interface SortDrawerState {
   widthRef: React.RefObject<HTMLElement>;
-  width: number;
 }
 
 const linerWidth = 30;
@@ -34,7 +34,6 @@ const Section = styled(Card)<any>`
 class SortDrawer extends React.Component<SortDrawerProps, SortDrawerState> {
   state = {
     widthRef: React.createRef<HTMLElement>(),
-    width: 0,
   };
   ComponentDidMount() {
     this.props.setDrawerWidth(this.state.widthRef.current!.offsetWidth);
@@ -64,16 +63,16 @@ class SortDrawer extends React.Component<SortDrawerProps, SortDrawerState> {
           <Section>
             <CardHeader title="Filter" />
             {/* which quarter, default to current */}
-            <FilterMenu />
+            <FilterMenu filter={this.props.filter} category={'term'} />
             <Divider />
             {/* department/major */}
-            <FilterMenu />
+            <FilterMenu filter={this.props.filter} category={'department'} />
             <Divider />
             {/* Category */}
-            <FilterMenu />
+            <FilterMenu filter={this.props.filter} category={'cat'} />
             <Divider />
             {/* GE */}
-            <FilterMenu />
+            <FilterMenu filter={this.props.filter} category={'ge'} />
           </Section>
         </Drawer>
       </RootRef>

@@ -16,7 +16,7 @@ import { Course } from '../models/course.model';
 export interface CourseDrawerProps {
   open: boolean;
   closeDetail: () => void;
-  // course: Course;
+  course: Course | null;
 }
 export interface CourseDrawerState {}
 
@@ -50,13 +50,12 @@ class CourseDrawer extends React.Component<
     return (
       <ScrollDrawer
         anchor="right"
-        open={this.props.open}
+        open={Boolean(this.props.course)}
         variant="persistent"
         elevation={1}
       >
         <Spacer />
-        <DescCard />
-        {/* <DescCard courseData={this.props.course} /> */}
+        <DescCard courseData={this.props.course} />
         <EnrollCard />
         <GradesCard />
         <div>

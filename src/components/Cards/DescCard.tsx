@@ -17,34 +17,16 @@ const StyleCard = styled(Card)<any>`
 `;
 
 export interface DescCardProps {
-  // courseData: {
-  //   code: string;
-  //   section: string;
-  //   name: string;
-  //   number: number;
-  //   capacity: number | null;
-  //   // instructor: Instructor | null;
-  //   subject: string;
-  //   description: string;
-  //   day: string[];
-  //   time: {
-  //     start: string;
-  //     end: string;
-  //   };
-  //   location: string;
-  //   grade: string;
-  //   type: string;
-  //   credits: number;
-  //   ge: string;
-  //   prerequirements: string | null;
-  // };
-  // courseData: Course;
+  courseData: Course | null;
 }
 
 const DescCard: React.SFC<DescCardProps> = props => {
   return (
     <StyleCard>
-      {/* <CardHeader title={props.courseData.subject+" "+props.courseData.code} subheader={this.props.courseData.name} /> */}
+      {/* <CardHeader
+        title={props.courseData.subject + ' ' + props.courseData.code}
+        subheader={this.props.courseData.name}
+      /> */}
       <CardHeader title="AMS 5" subheader="Statistics" />
       {/* <CardMedia /> */}
       <Divider />
@@ -63,8 +45,18 @@ const DescCard: React.SFC<DescCardProps> = props => {
         <div />
         <TextBlock type="body2" text={'Date and Time, class type'} />
         {/* <TextBlock type="body2" text={props.courseData.day} /> */}
-        <TextBlock type="body2" text={'Professor'} />
-        {/* <TextBlock type="body2" text={props.courseData.instructor.display} /> */}
+        {/* <TextBlock type="body2" text={'Professor'} /> */}
+        <TextBlock
+          type="body2"
+          text={'instructor'}
+          // text={
+          //   props.courseData.instructor.first +
+          //   ' ' +
+          //   props.courseData.instructor.middle +
+          //   ' ' +
+          //   props.courseData.instructor.last
+          // }
+        />
         <Divider />
         <div>
           <Typography>Description: {'{}'}</Typography>

@@ -10,7 +10,7 @@ export interface CourseState {
   filters: APIModel.Filter[];
   sort: keyof APIModel.Course;
   courses: APIModel.Course[];
-  // activeCourse: APIModel.Course;
+  activeCourse: APIModel.Course | null;
 }
 export type Filter = { type: keyof APIModel.Course; filter: string };
 
@@ -19,7 +19,7 @@ const initialState: CourseState = {
   filters: [],
   sort: 'code',
   courses: [],
-  // activeCourse: null,
+  activeCourse: null,
 };
 
 enum ActionTypes {
@@ -69,9 +69,11 @@ export const filterAction = (filter: APIModel.Filter): FilterAction => ({
 
 interface SetActiveAction extends Action {
   type: ActionTypes.SET_ACTIVE;
-  course: APIModel.Course;
+  course: APIModel.Course | null;
 }
-export const setActiveAction = (course: APIModel.Course): SetActiveAction => ({
+export const setActiveAction = (
+  course: APIModel.Course | null
+): SetActiveAction => ({
   type: ActionTypes.SET_ACTIVE,
   course,
 });
@@ -110,8 +112,8 @@ export default function courseReducer(
           : [...state.filters, action.filter],
         courses: Filter(state, [...state['filters'], action.filter]),
       };
-    // case ActionTypes.SET_ACTIVE:
-    //   return { ...state, activeCourse: action.course };
+    case ActionTypes.SET_ACTIVE:
+      return { ...state, activeCourse: action.course };
     default:
       return state;
   }
@@ -122,7 +124,7 @@ function Sort(state: CourseState, sort: keyof APIModel.Course) {
     .concat(state.courses)
     .sort((a: APIModel.Course, b: APIModel.Course) => InnerSort(a, b, sort));
 }
-
+//TODO: fix sort by name
 function InnerSort(
   a: APIModel.Course,
   b: APIModel.Course,
@@ -137,6 +139,7 @@ function InnerSort(
   return 0;
 }
 
+//TODO: filter by union for same type, intersction for different
 function Filter(state: CourseState, filters: APIModel.Filter[]) {
   let courseTemp: APIModel.Course[] = ([] as APIModel.Course[]).concat(
     state.courses

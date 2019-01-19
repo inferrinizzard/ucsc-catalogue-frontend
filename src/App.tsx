@@ -31,14 +31,14 @@ interface PropsFromStore {
   courses: Course[];
   filters: Filter[];
   sortKey: keyof Course;
-  // activeCourse: Course;
+  activeCourse: Course | null;
 }
 
 interface PropsToDispatch {
   load: () => void;
   filter: (f: Filter) => void;
   sort: (n: keyof Course) => void;
-  setActive: (c: Course) => void;
+  setActive: (c: Course | null) => void;
 }
 
 type AppProps = PropsFromStore & PropsToDispatch;
@@ -70,7 +70,7 @@ class App extends React.Component<AppProps, AppState> {
     this.props.filter(type);
   };
 
-  setActive = (course: Course) => {
+  setActive = (course: Course | null) => {
     this.props.setActive(course);
   };
 
@@ -83,6 +83,7 @@ class App extends React.Component<AppProps, AppState> {
   };
 
   closeDetail = () => {
+    this.setActive(null);
     this.setState({
       ...this.state,
       drawerOpen: false,
@@ -117,6 +118,7 @@ class App extends React.Component<AppProps, AppState> {
             sortKey={this.props.sortKey}
             open={!this.state.drawerOpen}
             setDrawerWidth={this.setDrawerWidth}
+            filter={this.filterCourses}
           />
           <Main
             courses={this.props.courses}
@@ -128,7 +130,7 @@ class App extends React.Component<AppProps, AppState> {
           <CourseDrawer
             open={this.state.drawerOpen}
             closeDetail={this.closeDetail}
-            // course={this.props.activeCourse}
+            course={this.props.activeCourse}
           />
         </div>
         <BottomLiner
@@ -147,7 +149,7 @@ const mapStateToProps = (state: ReduxState): PropsFromStore => ({
   courses: state.course.courses,
   filters: state.course.filters,
   sortKey: state.course.sort,
-  // activeCourse: state.course.activeCourse,
+  activeCourse: state.course.activeCourse,
 });
 const mapDispatchToProps = (
   dispatch: Dispatch<ReduxAction>

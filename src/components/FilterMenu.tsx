@@ -9,35 +9,34 @@ import RootRef from '@material-ui/core/RootRef';
 import { Course, Filter } from '../models/course.model';
 
 export interface FilterMenuProps {
-  // filters: string[];
+  filter: (f: Filter) => void;
+  category: typeof Course;
 }
 export interface FilterMenuState {
-  name: string;
   anchorEl: HTMLElement | null;
-  filters: string[];
-  activeFilters: string[];
+  filters: Filter[];
+  activeFilters: Filter[];
   widthRef: React.RefObject<HTMLElement>;
   width: number;
 }
 
 class FilterMenu extends React.Component<FilterMenuProps, FilterMenuState> {
   state = {
-    name: 'Letter',
     anchorEl: null,
-    filters: ['test'],
-    activeFilters: ['A', 'B', 'C', 'D'],
+    filters: [],
+    activeFilters: [],
     widthRef: React.createRef<HTMLElement>(),
     width: 0,
   };
 
-  handleRemoveActiveFilter = (activeFilter: string) => {
+  handleRemoveActiveFilter = (activeFilter: Filter) => {
     this.setState({
       ...this.state,
       activeFilters: this.state.activeFilters.filter(c => c !== activeFilter),
     });
   };
 
-  handleAddActiveFilter = (filter: string) => {
+  handleAddActiveFilter = (filter: Filter) => {
     this.setState({
       ...this.state,
       activeFilters: this.state.activeFilters.concat([filter]),
@@ -71,7 +70,7 @@ class FilterMenu extends React.Component<FilterMenuProps, FilterMenuState> {
             aria-haspopup="true"
             onClick={event => this.handleClick(event)}
           >
-            {this.state.name}
+            {this.props.category}
           </Button>
         </RootRef>
         <Menu
@@ -100,8 +99,8 @@ class FilterMenu extends React.Component<FilterMenuProps, FilterMenuState> {
         <div>
           {this.state.activeFilters.map((activeFilter, index) => (
             <Chip
-              key={activeFilter}
-              label={activeFilter}
+              key={activeFilter.filter}
+              label={activeFilter.filter}
               onDelete={event => this.handleRemoveActiveFilter(activeFilter)}
             />
           ))}
