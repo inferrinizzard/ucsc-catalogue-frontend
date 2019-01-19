@@ -25,9 +25,7 @@ const ClassCard: React.SFC<ClassCardProps> = props => {
           <Typography gutterBottom variant="h5" component="h2">
             {props.courseData.name}
           </Typography>
-          <Typography component="p">
-            {props.courseData.name}
-          </Typography>
+          <Typography component="p">{props.courseData.name}</Typography>
         </CardContent>
       </CardActionArea>
     </StyleCard>

@@ -31,7 +31,7 @@ interface FetchAction extends Action {
   type: ActionTypes.FETCH_API;
 }
 export const fetchAction = (): FetchAction => ({
-  type: ActionTypes.FETCH_API
+  type: ActionTypes.FETCH_API,
 });
 
 interface FetchSuccessAction extends Action {
