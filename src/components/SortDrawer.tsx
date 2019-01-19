@@ -18,7 +18,8 @@ export interface SortDrawerProps {
   setDrawerWidth: (val: number) => void;
 }
 export interface SortDrawerState {
-  width: React.RefObject<HTMLElement>;
+  widthRef: React.RefObject<HTMLElement>;
+  width: number;
 }
 
 const linerWidth = 30;
@@ -32,17 +33,26 @@ const Section = styled(Card)<any>`
 
 class SortDrawer extends React.Component<SortDrawerProps, SortDrawerState> {
   state = {
-    width: React.createRef<HTMLElement>(),
+    widthRef: React.createRef<HTMLElement>(),
+    width: 0,
   };
   ComponentDidMount() {
-    this.props.setDrawerWidth(this.state.width.current!.offsetWidth);
-    console.log(this.state.width.current!.offsetWidth);
+    this.props.setDrawerWidth(this.state.widthRef.current!.offsetWidth);
+    console.log(this.state.widthRef.current!.offsetWidth);
     console.log('cdm');
   }
   render() {
     return (
-      <RootRef rootRef={this.state.width}>
-        <Drawer open={this.props.open} variant="permanent">
+      <RootRef rootRef={this.state.widthRef}>
+        <Drawer
+          open={this.props.open}
+          variant="permanent"
+          PaperProps={{
+            style: {
+              padding: '0 0.25em',
+            },
+          }}
+        >
           <Spacer />
           <Section>
             <SearchBar />

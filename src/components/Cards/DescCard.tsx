@@ -1,4 +1,5 @@
 import * as React from 'react';
+import styled from 'styled-components';
 import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
 import CardMedia from '@material-ui/core/CardMedia';
@@ -6,9 +7,9 @@ import CardContent from '@material-ui/core/CardContent';
 import Typography from '@material-ui/core/Typography';
 import Divider from '@material-ui/core/Divider';
 import Collapse from '@material-ui/core/Collapse';
-import styled from 'styled-components';
 
 import TextBlock from '../TextBlock';
+import { Course } from '../../models/course.model';
 
 const StyleCard = styled(Card)<any>`
   margin: 0.5em;
@@ -23,8 +24,8 @@ export interface DescCardProps {
   //   number: number;
   //   capacity: number | null;
   //   // instructor: Instructor | null;
-  // 	subject: string;
-  // 	description: string;
+  //   subject: string;
+  //   description: string;
   //   day: string[];
   //   time: {
   //     start: string;
@@ -35,7 +36,9 @@ export interface DescCardProps {
   //   type: string;
   //   credits: number;
   //   ge: string;
+  //   prerequirements: string | null;
   // };
+  // courseData: Course;
 }
 
 const DescCard: React.SFC<DescCardProps> = props => {
@@ -47,8 +50,12 @@ const DescCard: React.SFC<DescCardProps> = props => {
       <Divider />
       <CardContent>
         <TextBlock type="body2" text={'Grade Average'} />
-        <TextBlock type="body2" text={'Unit count, course code'} />
-        {/* <TextBlock type="body2" text={props.courseData.credits+" "+props.courseData.number} /> */}
+        {/* <TextBlock type="body2" text={'Unit count, course code'} /> */}
+        <TextBlock
+          type="body2"
+          text={'credits, number'}
+          // text={props.courseData.credits + ' ' + props.courseData.number}
+        />
         <div />
         <TextBlock type="body2" text={'Number Enrolled'} />
         {/* <TextBlock type="body2" text={props.courseData.} /> */}
@@ -63,7 +70,7 @@ const DescCard: React.SFC<DescCardProps> = props => {
           <Typography>Description: {'{}'}</Typography>
           {/* <Typography>Description: {props.courseData.description}</Typography> */}
           <Typography>Prereqs: {'{}'}</Typography>
-          {/* <Typography>Prereqs: {props.courseData.prereq}</Typography> */}
+          {/* <Typography>Prereqs: {props.courseData.prerequirements}</Typography> */}
         </div>
       </CardContent>
     </StyleCard>

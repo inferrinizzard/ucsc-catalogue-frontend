@@ -3,12 +3,14 @@ import * as APIModel from '../models/course.model';
 import API from '../services/api';
 import { Epic, combineEpics } from 'redux-observable';
 import { filter, map, switchMap, delay } from 'rxjs/operators';
+import { any } from 'prop-types';
 
 export interface CourseState {
   loading: boolean;
   filters: APIModel.Filter[];
   sort: keyof APIModel.Course;
   courses: APIModel.Course[];
+  // activeCourse: APIModel.Course;
 }
 export type Filter = { type: keyof APIModel.Course; filter: string };
 
@@ -17,6 +19,7 @@ const initialState: CourseState = {
   filters: [],
   sort: 'code',
   courses: [],
+  // activeCourse: null,
 };
 
 enum ActionTypes {
@@ -25,6 +28,7 @@ enum ActionTypes {
   FETCH_API = 'fetch',
   FETCH_API_SUCCESS = 'fetch-success',
   UPDATE = 'update',
+  SET_ACTIVE = 'set-active',
 }
 
 interface FetchAction extends Action {
@@ -49,7 +53,7 @@ interface SortAction extends Action {
   type: ActionTypes.SORT;
   sort: keyof APIModel.Course;
 }
-export const SortAction = (sort: keyof APIModel.Course): SortAction => ({
+export const sortAction = (sort: keyof APIModel.Course): SortAction => ({
   type: ActionTypes.SORT,
   sort,
 });
@@ -58,16 +62,26 @@ interface FilterAction extends Action {
   type: ActionTypes.FILTER;
   filter: APIModel.Filter;
 }
-export const FilterAction = (filter: APIModel.Filter): FilterAction => ({
+export const filterAction = (filter: APIModel.Filter): FilterAction => ({
   type: ActionTypes.FILTER,
   filter,
+});
+
+interface SetActiveAction extends Action {
+  type: ActionTypes.SET_ACTIVE;
+  course: APIModel.Course;
+}
+export const setActiveAction = (course: APIModel.Course): SetActiveAction => ({
+  type: ActionTypes.SET_ACTIVE,
+  course,
 });
 
 export type CourseActions =
   | FetchAction
   | FetchSuccessAction
   | SortAction
-  | FilterAction;
+  | FilterAction
+  | SetActiveAction;
 
 export default function courseReducer(
   state: CourseState = initialState,
@@ -96,6 +110,8 @@ export default function courseReducer(
           : [...state.filters, action.filter],
         courses: Filter(state, [...state['filters'], action.filter]),
       };
+    // case ActionTypes.SET_ACTIVE:
+    //   return { ...state, activeCourse: action.course };
     default:
       return state;
   }

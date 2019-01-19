@@ -9,7 +9,7 @@ import ClassCard from './ClassCard';
 
 export interface MainProps {
   courses: Course[];
-  openDetail: () => void;
+  openDetail: (course: Course) => void;
 }
 
 export interface MainDivProps {

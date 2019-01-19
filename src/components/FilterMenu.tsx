@@ -4,6 +4,9 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import Fade from '@material-ui/core/Fade';
 import Chip from '@material-ui/core/Chip';
+import RootRef from '@material-ui/core/RootRef';
+
+import { Course, Filter } from '../models/course.model';
 
 export interface FilterMenuProps {
   // filters: string[];
@@ -11,18 +14,20 @@ export interface FilterMenuProps {
 export interface FilterMenuState {
   name: string;
   anchorEl: HTMLElement | null;
-  open: boolean;
   filters: string[];
   activeFilters: string[];
+  widthRef: React.RefObject<HTMLElement>;
+  width: number;
 }
 
 class FilterMenu extends React.Component<FilterMenuProps, FilterMenuState> {
   state = {
     name: 'Letter',
     anchorEl: null,
-    open: false,
     filters: ['test'],
     activeFilters: ['A', 'B', 'C', 'D'],
+    widthRef: React.createRef<HTMLElement>(),
+    width: 0,
   };
 
   handleRemoveActiveFilter = (activeFilter: string) => {
@@ -41,29 +46,46 @@ class FilterMenu extends React.Component<FilterMenuProps, FilterMenuState> {
   };
 
   handleClick = (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
-    this.setState({ ...this.state, anchorEl: event.currentTarget, open: true });
+    this.setState({ ...this.state, anchorEl: event.currentTarget });
   };
 
   handleClose = () => {
-    this.setState({ ...this.state, anchorEl: null, open: false });
+    this.setState({ ...this.state, anchorEl: null });
   };
+
+  ITEM_HEIGHT = 48;
+
+  componentDidMount() {
+    this.setState({
+      ...this.state,
+      width: this.state.widthRef.current!.offsetWidth,
+    });
+  }
 
   render() {
     return (
       <React.Fragment>
-        <Button
-          aria-owns={open ? 'fade-menu' : undefined}
-          aria-haspopup="true"
-          onClick={event => this.handleClick(event)}
-        >
-          {this.state.name}
-        </Button>
+        <RootRef rootRef={this.state.widthRef}>
+          <Button
+            aria-owns={open ? 'fade-menu' : undefined}
+            aria-haspopup="true"
+            onClick={event => this.handleClick(event)}
+          >
+            {this.state.name}
+          </Button>
+        </RootRef>
         <Menu
           id="fade-menu"
-          open={this.state.open}
-          onClose={this.handleClose}
+          open={Boolean(this.state.anchorEl)}
           anchorEl={this.state.anchorEl}
           TransitionComponent={Fade}
+          onBackdropClick={this.handleClose}
+          PaperProps={{
+            style: {
+              maxHeight: this.ITEM_HEIGHT * 4.5,
+              width: this.state.width !== 0 ? this.state.width : 'auto',
+            },
+          }}
         >
           {this.state.filters.map((filter, index) => (
             <MenuItem

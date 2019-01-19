@@ -11,9 +11,12 @@ import ProfCard from './Cards/ProfCard';
 import MajorCard from './Cards/MajorCard';
 import LocCard from './Cards/LocCard';
 
+import { Course } from '../models/course.model';
+
 export interface CourseDrawerProps {
   open: boolean;
   closeDetail: () => void;
+  // course: Course;
 }
 export interface CourseDrawerState {}
 
@@ -53,6 +56,7 @@ class CourseDrawer extends React.Component<
       >
         <Spacer />
         <DescCard />
+        {/* <DescCard courseData={this.props.course} /> */}
         <EnrollCard />
         <GradesCard />
         <div>

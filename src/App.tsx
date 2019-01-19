@@ -11,7 +11,13 @@ import CourseDrawer from './components/CourseDrawer';
 import BottomLiner from './components/BottomLiner';
 
 import { Course, Filter } from './models/course.model';
-import { fetchAction, SortAction } from './store/course';
+import {
+  fetchAction,
+  sortAction,
+  setActiveAction,
+  filterAction,
+} from './store/course';
+import { dispatch } from 'rxjs/internal/observable/pairs';
 
 const Liner = styled.div`
   width: 100%;
@@ -21,18 +27,18 @@ const Liner = styled.div`
   top: 0;
 `;
 
-const drawerWidth = 300;
-const linerWidth = 30;
-
 interface PropsFromStore {
   courses: Course[];
   filters: Filter[];
   sortKey: keyof Course;
+  // activeCourse: Course;
 }
 
 interface PropsToDispatch {
-  load: () => void,
-  sort: (n: keyof Course) => void
+  load: () => void;
+  filter: (f: Filter) => void;
+  sort: (n: keyof Course) => void;
+  setActive: (c: Course) => void;
 }
 
 type AppProps = PropsFromStore & PropsToDispatch;
@@ -60,7 +66,16 @@ class App extends React.Component<AppProps, AppState> {
     this.props.sort(type);
   };
 
-  openDetail = () => {
+  filterCourses = (type: Filter) => {
+    this.props.filter(type);
+  };
+
+  setActive = (course: Course) => {
+    this.props.setActive(course);
+  };
+
+  openDetail = (course: Course) => {
+    this.setActive(course);
     this.setState({
       ...this.state,
       drawerOpen: true,
@@ -113,6 +128,7 @@ class App extends React.Component<AppProps, AppState> {
           <CourseDrawer
             open={this.state.drawerOpen}
             closeDetail={this.closeDetail}
+            // course={this.props.activeCourse}
           />
         </div>
         <BottomLiner
@@ -130,13 +146,16 @@ class App extends React.Component<AppProps, AppState> {
 const mapStateToProps = (state: ReduxState): PropsFromStore => ({
   courses: state.course.courses,
   filters: state.course.filters,
-  sortKey: state.course.sort
+  sortKey: state.course.sort,
+  // activeCourse: state.course.activeCourse,
 });
 const mapDispatchToProps = (
   dispatch: Dispatch<ReduxAction>
 ): PropsToDispatch => ({
   load: () => dispatch(fetchAction()),
-  sort: key => dispatch(SortAction(key))
+  sort: key => dispatch(sortAction(key)),
+  setActive: course => dispatch(setActiveAction(course)),
+  filter: type => dispatch(filterAction(type)),
 });
 
 export default connect(
