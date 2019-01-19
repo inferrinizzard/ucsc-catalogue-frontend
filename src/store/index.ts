@@ -18,6 +18,11 @@ const rootReducer = combineReducers({
   course: CourseReducer,
 });
 
+export type ReduxState = {
+  UI: UIState,
+  course: CourseState
+}
+
 const rootEpic = combineEpics(CourseEpics) as any;
 const epicMiddleware = createEpicMiddleware();
 

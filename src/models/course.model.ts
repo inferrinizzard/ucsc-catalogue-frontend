@@ -69,3 +69,5 @@ export interface CourseEnrollment {
   waitlistTotal: number;
   sections: SectionEnrollment[];
 }
+
+export type Filter = { type: keyof Course; filter: string };

@@ -6,7 +6,7 @@ import { filter, map, switchMap, delay } from 'rxjs/operators';
 
 export interface CourseState {
   loading: boolean;
-  filters: Filter[];
+  filters: APIModel.Filter[];
   sort: keyof APIModel.Course;
   courses: APIModel.Course[];
 }
@@ -29,11 +29,9 @@ enum ActionTypes {
 
 interface FetchAction extends Action {
   type: ActionTypes.FETCH_API;
-  eventId: string;
 }
-export const fetchAction = (eventId: string): FetchAction => ({
-  type: ActionTypes.FETCH_API,
-  eventId,
+export const fetchAction = (): FetchAction => ({
+  type: ActionTypes.FETCH_API
 });
 
 interface FetchSuccessAction extends Action {
@@ -58,9 +56,9 @@ export const SortAction = (sort: keyof APIModel.Course): SortAction => ({
 
 interface FilterAction extends Action {
   type: ActionTypes.FILTER;
-  filter: Filter;
+  filter: APIModel.Filter;
 }
-export const FilterAction = (filter: Filter): FilterAction => ({
+export const FilterAction = (filter: APIModel.Filter): FilterAction => ({
   type: ActionTypes.FILTER,
   filter,
 });
@@ -123,7 +121,7 @@ function InnerSort(
   return 0;
 }
 
-function Filter(state: CourseState, filters: Filter[]) {
+function Filter(state: CourseState, filters: APIModel.Filter[]) {
   let courseTemp: APIModel.Course[] = ([] as APIModel.Course[]).concat(
     state.courses
   );
