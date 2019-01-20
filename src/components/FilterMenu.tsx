@@ -13,7 +13,7 @@ export interface FilterMenuProps {
   removeFilter: (f: Filter) => void;
   category: keyof Course | string;
   activeFilters: Filter[];
-  filterList: Filter[];
+  filterList: string[];
 }
 export interface FilterMenuState {
   anchorEl: HTMLElement | null;
@@ -75,20 +75,24 @@ class FilterMenu extends React.Component<FilterMenuProps, FilterMenuState> {
             <MenuItem
               key={index}
               // selected={}
-              onClick={event => this.props.addFilter(f)}
+              onClick={event =>
+                this.props.addFilter({ type: this.props.category, filter: f })
+              }
             >
-              {f.filter}
+              {f}
             </MenuItem>
           ))}
         </Menu>
         <div>
-          {this.props.activeFilters.map((af, index) => (
-            <Chip
-              key={af.filter}
-              label={af.filter}
-              onDelete={event => this.props.removeFilter(af)}
-            />
-          ))}
+          {this.props.activeFilters
+            .filter(f => f.type === this.props.category)
+            .map((af, index) => (
+              <Chip
+                key={af.filter}
+                label={af.filter}
+                onDelete={event => this.props.removeFilter(af)}
+              />
+            ))}
         </div>
       </React.Fragment>
     );

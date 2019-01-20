@@ -6,7 +6,9 @@ import CardMedia from '@material-ui/core/CardMedia';
 import CardContent from '@material-ui/core/CardContent';
 import Typography from '@material-ui/core/Typography';
 import Divider from '@material-ui/core/Divider';
-import Collapse from '@material-ui/core/Collapse';
+import ExpansionPanel from '@material-ui/core/ExpansionPanel';
+import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
+import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 
 import TextBlock from '../TextBlock';
 import { Course } from '../../models/course.model';
@@ -56,16 +58,36 @@ const DescCard: React.SFC<DescCardProps> = props => {
               props.courseData.instructor
                 ? props.courseData.instructor.first +
                   ' ' +
-                  props.courseData.instructor.middle
-                  ? props.courseData.instructor.middle + ' '
-                  : '' + props.courseData.instructor.last
+                  (props.courseData.instructor.middle
+                    ? props.courseData.instructor.middle + ' '
+                    : '') +
+                  props.courseData.instructor.last
                 : 'STAFF'
             }
           />
           <Divider />
           <div>
-            <Typography>Description: {props.courseData.description}</Typography>
-            <Typography>Prereqs: {props.courseData.prerequirements}</Typography>
+            <ExpansionPanel>
+              <ExpansionPanelSummary>
+                <Typography variant="body2">Description</Typography>
+              </ExpansionPanelSummary>
+              <ExpansionPanelDetails>
+                <Typography>{props.courseData.description}</Typography>
+              </ExpansionPanelDetails>
+            </ExpansionPanel>
+            <ExpansionPanel>
+              <ExpansionPanelSummary>
+                <Typography variant="body2">Prerequisites</Typography>
+                {!props.courseData.prerequisites && (
+                  <Typography variant="body2"> - None</Typography>
+                )}
+              </ExpansionPanelSummary>
+              {props.courseData.prerequisites && (
+                <ExpansionPanelDetails>
+                  <Typography>{props.courseData.prerequisites}</Typography>
+                </ExpansionPanelDetails>
+              )}
+            </ExpansionPanel>
           </div>
         </CardContent>
       )}

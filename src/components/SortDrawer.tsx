@@ -18,11 +18,14 @@ export interface SortDrawerProps {
   setDrawerWidth: (val: number) => void;
   addFilter: (f: Filter) => void;
   removeFilter: (f: Filter) => void;
+  activeFilters: Filter[];
 }
 export interface SortDrawerState {
   widthRef: React.RefObject<HTMLElement>;
   categories: keyof Course[] | string[];
+  catList: { [K in CategoryType]: string[] };
 }
+export type CategoryType = keyof Course | string;
 
 const linerWidth = 30;
 const Spacer = styled.div`
@@ -36,7 +39,13 @@ const Section = styled(Card)<any>`
 class SortDrawer extends React.Component<SortDrawerProps, SortDrawerState> {
   state = {
     widthRef: React.createRef<HTMLElement>(),
-    categories: ['term', 'subject', 'cat', 'ge'],
+    categories: ['term', 'subject', 'level', 'ge'],
+    catList: {
+      term: ['2190', '2189'],
+      subject: ['AMS', 'ANTH'],
+      level: ['Lower Div'],
+      ge: ['TA', 'SR'],
+    },
   };
   ComponentDidMount() {
     this.props.setDrawerWidth(this.state.widthRef.current!.offsetWidth);
@@ -65,17 +74,18 @@ class SortDrawer extends React.Component<SortDrawerProps, SortDrawerState> {
           </Section>
           <Section>
             <CardHeader title="Filter" />
-						{this.state.categories.map((category,index)=>(
-							<React.Fragment>
-								{index!==0 && <Divider />}
-								<FilterMenu
-									key={category}
-									addFilter={this.props.addFilter}
-									removeFilter={this.props.removeFilter}
-									category={category}
-								/>
-							</React.Fragment>
-						))}
+            {this.state.categories.map((category, index) => (
+              <React.Fragment key={index}>
+                {index !== 0 && <Divider />}
+                <FilterMenu
+                  addFilter={this.props.addFilter}
+                  removeFilter={this.props.removeFilter}
+                  category={category}
+                  filterList={this.state.catList[category]}
+                  activeFilters={this.props.activeFilters}
+                />
+              </React.Fragment>
+            ))}
             {/* which quarter, default to current */}
             {/* department/major */}
             {/* Category */}

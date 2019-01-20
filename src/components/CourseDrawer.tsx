@@ -24,13 +24,7 @@ const linerWidth = 30;
 const Spacer = styled.div`
   margin-top: ${linerWidth}px;
 `;
-const ScrollDrawer = styled(({ width, ...other }) => (
-  <Drawer classes={{ paper: 'paper' }} {...other} />
-))<any>`
-  & .paper {
-    width: 50%;
-  }
-`;
+
 const Third = styled.span`
   width: 33.3%;
   display: inline-block;
@@ -48,11 +42,16 @@ class CourseDrawer extends React.Component<
 > {
   render() {
     return (
-      <ScrollDrawer
+      <Drawer
         anchor="right"
         open={Boolean(this.props.course)}
         variant="persistent"
         elevation={1}
+        PaperProps={{
+          style: {
+            width: '50%',
+          },
+        }}
       >
         <Spacer />
         <DescCard courseData={this.props.course} />
@@ -70,7 +69,7 @@ class CourseDrawer extends React.Component<
           </Third>
         </div>
         <FloatButton onClick={this.props.closeDetail}>BACK</FloatButton>
-      </ScrollDrawer>
+      </Drawer>
     );
   }
 }

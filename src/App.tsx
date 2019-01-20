@@ -124,8 +124,9 @@ class App extends React.Component<AppProps, AppState> {
             sortKey={this.props.sortKey}
             open={!this.state.drawerOpen}
             setDrawerWidth={this.setDrawerWidth}
-            addfilter={this.addFilter}
-            removefilter={this.removeFilter}
+            addFilter={this.addFilter}
+						removeFilter={this.removeFilter}
+						activeFilters={this.props.filters}
           />
           <Main
             courses={this.props.courses}

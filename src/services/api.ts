@@ -36,7 +36,7 @@ function convertAndMergeCourse(
     type: c.ty,
     credit: c.cr,
     ge: c.ge,
-    prerequirements: c.re,
+    prerequisites: c.re,
     combinedSections: c.com,
     sections: c.sec.map<model.Section>(s => ({
       number: s.num,
@@ -51,8 +51,8 @@ function convertAndMergeCourse(
             }))
         : null,
       instructor: s.ins,
-			capacity: s.cap,
-			// subjectCode: subject + ' ' + t.c;
+      capacity: s.cap,
+      // subjectCode: subject + ' ' + t.c;
     })),
   };
 }
