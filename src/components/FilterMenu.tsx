@@ -11,9 +11,9 @@ import { Course, Filter } from '../models/course.model';
 export interface FilterMenuProps {
   addFilter: (f: Filter) => void;
   removeFilter: (f: Filter) => void;
-	category: keyof Course | string;
-	activeFilters: Filter[];
-	filterList: Filter[];
+  category: keyof Course | string;
+  activeFilters: Filter[];
+  filterList: Filter[];
 }
 export interface FilterMenuState {
   anchorEl: HTMLElement | null;
@@ -71,22 +71,22 @@ class FilterMenu extends React.Component<FilterMenuProps, FilterMenuState> {
             },
           }}
         >
-          {this.props.filterList.map((filter, index) => (
+          {this.props.filterList.map((f, index) => (
             <MenuItem
-              key={filter.filter}
+              key={index}
               // selected={}
-              onClick={event => this.handleAddActiveFilter}
+              onClick={event => this.props.addFilter(f)}
             >
-              {filter}
+              {f.filter}
             </MenuItem>
           ))}
         </Menu>
         <div>
-          {this.props.activeFilters.map((activeFilter, index) => (
+          {this.props.activeFilters.map((af, index) => (
             <Chip
-              key={activeFilter.filter}
-              label={activeFilter.filter}
-              onDelete={event => this.handleRemoveActiveFilter(activeFilter)}
+              key={af.filter}
+              label={af.filter}
+              onDelete={event => this.props.removeFilter(af)}
             />
           ))}
         </div>

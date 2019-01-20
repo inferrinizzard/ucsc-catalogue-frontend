@@ -23,7 +23,7 @@ const initialState: CourseState = {
 };
 
 enum ActionTypes {
-  APPLY_FILTER = 'apply-filter',
+  ADD_FILTER = 'add-filter',
   REMOVE_FILTER = 'remove-filter',
   SORT = 'sort',
   FETCH_API = 'fetch',
@@ -59,12 +59,12 @@ export const sortAction = (sort: keyof APIModel.Course): SortAction => ({
   sort,
 });
 
-interface ApplyFilterAction extends Action {
-  type: ActionTypes.APPLY_FILTER;
+interface AddFilterAction extends Action {
+  type: ActionTypes.ADD_FILTER;
   filter: APIModel.Filter;
 }
-export const applyFilterAction = (filter: APIModel.Filter): ApplyFilterAction => ({
-  type: ActionTypes.APPLY_FILTER,
+export const addFilterAction = (filter: APIModel.Filter): AddFilterAction => ({
+  type: ActionTypes.ADD_FILTER,
   filter,
 });
 
@@ -72,7 +72,7 @@ interface RemoveFilterAction extends Action {
   type: ActionTypes.REMOVE_FILTER;
   filter: APIModel.Filter;
 }
-export const reomveFilterAction = (filter: APIModel.Filter): RemoveFilterAction => ({
+export const removeFilterAction = (filter: APIModel.Filter): RemoveFilterAction => ({
   type: ActionTypes.REMOVE_FILTER,
   filter,
 });
@@ -92,7 +92,7 @@ export type CourseActions =
   | FetchAction
   | FetchSuccessAction
   | SortAction
-  | ApplyFilterAction
+  | AddFilterAction
   | RemoveFilterAction
   | SetActiveAction;
 
@@ -111,7 +111,7 @@ export default function courseReducer(
         sort: action.sort,
         courses: Sort(state, action.sort),
       };
-    case ActionTypes.APPLY_FILTER:
+    case ActionTypes.ADD_FILTER:
       return{
 				...state,
 				filters: [...state.filters,action.filter],

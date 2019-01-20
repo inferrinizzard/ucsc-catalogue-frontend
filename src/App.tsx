@@ -15,7 +15,8 @@ import {
   fetchAction,
   sortAction,
   setActiveAction,
-  filterAction,
+  addFilterAction,
+  removeFilterAction,
 } from './store/course';
 import { dispatch } from 'rxjs/internal/observable/pairs';
 
@@ -36,7 +37,8 @@ interface PropsFromStore {
 
 interface PropsToDispatch {
   load: () => void;
-  filter: (f: Filter) => void;
+  addFilter: (f: Filter) => void;
+  removeFilter: (f: Filter) => void;
   sort: (n: keyof Course) => void;
   setActive: (c: Course | null) => void;
 }
@@ -66,8 +68,12 @@ class App extends React.Component<AppProps, AppState> {
     this.props.sort(type);
   };
 
-  filterCourses = (type: Filter) => {
-    this.props.filter(type);
+  addFilter = (type: Filter) => {
+    this.props.addFilter(type);
+  };
+
+  removeFilter = (type: Filter) => {
+    this.props.removeFilter(type);
   };
 
   setActive = (course: Course | null) => {
@@ -118,7 +124,8 @@ class App extends React.Component<AppProps, AppState> {
             sortKey={this.props.sortKey}
             open={!this.state.drawerOpen}
             setDrawerWidth={this.setDrawerWidth}
-            filter={this.filterCourses}
+            addfilter={this.addFilter}
+            removefilter={this.removeFilter}
           />
           <Main
             courses={this.props.courses}
@@ -157,7 +164,8 @@ const mapDispatchToProps = (
   load: () => dispatch(fetchAction()),
   sort: key => dispatch(sortAction(key)),
   setActive: course => dispatch(setActiveAction(course)),
-  filter: type => dispatch(filterAction(type)),
+  addFilter: type => dispatch(addFilterAction(type)),
+  removeFilter: type => dispatch(removeFilterAction(type)),
 });
 
 export default connect(

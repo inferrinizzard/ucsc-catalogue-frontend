@@ -16,10 +16,12 @@ export interface SortDrawerProps {
   sortKey: keyof Course;
   open: boolean;
   setDrawerWidth: (val: number) => void;
-  filter: (f: Filter) => void;
+  addFilter: (f: Filter) => void;
+  removeFilter: (f: Filter) => void;
 }
 export interface SortDrawerState {
   widthRef: React.RefObject<HTMLElement>;
+  categories: keyof Course[] | string[];
 }
 
 const linerWidth = 30;
@@ -34,6 +36,7 @@ const Section = styled(Card)<any>`
 class SortDrawer extends React.Component<SortDrawerProps, SortDrawerState> {
   state = {
     widthRef: React.createRef<HTMLElement>(),
+    categories: ['term', 'subject', 'cat', 'ge'],
   };
   ComponentDidMount() {
     this.props.setDrawerWidth(this.state.widthRef.current!.offsetWidth);
@@ -62,17 +65,21 @@ class SortDrawer extends React.Component<SortDrawerProps, SortDrawerState> {
           </Section>
           <Section>
             <CardHeader title="Filter" />
+						{this.state.categories.map((category,index)=>(
+							<React.Fragment>
+								{index!==0 && <Divider />}
+								<FilterMenu
+									key={category}
+									addFilter={this.props.addFilter}
+									removeFilter={this.props.removeFilter}
+									category={category}
+								/>
+							</React.Fragment>
+						))}
             {/* which quarter, default to current */}
-            <FilterMenu filter={this.props.filter} category={'term'} />
-            <Divider />
             {/* department/major */}
-            <FilterMenu filter={this.props.filter} category={'subject'} />
-            <Divider />
             {/* Category */}
-            <FilterMenu filter={this.props.filter} category={'cat'} />
-            <Divider />
             {/* GE */}
-            <FilterMenu filter={this.props.filter} category={'ge'} />
           </Section>
         </Drawer>
       </RootRef>
