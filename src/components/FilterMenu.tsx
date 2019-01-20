@@ -9,13 +9,14 @@ import RootRef from '@material-ui/core/RootRef';
 import { Course, Filter } from '../models/course.model';
 
 export interface FilterMenuProps {
-  filter: (f: Filter) => void;
-  category: keyof Course | string;
+  addFilter: (f: Filter) => void;
+  removeFilter: (f: Filter) => void;
+	category: keyof Course | string;
+	activeFilters: Filter[];
+	filterList: Filter[];
 }
 export interface FilterMenuState {
   anchorEl: HTMLElement | null;
-  filters: Filter[];
-  activeFilters: Filter[];
   widthRef: React.RefObject<HTMLElement>;
   width: number;
 }
@@ -23,8 +24,6 @@ export interface FilterMenuState {
 class FilterMenu extends React.Component<FilterMenuProps, FilterMenuState> {
   state = {
     anchorEl: null,
-    filters: [],
-    activeFilters: [],
     widthRef: React.createRef<HTMLElement>(),
     width: 0,
   };
@@ -51,6 +50,7 @@ class FilterMenu extends React.Component<FilterMenuProps, FilterMenuState> {
       <React.Fragment>
         <RootRef rootRef={this.state.widthRef}>
           <Button
+            fullWidth
             aria-owns={open ? 'fade-menu' : undefined}
             aria-haspopup="true"
             onClick={event => this.handleClick(event)}
@@ -71,9 +71,9 @@ class FilterMenu extends React.Component<FilterMenuProps, FilterMenuState> {
             },
           }}
         >
-          {this.state.filters.map((filter, index) => (
+          {this.props.filterList.map((filter, index) => (
             <MenuItem
-              key={filter}
+              key={filter.filter}
               // selected={}
               onClick={event => this.handleAddActiveFilter}
             >
@@ -82,7 +82,7 @@ class FilterMenu extends React.Component<FilterMenuProps, FilterMenuState> {
           ))}
         </Menu>
         <div>
-          {this.state.activeFilters.map((activeFilter, index) => (
+          {this.props.activeFilters.map((activeFilter, index) => (
             <Chip
               key={activeFilter.filter}
               label={activeFilter.filter}

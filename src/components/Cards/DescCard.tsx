@@ -30,17 +30,16 @@ const DescCard: React.SFC<DescCardProps> = props => {
         />
       )}
       {/* <CardMedia /> */}
-      <Divider />'
+      <Divider />
       {props.courseData && (
         <CardContent>
           <TextBlock type="body2" text={'Grade Average'} />
-          {/* <TextBlock type="body2" text={'Unit count, course code'} /> */}
           <TextBlock
             type="body2"
             text={
               'Credits: ' +
               props.courseData.credit +
-              ' Course Number:' +
+              ', Course Number:' +
               props.courseData.number
             }
           />

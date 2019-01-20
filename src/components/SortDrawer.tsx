@@ -27,7 +27,7 @@ const Spacer = styled.div`
   margin-top: ${linerWidth}px;
 `;
 const Section = styled(Card)<any>`
-  margin: 0.3em;
+  margin: 0.5em 0.3em;
   padding: 0.2em;
 `;
 

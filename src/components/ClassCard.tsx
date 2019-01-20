@@ -6,20 +6,22 @@ import Typography from '@material-ui/core/Typography';
 import styled from 'styled-components';
 import { Course } from '../models/course.model';
 
-const StyleCard = styled(Card)<any>`
+const StyleCard = styled(Card)<ClassCardProps>`
   margin: 0.15em 0.25em
-  min-width: 200px;
+	min-width: 200px;
+	width: ${p => ((p.open as boolean) ? 50 : 20)}%
   display: inline-block;
 `;
 
 export interface ClassCardProps {
+  open: boolean;
   openDetail: (course: Course) => void;
   courseData: Course;
 }
 
 const ClassCard: React.SFC<ClassCardProps> = props => {
   return (
-    <StyleCard>
+    <StyleCard {...props}>
       <CardActionArea onClick={event => props.openDetail(props.courseData)}>
         <CardContent>
           <Typography gutterBottom variant="h5" component="h2">

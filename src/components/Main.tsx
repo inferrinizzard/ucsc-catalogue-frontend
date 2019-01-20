@@ -35,7 +35,8 @@ const Main: React.SFC<MainProps & MainDivProps> = props => {
     <MainDiv {...props}>
       {props.courses.map((course, index) => (
         <ClassCard
-          key={index}
+					key={index}
+					open={props.open}
           courseData={course}
           openDetail={props.openDetail}
         />
