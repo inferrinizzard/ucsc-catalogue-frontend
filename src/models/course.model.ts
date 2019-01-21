@@ -43,12 +43,12 @@ export interface Course {
   capacity: number | null;
   instructor: Instructor | null;
   subject: string;
-  // subjectCode: string;
-  // level: CourseLevel;
+  subjectCode: string;
+  level: CourseLevel;
 }
 
 export type EnrollmentStatus = 'Wait List' | 'Open' | 'Closed' | string;
-// export type CourseLevel = 'Lower Div' | 'Upper Div' | 'Graduate' | string;
+export type CourseLevel = 'Lower Div' | 'Upper Div' | 'Graduate' | string;
 
 export interface SectionEnrollment {
   capacity: number; // capacity of the section

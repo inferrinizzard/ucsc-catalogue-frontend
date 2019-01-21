@@ -72,7 +72,9 @@ interface RemoveFilterAction extends Action {
   type: ActionTypes.REMOVE_FILTER;
   filter: APIModel.Filter;
 }
-export const removeFilterAction = (filter: APIModel.Filter): RemoveFilterAction => ({
+export const removeFilterAction = (
+  filter: APIModel.Filter
+): RemoveFilterAction => ({
   type: ActionTypes.REMOVE_FILTER,
   filter,
 });
@@ -112,28 +114,43 @@ export default function courseReducer(
         courses: Sort(state, action.sort),
       };
     case ActionTypes.ADD_FILTER:
-      return{
-				...state,
-				filters: [...state.filters,action.filter],
-				courses: Filter(state, [...state.filters, action.filter]),
-			}
-		case ActionTypes.REMOVE_FILTER:
-			let hasFilter: boolean = false;
-			state.filters.forEach(
-				f => (hasFilter = f === action.filter ? true : hasFilter)
-			);
-			return {
-				...state,
-				filters: hasFilter
-					? [...state.filters].splice(state.filters.indexOf(action.filter), 1)
-					: state.filters,
-				courses: Filter({...state, courses: API.courses('2190')}, [...state.filters, action.filter]),
-			};
+      return {
+        ...state,
+        filters: [...state.filters, action.filter],
+        courses: Filter(state, [...state.filters, action.filter]),
+      };
+    case ActionTypes.REMOVE_FILTER:
+      let hasFilter: boolean = false;
+      state.filters.forEach(
+        f => (hasFilter = f === action.filter ? true : hasFilter)
+      );
+      return {
+        ...state,
+        filters: hasFilter
+          ? [...state.filters].splice(state.filters.indexOf(action.filter), 1)
+          : state.filters,
+        courses: Filter(
+          {
+            ...state,
+            courses: API.courses('2190').then(value => {
+              return value;
+            }),
+          },
+          [...state.filters, action.filter]
+        ),
+      };
     case ActionTypes.SET_ACTIVE:
       return { ...state, activeCourse: action.course };
     default:
       return state;
   }
+}
+
+async function getCourseCache() {
+  let courseCache: APIModel.Course[] = await API.courses('2190').then(value => {
+    return value;
+  });
+  return courseCache as APIModel.Course[];
 }
 
 function Sort(state: CourseState, sort: keyof APIModel.Course) {

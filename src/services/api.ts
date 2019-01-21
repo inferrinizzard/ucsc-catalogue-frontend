@@ -52,8 +52,14 @@ function convertAndMergeCourse(
         : null,
       instructor: s.ins,
       capacity: s.cap,
-      // subjectCode: subject + ' ' + t.c;
     })),
+    subjectCode: subject + ' ' + t.c,
+    level:
+      t.c < '100'
+        ? 'Lower Div'
+        : t.c >= '100' && t.c < '200'
+        ? 'Upper Div'
+        : 'Graduate',
   };
 }
 

@@ -19,7 +19,7 @@ export interface SelectMenuState {
 }
 
 const keyNameMap: { [K in keyof Course]?: string } = {
-  name: 'Course Name',
+  subjectCode: 'Course Name',
   capacity: 'Capacity',
   type: 'Type',
 };

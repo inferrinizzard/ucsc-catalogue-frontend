@@ -11,7 +11,7 @@ import { Course, Filter } from '../models/course.model';
 export interface FilterMenuProps {
   addFilter: (f: Filter) => void;
   removeFilter: (f: Filter) => void;
-  category: keyof Course | string;
+  category: keyof Course;
   activeFilters: Filter[];
   filterList: string[];
 }
