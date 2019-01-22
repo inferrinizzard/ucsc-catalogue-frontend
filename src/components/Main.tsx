@@ -2,6 +2,7 @@ import * as React from 'react';
 import styled, { ThemedStyledFunction } from 'styled-components';
 import { Course } from '../models/course.model';
 import ClassCard from './ClassCard';
+import InfiniteScroll from 'react-infinite-scroller';
 
 // function styledComponentWithProps<T, U extends HTMLElement = HTMLElement>(styledFunction: StyledFunction<React.HTMLProps<U>>): StyledFunction<T & React.HTMLProps<U>> {
 // 	return styledFunction;
@@ -36,7 +37,7 @@ const Main: React.SFC<MainProps & MainDivProps> = props => {
       {props.courses.map((course, index) => (
         <ClassCard
           key={index}
-					courseData={course}
+          courseData={course}
           openDetail={props.openDetail}
         />
       ))}
