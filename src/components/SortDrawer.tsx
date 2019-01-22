@@ -79,7 +79,7 @@ class SortDrawer extends React.Component<SortDrawerProps, SortDrawerState> {
                     addFilter={this.props.addFilter}
                     removeFilter={this.props.removeFilter}
                     category={category}
-                    filterList={catMap[category]}
+                    filterList={catMap[category] || []}
                     activeFilters={this.props.activeFilters}
                   />
                 </React.Fragment>

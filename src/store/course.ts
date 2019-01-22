@@ -114,31 +114,29 @@ export default function courseReducer(
         courses: Sort(state, action.sort),
       };
     case ActionTypes.ADD_FILTER:
-      return {
-        ...state,
-        filters: [...state.filters, action.filter],
-        courses: Filter(state, [...state.filters, action.filter]),
-      };
-    case ActionTypes.REMOVE_FILTER:
-      let hasFilter: boolean = false;
-      state.filters.forEach(
-        f => (hasFilter = f === action.filter ? true : hasFilter)
-      );
-      return {
-        ...state,
-        filters: hasFilter
-          ? [...state.filters].splice(state.filters.indexOf(action.filter), 1)
-          : state.filters,
-        courses: Filter(
-          {
+      return !checkFilter(state.filters, action.filter)
+        ? {
             ...state,
-            courses: API.courses('2190').then(value => {
-              return value;
-            }),
-          },
-          [...state.filters, action.filter]
-        ),
-      };
+            filters: [...state.filters, action.filter],
+            courses: Filter(state.courses, [...state.filters, action.filter]),
+          }
+        : state;
+    case ActionTypes.REMOVE_FILTER:
+      return checkFilter(state.filters, action.filter)
+        ? {
+            ...state,
+            filters: [...state.filters].splice(
+              state.filters.indexOf(action.filter),
+              1
+            ),
+            courses: Filter(
+              API.courses('2190').then(value => {
+                return value;
+              }),
+              [...state.filters, action.filter]
+            ),
+          }
+        : state;
     case ActionTypes.SET_ACTIVE:
       return { ...state, activeCourse: action.course };
     default:
@@ -146,24 +144,26 @@ export default function courseReducer(
   }
 }
 
-async function getCourseCache() {
-  let courseCache: APIModel.Course[] = await API.courses('2190').then(value => {
-    return value;
-  });
-  return courseCache as APIModel.Course[];
+function checkFilter(list: Filter[], filter: Filter): boolean {
+  let hasFilter = false;
+  list.forEach(f => (hasFilter = f === filter ? true : hasFilter));
+  return hasFilter;
 }
 
-function Sort(state: CourseState, sort: keyof APIModel.Course) {
+function Sort(
+  state: CourseState,
+  sort: keyof APIModel.Course
+): APIModel.Course[] {
   return ([] as APIModel.Course[])
     .concat(state.courses)
     .sort((a: APIModel.Course, b: APIModel.Course) => InnerSort(a, b, sort));
 }
-//TODO: fix sort by name
+
 function InnerSort(
   a: APIModel.Course,
   b: APIModel.Course,
   sort: keyof APIModel.Course
-) {
+): number {
   const left = a[sort];
   const right = b[sort];
   if (left && right) {
@@ -174,10 +174,11 @@ function InnerSort(
 }
 
 //TODO: filter by union for same type, intersction for different
-function Filter(state: CourseState, filters: APIModel.Filter[]) {
-  let courseTemp: APIModel.Course[] = ([] as APIModel.Course[]).concat(
-    state.courses
-  );
+function Filter(
+  courses: APIModel.Course[],
+  filters: APIModel.Filter[]
+): APIModel.Course[] {
+  let courseTemp: APIModel.Course[] = ([] as APIModel.Course[]).concat(courses);
   filters.forEach(f =>
     courseTemp.filter(course => course[f.type] === f.filter)
   );
