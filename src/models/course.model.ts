@@ -35,7 +35,7 @@ export interface Course {
   type: string; // Lecture, Studio, etc.
   credit: number; // number of credits
   ge: string[];
-  prerequirements: string | null;
+  prerequisites: string | null;
   combinedSections: string[]; // Array of course Number (in string)
   sections: Section[];
   number: number;
@@ -43,14 +43,12 @@ export interface Course {
   capacity: number | null;
   instructor: Instructor | null;
   subject: string;
-  // description: string;
-  // type: string;
-  // credits: number;
-  // ge: string[] | null;
-  // prereq?: string;
+  subjectCode: string;
+  level: CourseLevel;
 }
 
 export type EnrollmentStatus = 'Wait List' | 'Open' | 'Closed' | string;
+export type CourseLevel = 'Lower Div' | 'Upper Div' | 'Graduate' | string;
 
 export interface SectionEnrollment {
   capacity: number; // capacity of the section
@@ -74,3 +72,5 @@ export interface CourseEnrollment {
   waitlistTotal: number;
   sections: SectionEnrollment[];
 }
+
+export type Filter = { type: keyof Course; filter: string };

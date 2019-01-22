@@ -50,10 +50,12 @@
     "ky": "^0.6.0",
     "react": "^16.6.0",
     "react-dom": "^16.6.0",
-    "react-redux": "^5.1.1",
+    "react-redux": "^6.0.0",
     "react-router-dom": "^4.3.1",
     "redux": "^4.0.1",
     "redux-logger": "^3.0.6",
+    "redux-observable": "^1.0.0",
+    "rxjs": "^6.3.3",
     "style-loader": "^0.23.1",
     "styled-components": "^4.1.3"
   }

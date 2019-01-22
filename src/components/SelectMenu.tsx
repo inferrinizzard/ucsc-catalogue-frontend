@@ -4,53 +4,96 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
+import RootRef from '@material-ui/core/RootRef';
+import { Course } from '../models/course.model';
 
 export interface SelectMenuProps {
-  sort: (type: number) => void;
+  sort: (type: keyof Course) => void;
+  sortKey: keyof Course;
 }
 export interface SelectMenuState {
-  open: boolean;
   selectedIndex: number;
+  anchor: HTMLElement | null;
+  widthRef: React.RefObject<HTMLElement>;
+  width: number;
 }
 
-const options = [
-  'Course Name',
-  'Number Enrolled',
-  'Grade Average',
-  'Prof Rating',
-];
+const keyNameMap: { [K in keyof Course]?: string } = {
+  subjectCode: 'Course Name',
+  capacity: 'Capacity',
+  type: 'Type',
+};
 
 class SelectMenu extends React.Component<SelectMenuProps, SelectMenuState> {
-  handleOpen = () => {
-    this.setState({ ...this.state, open: true });
+  handleOpen = (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
+    this.setState({ ...this.state, anchor: event.currentTarget });
   };
   handleClose = (
-    event: React.MouseEvent<HTMLElement, MouseEvent>,
-    index: number
+    event:
+      | React.MouseEvent<HTMLElement, MouseEvent>
+      | React.SyntheticEvent<{}, Event>,
+    key: keyof Course
   ) => {
-    this.setState({ open: false, selectedIndex: index });
-    this.props.sort(index);
+    if (key !== this.props.sortKey) this.props.sort(key);
+    this.setState({ ...this.state, anchor: null });
   };
 
   state = {
-    open: false,
     selectedIndex: 0,
+    anchor: null,
+    widthRef: React.createRef<HTMLElement>(),
+    width: 0,
   };
+
+  componentDidMount() {
+    this.setState({
+      ...this.state,
+      width: this.state.widthRef.current!.offsetWidth,
+    });
+  }
 
   render() {
     return (
       <React.Fragment>
-        <List component="nav">
-          <ListItem
-            button
-            aria-haspopup="true"
-            aria-controls="lock-menu"
-            onClick={this.handleOpen}
-          >
-            <ListItemText primary={options[this.state.selectedIndex]} />
-          </ListItem>
-        </List>
-        <Menu open={this.state.open}>
+        <RootRef rootRef={this.state.widthRef}>
+          <List component="nav">
+            <ListItem
+              button
+              aria-haspopup="true"
+              aria-controls="lock-menu"
+              onClick={event => this.handleOpen(event)}
+            >
+              <ListItemText
+                primary={
+                  keyNameMap[this.props.sortKey]
+                    ? keyNameMap[this.props.sortKey]
+                    : 'Course Name'
+                }
+              />
+            </ListItem>
+          </List>
+        </RootRef>
+        <Menu
+          open={Boolean(this.state.anchor)}
+          anchorEl={this.state.anchor}
+          onBackdropClick={event => this.handleClose(event, this.props.sortKey)}
+          PaperProps={{
+            style: {
+              width: this.state.width !== 0 ? this.state.width : 'auto',
+            },
+          }}
+        >
+          {(Object.keys(keyNameMap) as (keyof Course)[]).map((key, index) => (
+            <MenuItem
+              key={key}
+              selected={key === this.props.sortKey}
+              onClick={event => this.handleClose(event, key)}
+            >
+              {keyNameMap[key]}
+              {/* {key} */}
+            </MenuItem>
+          ))}
+          {/*}
           {options.map((option, index) => (
             <MenuItem
               key={option}
@@ -59,7 +102,7 @@ class SelectMenu extends React.Component<SelectMenuProps, SelectMenuState> {
             >
               {option}
             </MenuItem>
-          ))}
+          ))}*/}
         </Menu>
       </React.Fragment>
     );

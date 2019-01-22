@@ -9,14 +9,19 @@ import RootRef from '@material-ui/core/RootRef';
 import SearchBar from './SearchBar';
 import SelectMenu from './SelectMenu';
 import FilterMenu from './FilterMenu';
+import { Course, Filter } from '../models/course.model';
 
 export interface SortDrawerProps {
-  sort: (type: number) => void;
+  sort: (type: keyof Course) => void;
+  sortKey: keyof Course;
   open: boolean;
   setDrawerWidth: (val: number) => void;
+  addFilter: (f: Filter) => void;
+  removeFilter: (f: Filter) => void;
+  activeFilters: Filter[];
 }
 export interface SortDrawerState {
-  width: React.RefObject<HTMLElement>;
+  widthRef: React.RefObject<HTMLElement>;
 }
 
 const linerWidth = 30;
@@ -24,44 +29,66 @@ const Spacer = styled.div`
   margin-top: ${linerWidth}px;
 `;
 const Section = styled(Card)<any>`
-  margin: 0.3em;
+  margin: 0.5em 0.3em;
   padding: 0.2em;
 `;
 
+const catMap: { [K in keyof Course]?: string[] } = {
+  subject: ['AMS', 'ANTH'],
+  level: ['Lower Div'],
+  ge: ['TA', 'SR'],
+  type: ['lecture', 'discussion', 'lab'],
+};
+
 class SortDrawer extends React.Component<SortDrawerProps, SortDrawerState> {
   state = {
-    width: React.createRef<HTMLElement>(),
+    widthRef: React.createRef<HTMLElement>(),
   };
   ComponentDidMount() {
-    this.props.setDrawerWidth(this.state.width.current!.offsetWidth);
-    console.log(this.state.width.current!.offsetWidth);
+    this.props.setDrawerWidth(this.state.widthRef.current!.offsetWidth);
+    console.log(this.state.widthRef.current!.offsetWidth);
     console.log('cdm');
   }
   render() {
     return (
-      <RootRef rootRef={this.state.width}>
-        <Drawer open={this.props.open} variant="permanent">
+      <RootRef rootRef={this.state.widthRef}>
+        <Drawer
+          open={this.props.open}
+          variant="permanent"
+          PaperProps={{
+            style: {
+              padding: '0 0.25em',
+            },
+          }}
+        >
           <Spacer />
           <Section>
             <SearchBar />
           </Section>
           <Section>
             <CardHeader title="Sorting" />
-            <SelectMenu sort={this.props.sort} />
+            <SelectMenu sort={this.props.sort} sortKey={this.props.sortKey} />
           </Section>
           <Section>
             <CardHeader title="Filter" />
+            {(Object.keys(catMap) as (keyof Course)[]).map(
+              (category, index) => (
+                <React.Fragment key={index}>
+                  {index !== 0 && <Divider />}
+                  <FilterMenu
+                    addFilter={this.props.addFilter}
+                    removeFilter={this.props.removeFilter}
+                    category={category}
+                    filterList={catMap[category]}
+                    activeFilters={this.props.activeFilters}
+                  />
+                </React.Fragment>
+              )
+            )}
             {/* which quarter, default to current */}
-            <FilterMenu />
-            <Divider />
             {/* department/major */}
-            <FilterMenu />
-            <Divider />
             {/* Category */}
-            <FilterMenu />
-            <Divider />
             {/* GE */}
-            <FilterMenu />
           </Section>
         </Drawer>
       </RootRef>

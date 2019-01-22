@@ -11,9 +11,12 @@ import ProfCard from './Cards/ProfCard';
 import MajorCard from './Cards/MajorCard';
 import LocCard from './Cards/LocCard';
 
+import { Course } from '../models/course.model';
+
 export interface CourseDrawerProps {
   open: boolean;
   closeDetail: () => void;
+  course: Course | null;
 }
 export interface CourseDrawerState {}
 
@@ -21,13 +24,7 @@ const linerWidth = 30;
 const Spacer = styled.div`
   margin-top: ${linerWidth}px;
 `;
-const ScrollDrawer = styled(({ width, ...other }) => (
-  <Drawer classes={{ paper: 'paper' }} {...other} />
-))<any>`
-  & .paper {
-    width: 50%;
-  }
-`;
+
 const Third = styled.span`
   width: 33.3%;
   display: inline-block;
@@ -45,14 +42,19 @@ class CourseDrawer extends React.Component<
 > {
   render() {
     return (
-      <ScrollDrawer
+      <Drawer
         anchor="right"
-        open={this.props.open}
+        open={Boolean(this.props.course)}
         variant="persistent"
         elevation={1}
+        PaperProps={{
+          style: {
+            width: '50%',
+          },
+        }}
       >
         <Spacer />
-        <DescCard />
+        <DescCard courseData={this.props.course} />
         <EnrollCard />
         <GradesCard />
         <div>
@@ -67,7 +69,7 @@ class CourseDrawer extends React.Component<
           </Third>
         </div>
         <FloatButton onClick={this.props.closeDetail}>BACK</FloatButton>
-      </ScrollDrawer>
+      </Drawer>
     );
   }
 }

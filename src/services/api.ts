@@ -36,7 +36,7 @@ function convertAndMergeCourse(
     type: c.ty,
     credit: c.cr,
     ge: c.ge,
-    prerequirements: c.re,
+    prerequisites: c.re,
     combinedSections: c.com,
     sections: c.sec.map<model.Section>(s => ({
       number: s.num,
@@ -53,6 +53,13 @@ function convertAndMergeCourse(
       instructor: s.ins,
       capacity: s.cap,
     })),
+    subjectCode: subject + ' ' + t.c,
+    level:
+      t.c < '100'
+        ? 'Lower Div'
+        : t.c >= '100' && t.c < '200'
+        ? 'Upper Div'
+        : 'Graduate',
   };
 }
 
@@ -83,7 +90,11 @@ function convertTracking(
 
 class _API {
   private endpoint = 'https://andromeda.miragespace.net/slugsurvival';
+  private coursesCache?: model.Course[];
   public async courses(termId: string): Promise<model.Course[]> {
+    if (this.coursesCache) {
+      return this.coursesCache;
+    }
     const [termsData, coursesData] = await Promise.all([
       ky
         .get(`${this.endpoint}/data/fetch/terms/${termId}.json`)
@@ -92,17 +103,16 @@ class _API {
         .get(`${this.endpoint}/data/fetch/courses/${termId}.json`)
         .json() as Promise<ApiResponseModel.CoursesApiResponse>,
     ]);
-    return Object.entries(termsData).reduce<model.Course[]>(
-      (prev, [subject, rawTermCourses]) => {
-        return [
-          ...prev,
-          ...rawTermCourses.map((x: any) =>
-            convertAndMergeCourse(subject, x, coursesData[x.num])
-          ),
-        ];
-      },
-      []
-    );
+    return (this.coursesCache = Object.entries(termsData).reduce<
+      model.Course[]
+    >((prev, [subject, rawTermCourses]) => {
+      return [
+        ...prev,
+        ...rawTermCourses.map((x: any) =>
+          convertAndMergeCourse(subject, x, coursesData[x.num])
+        ),
+      ];
+    }, []));
   }
   public async tracking(
     courseNum: number,

@@ -1,6 +1,0 @@
-offwhite: #f6f7eb;
-offblack: #141f34;
-blue: #5d92dd;
-darkblue: #1f65ab;
-lightblue: #92c2ff;
-yellow: ffe87a;
