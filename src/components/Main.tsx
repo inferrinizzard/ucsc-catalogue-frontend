@@ -1,16 +1,20 @@
 import * as React from 'react';
-import styled, { ThemedStyledFunction } from 'styled-components';
+import { PureComponent } from 'react';
+import styled from 'styled-components';
+import { AutoSizer } from 'react-virtualized';
+import { List } from 'react-virtualized';
+// import { FixedSizeList as List } from 'react-window';
+import memoize from 'memoize-one';
 
 import { Course } from '../models/course.model';
 import ClassCard from './ClassCard';
-
-// function styledComponentWithProps<T, U extends HTMLElement = HTMLElement>(styledFunction: StyledFunction<React.HTMLProps<U>>): StyledFunction<T & React.HTMLProps<U>> {
-// 	return styledFunction;
-// }
+import { CombineLatestSubscriber } from 'rxjs/internal/observable/combineLatest';
 
 export interface MainProps {
   courses: Course[];
   openDetail: (course: Course) => void;
+  cardWidth: number;
+  cardHeight: number;
 }
 
 export interface MainDivProps {
@@ -19,28 +23,71 @@ export interface MainDivProps {
   drawerWidth: number;
 }
 
-// const MainDiv = styledComponentWithProps<MyProps, HTMLDivElement>(styled.div)`
-const MainDiv = styled.div<MainDivProps>`
-  margin-top: ${p => p.linerWidth as number}px;
-  margin-left: ${p => p.drawerWidth as number}px;
-  width: calc(
-    ${p => ((p.open as boolean) ? 50 : 100)}% -
-      ${p => p.drawerWidth as number}px
-  );
+const MainDiv = styled.div`
+  margin-top: ${(p: MainDivProps) => p.linerWidth}px;
+  margin-left: ${p => p.drawerWidth}px;
+  width: calc(${p => (p.open ? 50 : 100)}% - ${p => p.drawerWidth}px);
+  height: calc(100% - ${p => p.linerWidth * 2}px);
 `;
 
-// const MainDiv = styled(MainDivCore)<any>``;
+// class Row extends PureComponent {
+//   render() {
+//     const items = [];
+//     const fromIndex = index * columns;
+//   }
+// }
 
 const Main: React.SFC<MainProps & MainDivProps> = props => {
   return (
     <MainDiv {...props}>
-      {props.courses.map((course, index) => (
-        <ClassCard
-          key={index}
-          courseData={course}
-          openDetail={props.openDetail}
-        />
-      ))}
+      <AutoSizer>
+        {({ height, width }: { height: number; width: number }) => {
+          const columns = Math.floor(width / props.cardWidth);
+          const rows = Math.ceil(props.courses.length / columns);
+          return (
+            <div>
+              <List
+                width={width}
+                height={height}
+                rowCount={rows}
+                rowHeight={props.cardHeight}
+                overscanRowCount={2}
+                rowRenderer={({
+                  index,
+                  key,
+                  style,
+                }: {
+                  index: number;
+                  key: string;
+                  style: any;
+                }) => {
+                  const items = [];
+                  const fromIndex: number = index * columns;
+                  const toIndex = Math.min(
+                    fromIndex + columns,
+                    props.courses.length
+                  );
+                  for (let i = fromIndex; i < toIndex; i++) {
+                    let course = props.courses[i];
+                    items.push(
+                      <ClassCard
+                        key={i}
+                        courseData={course}
+                        openDetail={props.openDetail}
+                      />
+                    );
+                  }
+                  return (
+                    <div key={key} style={style}>
+                      {items}
+                    </div>
+                  );
+                }}
+              />
+            </div>
+          );
+        }}
+      </AutoSizer>
     </MainDiv>
   );
 };
