@@ -1,9 +1,7 @@
 import * as React from 'react';
 import { PureComponent } from 'react';
 import styled from 'styled-components';
-import { AutoSizer } from 'react-virtualized';
-import { List } from 'react-virtualized';
-// import { FixedSizeList as List } from 'react-window';
+import { AutoSizer, List } from 'react-virtualized';
 import memoize from 'memoize-one';
 
 import { Course } from '../models/course.model';
@@ -29,13 +27,6 @@ const MainDiv = styled.div`
   width: calc(${p => (p.open ? 50 : 100)}% - ${p => p.drawerWidth}px);
   height: calc(100% - ${p => p.linerWidth * 2}px);
 `;
-
-// class Row extends PureComponent {
-//   render() {
-//     const items = [];
-//     const fromIndex = index * columns;
-//   }
-// }
 
 const Main: React.SFC<MainProps & MainDivProps> = props => {
   return (
