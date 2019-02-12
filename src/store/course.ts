@@ -174,6 +174,7 @@ function InnerSort(
 }
 
 //TODO: filter by union for same type, intersction for different
+//for each type, course[f.type] = f1.filter || f2.filter || ...
 function Filter(
   courses: APIModel.Course[],
   filters: APIModel.Filter[]

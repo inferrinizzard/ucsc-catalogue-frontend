@@ -53,11 +53,28 @@ function convertAndMergeCourse(
       instructor: s.ins,
       capacity: s.cap,
     })),
-    subjectCode: subject + ' ' + t.c,
+    subjectCode:
+      subject +
+      ' ' +
+      (
+        '00' +
+        (t.c.endsWith('0') ||
+        t.c.endsWith('1') ||
+        t.c.endsWith('2') ||
+        t.c.endsWith('3') ||
+        t.c.endsWith('4') ||
+        t.c.endsWith('5') ||
+        t.c.endsWith('6') ||
+        t.c.endsWith('7') ||
+        t.c.endsWith('8') ||
+        t.c.endsWith('9')
+          ? t.c + '0'
+          : t.c)
+      ).slice(-4),
     level:
-      t.c < '100'
+      t.c < '1000'
         ? 'Lower Div'
-        : t.c >= '100' && t.c < '200'
+        : t.c >= '1000' && t.c < '2000'
         ? 'Upper Div'
         : 'Graduate',
   };
