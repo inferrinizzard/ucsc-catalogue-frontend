@@ -2,7 +2,6 @@ import * as React from 'react';
 import { PureComponent } from 'react';
 import styled from 'styled-components';
 import { AutoSizer, List } from 'react-virtualized';
-import memoize from 'memoize-one';
 
 import { Course } from '../models/course.model';
 import ClassCard from './ClassCard';
