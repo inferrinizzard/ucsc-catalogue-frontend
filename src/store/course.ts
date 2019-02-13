@@ -180,10 +180,34 @@ function Filter(
   filters: APIModel.Filter[]
 ): APIModel.Course[] {
   let courseTemp: APIModel.Course[] = ([] as APIModel.Course[]).concat(courses);
-  filters.forEach(f =>
-    courseTemp.filter(course => course[f.type] === f.filter)
+  let types: (keyof APIModel.Course)[] = [];
+  filters.forEach(
+    f => (types = types.includes(f.type) ? types : types.concat(f.type))
   );
-  return courseTemp;
+  let filtersByType: { [K in keyof APIModel.Course]: APIModel.Filter[] };
+  types.forEach((type: keyof APIModel.Course) => {
+    filtersByType[type] = filters.filter(f => {
+      f.type === type;
+    });
+  });
+  return courseTemp.reduce(
+    (filtered: APIModel.Course[], curr: APIModel.Course) => {
+      if (
+        types.every(type => {
+          return filtersByType[type].every(filt => {
+            return curr[filt.type] === type;
+          });
+        })
+      )
+        return filtered.concat(curr);
+      else return filtered;
+    },
+    []
+  );
+  // filters.forEach(f =>
+  //   courseTemp.filter(course => course[f.type] === f.filter)
+  // );
+  // return courseTemp;
 }
 
 const fetchCoursesEpic: Epic<CourseActions> = (action$, state$) =>

@@ -125,8 +125,8 @@ class App extends React.Component<AppProps, AppState> {
             open={!this.state.drawerOpen}
             setDrawerWidth={this.setDrawerWidth}
             addFilter={this.addFilter}
-						removeFilter={this.removeFilter}
-						activeFilters={this.props.filters}
+            removeFilter={this.removeFilter}
+            activeFilters={this.props.filters}
           />
           <Main
             courses={this.props.courses}
