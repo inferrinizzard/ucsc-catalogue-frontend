@@ -49,6 +49,8 @@ export interface AppState {
   drawerOpen: boolean;
   linerWidth: number;
   drawerWidth: number;
+  cardHeight: number;
+  cardWidth: number;
   linerOpen: boolean;
 }
 
@@ -56,7 +58,9 @@ class App extends React.Component<AppProps, AppState> {
   state = {
     drawerOpen: false,
     linerWidth: 30,
-    drawerWidth: 300,
+    drawerWidth: 250,
+    cardHeight: 100,
+    cardWidth: 210,
     linerOpen: false,
   };
 
@@ -116,17 +120,17 @@ class App extends React.Component<AppProps, AppState> {
 
   render() {
     return (
-      <React.Fragment>
+      <div id={'app'}>
         <Liner>UCSC-Catalogue</Liner>
-        <div>
+        <div id={'main'}>
           <SortDrawer
             sort={this.sortCourses}
             sortKey={this.props.sortKey}
             open={!this.state.drawerOpen}
             setDrawerWidth={this.setDrawerWidth}
             addFilter={this.addFilter}
-						removeFilter={this.removeFilter}
-						activeFilters={this.props.filters}
+            removeFilter={this.removeFilter}
+            activeFilters={this.props.filters}
           />
           <Main
             courses={this.props.courses}
@@ -134,6 +138,8 @@ class App extends React.Component<AppProps, AppState> {
             linerWidth={this.state.linerWidth}
             drawerWidth={this.state.drawerWidth}
             openDetail={this.openDetail}
+            cardHeight={this.state.cardHeight}
+            cardWidth={this.state.cardWidth}
           />
           <CourseDrawer
             open={this.state.drawerOpen}
@@ -148,7 +154,7 @@ class App extends React.Component<AppProps, AppState> {
         >
           About
         </BottomLiner>
-      </React.Fragment>
+      </div>
     );
   }
 }
