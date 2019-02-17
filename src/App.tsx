@@ -40,7 +40,7 @@ interface PropsFromStore {
 }
 
 interface PropsToDispatch {
-  load: () => void;
+  load: (q: number) => void;
   addFilter: (f: Filter) => void;
   removeFilter: (f: Filter) => void;
   sort: (n: CourseType) => void;
@@ -69,9 +69,9 @@ class App extends React.Component<AppProps, AppState> {
   };
 
   public componentDidMount() {
-    this.props.load();
+    this.props.load(2190);
   }
-
+  //#region prop functions
   sortCourses = (type: CourseType) => {
     this.props.sort(type);
   };
@@ -84,15 +84,8 @@ class App extends React.Component<AppProps, AppState> {
     this.props.removeFilter(type);
   };
 
-  condenseFilter = (
-    filters: FilterList<FilterDomain, CourseType>
-  ): Filter[] => {
-    let list: Filter[] = [];
-    for (let type in filters)
-      filters[type].forEach(f =>
-        list.push({ type: type as CourseType, name: f })
-      );
-    return list;
+  changeQuarter = (q: number) => {
+    this.props.load(q);
   };
 
   setActive = (course: Course | null) => {
@@ -133,6 +126,17 @@ class App extends React.Component<AppProps, AppState> {
     this.setState({ ...this.state, drawerWidth: val });
   };
 
+  condenseFilter = (
+    filters: FilterList<FilterDomain, CourseType>
+  ): Filter[] => {
+    let list: Filter[] = [];
+    for (let type in filters)
+      filters[type].forEach(f =>
+        list.push({ type: type as CourseType, name: f })
+      );
+    return list;
+  };
+  //#endregion
   render() {
     return (
       <div id={'app'}>
@@ -146,6 +150,7 @@ class App extends React.Component<AppProps, AppState> {
             addFilter={this.addFilter}
             removeFilter={this.removeFilter}
             activeFilters={this.condenseFilter(this.props.filters)}
+            changeQuarter={this.changeQuarter}
           />
           <Main
             courses={this.props.courses}
@@ -183,7 +188,7 @@ const mapStateToProps = (state: ReduxState): PropsFromStore => ({
 const mapDispatchToProps = (
   dispatch: Dispatch<ReduxAction>
 ): PropsToDispatch => ({
-  load: () => dispatch(fetchAction()),
+  load: quarter => dispatch(fetchAction(quarter)),
   sort: key => dispatch(sortAction(key)),
   setActive: course => dispatch(setActiveAction(course)),
   addFilter: type => dispatch(addFilterAction(type)),

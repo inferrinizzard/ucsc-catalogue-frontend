@@ -89,11 +89,11 @@ class FilterMenu extends React.Component<FilterMenuProps, FilterMenuState> {
             })
             .map((f, index) => (
               <Tooltip
+                key={index}
                 title={this.props.toolTips[this.props.filterList.indexOf(f)]}
                 placement="right"
               >
                 <MenuItem
-                  key={index}
                   onClick={event =>
                     this.addFilterAndClose({
                       type: this.props.category,

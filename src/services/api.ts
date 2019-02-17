@@ -111,15 +111,12 @@ class _API {
   private endpoint = 'https://andromeda.miragespace.net/slugsurvival';
   private coursesCache?: model.Course[];
   public async courses(termId: string | number): Promise<model.Course[]> {
-    if (this.coursesCache) {
-      return this.coursesCache;
-    }
     const [termsData, coursesData] = await Promise.all([
       ky
-        .get(`${this.endpoint}/data/fetch/terms/${termId}.json`)
+        .get(`${this.endpoint}/data/fetch/terms/${termId.toString()}.json`)
         .json() as Promise<ApiResponseModel.TermsApiResponse>,
       ky
-        .get(`${this.endpoint}/data/fetch/courses/${termId}.json`)
+        .get(`${this.endpoint}/data/fetch/courses/${termId.toString()}.json`)
         .json() as Promise<ApiResponseModel.CoursesApiResponse>,
     ]);
     return (this.coursesCache = Object.entries(termsData).reduce<

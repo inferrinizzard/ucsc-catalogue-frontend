@@ -9,6 +9,7 @@ import RootRef from '@material-ui/core/RootRef';
 import SearchBar from './SearchBar';
 import SelectMenu from './SelectMenu';
 import FilterMenu from './FilterMenu';
+import QuarterMenu from './QuarterMenu';
 import { Filter, CourseType } from '../store/course';
 
 export interface SortDrawerProps {
@@ -18,6 +19,7 @@ export interface SortDrawerProps {
   setDrawerWidth: (val: number) => void;
   addFilter: (f: Filter) => void;
   removeFilter: (f: Filter) => void;
+  changeQuarter: (n: number) => void;
   activeFilters: Filter[];
 }
 export interface SortDrawerState {
@@ -97,6 +99,7 @@ const catMap: { [K in CourseType]?: string[] } = {
     'LTGE',
     'LTMO',
     'LTPR',
+    'LITN',
     'LTIT',
     'LTWL',
     'MATH',
@@ -149,7 +152,7 @@ const catMap: { [K in CourseType]?: string[] } = {
     'SR',
     'TA',
   ],
-  type: ['Lecture', 'Discussion', 'Laboratory', 'Seminar'],
+  type: ['Lecture', 'Discussion', 'Field Studies', 'Laboratory', 'Seminar'],
 };
 const toolTip: { [K in CourseType]?: string[] } = {
   subject: [
@@ -272,7 +275,7 @@ const toolTip: { [K in CourseType]?: string[] } = {
     'Statistical Reasoning',
     'Textual Analysis',
   ],
-  type: ['Lecture', 'Discussion', 'Laboratory', 'Seminar'],
+  type: ['Lecture', 'Discussion', 'Field Studies', 'Laboratory', 'Seminar'],
 };
 
 class SortDrawer extends React.Component<SortDrawerProps, SortDrawerState> {
@@ -321,6 +324,7 @@ class SortDrawer extends React.Component<SortDrawerProps, SortDrawerState> {
                 />
               </React.Fragment>
             ))}
+            <QuarterMenu changeQuarter={this.props.changeQuarter} />
             {/* which quarter, default to current */}
           </Section>
         </Drawer>

@@ -58,9 +58,11 @@ enum ActionTypes {
 
 interface FetchAction extends Action {
   type: ActionTypes.FETCH_API;
+  quarter: number;
 }
-export const fetchAction = (): FetchAction => ({
+export const fetchAction = (quarter: number): FetchAction => ({
   type: ActionTypes.FETCH_API,
+  quarter,
 });
 
 interface FetchSuccessAction extends Action {
@@ -123,7 +125,7 @@ export default function courseReducer(
 ): CourseState {
   switch (action.type) {
     case ActionTypes.FETCH_API:
-      return { ...state, loading: true };
+      return { ...state, loading: true, quarter: action.quarter };
     case ActionTypes.FETCH_API_SUCCESS:
       return {
         ...state,
@@ -239,8 +241,7 @@ function Filter(
 const fetchCoursesEpic: Epic<CourseActions> = (action$, state$) =>
   action$.ofType(ActionTypes.FETCH_API).pipe(
     map(action => action as FetchAction),
-    // map(action => action.eventId),
-    switchMap(() => API.courses(2190)),
+    switchMap(action => API.courses(action.quarter)),
     map(courses => fetchSuccessAction(courses))
   );
 
