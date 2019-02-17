@@ -34,7 +34,7 @@ export declare type FilterList<
 const initialState: CourseState = {
   loading: true,
   filters: {
-    subject: ['AMS'],
+    subject: [],
     level: [],
     ge: [],
     type: [],
@@ -214,7 +214,7 @@ function Filter(
     return course[filter.type] === filter.name;
   };
 
-  // see if the course satisties 1 or more filters (OR conditioning)
+  // see if the course satisfies 1 or more filters (OR conditioning)
   const CourseFilterOR = (course: Course, filters: Filter[]): boolean => {
     return filters.some(filter => SingleFilter(course, filter));
   };

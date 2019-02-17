@@ -5,6 +5,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Fade from '@material-ui/core/Fade';
 import Chip from '@material-ui/core/Chip';
 import RootRef from '@material-ui/core/RootRef';
+import Tooltip from '@material-ui/core/Tooltip';
 
 import { Filter, CourseType } from '../store/course';
 
@@ -14,6 +15,7 @@ export interface FilterMenuProps {
   category: CourseType;
   activeFilters: Filter[];
   filterList: string[];
+  toolTips: string[];
 }
 export interface FilterMenuState {
   anchorEl: HTMLElement | null;
@@ -86,17 +88,22 @@ class FilterMenu extends React.Component<FilterMenuProps, FilterMenuState> {
               }
             })
             .map((f, index) => (
-              <MenuItem
-                key={index}
-                onClick={event =>
-                  this.addFilterAndClose({
-                    type: this.props.category,
-                    name: f,
-                  })
-                }
+              <Tooltip
+                title={this.props.toolTips[this.props.filterList.indexOf(f)]}
+                placement="right"
               >
-                {f}
-              </MenuItem>
+                <MenuItem
+                  key={index}
+                  onClick={event =>
+                    this.addFilterAndClose({
+                      type: this.props.category,
+                      name: f,
+                    })
+                  }
+                >
+                  {f}
+                </MenuItem>
+              </Tooltip>
             ))}
         </Menu>
         <div>
