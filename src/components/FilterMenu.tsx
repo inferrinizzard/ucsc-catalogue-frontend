@@ -6,12 +6,12 @@ import Fade from '@material-ui/core/Fade';
 import Chip from '@material-ui/core/Chip';
 import RootRef from '@material-ui/core/RootRef';
 
-import { Course, Filter } from '../models/course.model';
+import { Filter, CourseType } from '../store/course';
 
 export interface FilterMenuProps {
   addFilter: (f: Filter) => void;
   removeFilter: (f: Filter) => void;
-  category: keyof Course;
+  category: CourseType;
   activeFilters: Filter[];
   filterList: string[];
 }
@@ -34,6 +34,11 @@ class FilterMenu extends React.Component<FilterMenuProps, FilterMenuState> {
 
   handleClose = () => {
     this.setState({ ...this.state, anchorEl: null });
+  };
+
+  addFilterAndClose = (filt: Filter) => {
+    this.props.addFilter(filt);
+    this.handleClose();
   };
 
   ITEM_HEIGHT = 48;
@@ -71,28 +76,36 @@ class FilterMenu extends React.Component<FilterMenuProps, FilterMenuState> {
             },
           }}
         >
-          {this.props.filterList.map((f, index) => (
-            <MenuItem
-              key={index}
-              // selected={}
-              onClick={event =>
-                this.props.addFilter({ type: this.props.category, filter: f })
-              }
-            >
-              {f}
-            </MenuItem>
-          ))}
+          {this.props.filterList
+            // .filter(
+            //   f =>
+            //     !this.props.activeFilters.includes({
+            //       type: this.props.category,
+            //       name: f,
+            //     })
+            // )
+            .map((f, index) => (
+              <MenuItem
+                key={index}
+                onClick={event =>
+                  this.addFilterAndClose({
+                    type: this.props.category,
+                    name: f,
+                  })
+                }
+              >
+                {f}
+              </MenuItem>
+            ))}
         </Menu>
         <div>
-          {this.props.activeFilters
-            .filter(f => f.type === this.props.category)
-            .map((af, index) => (
-              <Chip
-                key={af.filter}
-                label={af.filter}
-                onDelete={event => this.props.removeFilter(af)}
-              />
-            ))}
+          {this.props.activeFilters.map((af, index) => (
+            <Chip
+              key={af.name}
+              label={af.name}
+              onDelete={event => this.props.removeFilter(af)}
+            />
+          ))}
         </div>
       </React.Fragment>
     );

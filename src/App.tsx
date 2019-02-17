@@ -10,13 +10,17 @@ import SortDrawer from './components/SortDrawer';
 import CourseDrawer from './components/CourseDrawer';
 import BottomLiner from './components/BottomLiner';
 
-import { Course, Filter } from './models/course.model';
+import { Course } from './models/course.model';
 import {
   fetchAction,
   sortAction,
   setActiveAction,
   addFilterAction,
   removeFilterAction,
+  Filter,
+  FilterList,
+  FilterDomain,
+  CourseType,
 } from './store/course';
 import { dispatch } from 'rxjs/internal/observable/pairs';
 
@@ -30,8 +34,8 @@ const Liner = styled.div`
 
 interface PropsFromStore {
   courses: Course[];
-  filters: Filter[];
-  sortKey: keyof Course;
+  filters: FilterList<FilterDomain, CourseType>;
+  sortKey: CourseType;
   activeCourse: Course | null;
 }
 
@@ -39,7 +43,7 @@ interface PropsToDispatch {
   load: () => void;
   addFilter: (f: Filter) => void;
   removeFilter: (f: Filter) => void;
-  sort: (n: keyof Course) => void;
+  sort: (n: CourseType) => void;
   setActive: (c: Course | null) => void;
 }
 
@@ -68,7 +72,7 @@ class App extends React.Component<AppProps, AppState> {
     this.props.load();
   }
 
-  sortCourses = (type: keyof Course) => {
+  sortCourses = (type: CourseType) => {
     this.props.sort(type);
   };
 
@@ -78,6 +82,17 @@ class App extends React.Component<AppProps, AppState> {
 
   removeFilter = (type: Filter) => {
     this.props.removeFilter(type);
+  };
+
+  condenseFilter = (
+    filters: FilterList<FilterDomain, CourseType>
+  ): Filter[] => {
+    let list: Filter[] = [];
+    for (let type in filters)
+      filters[type].forEach(f =>
+        list.push({ type: type as CourseType, name: f })
+      );
+    return list;
   };
 
   setActive = (course: Course | null) => {
@@ -130,7 +145,7 @@ class App extends React.Component<AppProps, AppState> {
             setDrawerWidth={this.setDrawerWidth}
             addFilter={this.addFilter}
             removeFilter={this.removeFilter}
-            activeFilters={this.props.filters}
+            activeFilters={this.condenseFilter(this.props.filters)}
           />
           <Main
             courses={this.props.courses}

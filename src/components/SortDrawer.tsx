@@ -9,11 +9,11 @@ import RootRef from '@material-ui/core/RootRef';
 import SearchBar from './SearchBar';
 import SelectMenu from './SelectMenu';
 import FilterMenu from './FilterMenu';
-import { Course, Filter } from '../models/course.model';
+import { Filter, CourseType } from '../store/course';
 
 export interface SortDrawerProps {
-  sort: (type: keyof Course) => void;
-  sortKey: keyof Course;
+  sort: (type: CourseType) => void;
+  sortKey: CourseType;
   open: boolean;
   setDrawerWidth: (val: number) => void;
   addFilter: (f: Filter) => void;
@@ -33,11 +33,11 @@ const Section = styled(Card)<any>`
   padding: 0.2em;
 `;
 
-const catMap: { [K in keyof Course]?: string[] } = {
+const catMap: { [K in CourseType]?: string[] } = {
   subject: ['AMS', 'ANTH'],
   level: ['Lower Div'],
   ge: ['TA', 'SR'],
-  type: ['lecture', 'discussion', 'lab'],
+  type: ['Lecture', 'Discussion', 'Laboratory', 'Seminar'],
 };
 
 class SortDrawer extends React.Component<SortDrawerProps, SortDrawerState> {
@@ -71,20 +71,20 @@ class SortDrawer extends React.Component<SortDrawerProps, SortDrawerState> {
           </Section>
           <Section>
             <CardHeader title="Filter" />
-            {(Object.keys(catMap) as (keyof Course)[]).map(
-              (category, index) => (
-                <React.Fragment key={index}>
-                  {index !== 0 && <Divider />}
-                  <FilterMenu
-                    addFilter={this.props.addFilter}
-                    removeFilter={this.props.removeFilter}
-                    category={category}
-                    filterList={catMap[category] || []}
-                    activeFilters={this.props.activeFilters}
-                  />
-                </React.Fragment>
-              )
-            )}
+            {(Object.keys(catMap) as (CourseType)[]).map((category, index) => (
+              <React.Fragment key={index}>
+                {index !== 0 && <Divider />}
+                <FilterMenu
+                  addFilter={this.props.addFilter}
+                  removeFilter={this.props.removeFilter}
+                  category={category}
+                  filterList={catMap[category] || []}
+                  activeFilters={this.props.activeFilters.filter(
+                    f => f.type === category
+                  )}
+                />
+              </React.Fragment>
+            ))}
             {/* which quarter, default to current */}
             {/* department/major */}
             {/* Category */}

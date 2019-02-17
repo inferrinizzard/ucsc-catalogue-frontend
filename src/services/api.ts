@@ -108,7 +108,7 @@ function convertTracking(
 class _API {
   private endpoint = 'https://andromeda.miragespace.net/slugsurvival';
   private coursesCache?: model.Course[];
-  public async courses(termId: string): Promise<model.Course[]> {
+  public async courses(termId: string | number): Promise<model.Course[]> {
     if (this.coursesCache) {
       return this.coursesCache;
     }
