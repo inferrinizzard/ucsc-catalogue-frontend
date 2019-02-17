@@ -3,7 +3,6 @@ import { Course } from '../models/course.model';
 import API from '../services/api';
 import { Epic, combineEpics } from 'redux-observable';
 import { filter, map, switchMap, delay, mergeMap } from 'rxjs/operators';
-import { any } from 'prop-types';
 
 export interface CourseState {
   loading: boolean;
@@ -205,26 +204,36 @@ function setFilters(
 
 function Filter(
   courses: Course[],
-  filters: FilterList<FilterDomain, CourseType>
+  filterListObj: FilterList<FilterDomain, CourseType>
 ): Course[] {
-  let temp: Course[] = [] as Course[];
-  for (let c of courses)
-    if (
-      Object.keys(filters).some(type => {
-        return (
-          filters[type].length > 0 &&
-          filters[type].some(f => {
-            return type === 'ge'
-              ? c['ge']!.includes(f)
-              : c[type as CourseType] != f
-              ? false
-              : true;
-          })
-        );
-      })
-    )
-      temp.push(c);
-  return temp;
+  // see if a course passes a single filter
+  const SingleFilter = (course: Course, filter: Filter): boolean => {
+    if (Array.isArray(course[filter.type])) {
+      return (course[filter.type] as Array<any>).includes(filter.name);
+    }
+    return course[filter.type] === filter.name;
+  };
+
+  // see if the course satisties 1 or more filters (OR conditioning)
+  const CourseFilterOR = (course: Course, filters: Filter[]): boolean => {
+    return filters.some(filter => SingleFilter(course, filter));
+  };
+
+  let processing = [...courses]; // copy into processing
+
+  Object.keys(filterListObj).forEach(_key => {
+    const key = _key as CourseType;
+    const filters: Filter[] = filterListObj[key].map(x => ({
+      type: key,
+      name: x,
+    }));
+    if (filters.length == 0) return;
+
+    // for each iteration, update processing
+    processing = processing.filter(course => CourseFilterOR(course, filters));
+  });
+  // those who survive will be returned
+  return processing;
 }
 //#endregion
 const fetchCoursesEpic: Epic<CourseActions> = (action$, state$) =>

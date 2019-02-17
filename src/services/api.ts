@@ -71,12 +71,14 @@ function convertAndMergeCourse(
           ? t.c + '0'
           : t.c)
       ).slice(-4),
-    level:
-      t.c < '1000'
+    level: (() => {
+      const n = parseInt(t.c);
+      return n < 100
         ? 'Lower Div'
-        : t.c >= '1000' && t.c < '2000'
+        : n >= 100 && n < 200
         ? 'Upper Div'
-        : 'Graduate',
+        : 'Graduate';
+    })(),
   };
 }
 

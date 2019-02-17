@@ -24,7 +24,6 @@
   },
   "homepage": "https://github.com/inferrinizzard/ucsc-catalog-frontend#readme",
   "devDependencies": {
-    "@types/lodash": "^4.14.118",
     "@types/react": "^16.4.18",
     "@types/react-content-loader": "^3.1.3",
     "@types/react-dom": "^16.0.9",
