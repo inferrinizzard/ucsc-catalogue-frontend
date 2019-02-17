@@ -77,13 +77,14 @@ class FilterMenu extends React.Component<FilterMenuProps, FilterMenuState> {
           }}
         >
           {this.props.filterList
-            // .filter(
-            //   f =>
-            //     !this.props.activeFilters.includes({
-            //       type: this.props.category,
-            //       name: f,
-            //     })
-            // )
+            // filter out active elements
+            .filter(f => {
+              if (this.props.activeFilters.map(x => x.name).includes(f)) {
+                return false; // if it is already active, omit it
+              } else {
+                return true;
+              }
+            })
             .map((f, index) => (
               <MenuItem
                 key={index}
