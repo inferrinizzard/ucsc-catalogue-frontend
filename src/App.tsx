@@ -8,7 +8,7 @@ import { ReduxState, ReduxAction } from './store';
 import Main from './components/Main';
 import SortDrawer from './components/SortDrawer';
 import CourseDrawer from './components/CourseDrawer';
-import BottomLiner from './components/BottomLiner';
+import BottomLiner from './components/Pieces/BottomLiner';
 
 import { Course } from './models/course.model';
 import {

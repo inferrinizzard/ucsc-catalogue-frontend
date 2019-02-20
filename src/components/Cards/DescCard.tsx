@@ -10,7 +10,7 @@ import ExpansionPanel from '@material-ui/core/ExpansionPanel';
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 
-import TextBlock from '../TextBlock';
+import TextBlock from '../Pieces/TextBlock';
 import { Course } from '../../models/course.model';
 
 const StyleCard = styled(Card)<any>`
@@ -35,23 +35,34 @@ const DescCard: React.SFC<DescCardProps> = props => {
       <Divider />
       {props.courseData && (
         <CardContent>
-          <TextBlock type="body2" text={'Grade Average'} />
           <TextBlock
             type="body2"
             text={
-              'Credits: ' +
-              props.courseData.credit +
-              ', Course Number:' +
-              props.courseData.number
+              'Date and Time: ' + props.courseData.settings
+                ? props.courseData.settings![0].day.reduce((d, s, i) => {
+                    return (i === 0 ? '' : d) + s.substring(0, 2);
+                  })
+                : 'N/a'
             }
+          />
+          <TextBlock
+            type="body2"
+            text={'Class type: ' + props.courseData.type}
+          />
+          <div />
+          <TextBlock
+            type="body2"
+            text={'Credits: ' + props.courseData.credit}
+          />
+          <TextBlock
+            type="body2"
+            text={'Course Number:' + props.courseData.number}
           />
           <div />
           <TextBlock type="body2" text={'Number Enrolled'} />
           {/* <TextBlock type="body2" text={props.courseData.} /> */}
           <TextBlock type="body2" text={'Number Waitlist'} />
           <div />
-          <TextBlock type="body2" text={'Date and Time, class type'} />
-          {/* <TextBlock type="body2" text={props.courseData.day} /> */}
           <TextBlock
             type="body2"
             text={
@@ -65,6 +76,7 @@ const DescCard: React.SFC<DescCardProps> = props => {
                 : 'STAFF'
             }
           />
+          <TextBlock type="body2" text={'Grade Average'} />
           <Divider />
           <div>
             <ExpansionPanel>

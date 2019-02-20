@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import { AutoSizer, List } from 'react-virtualized';
 
 import { Course } from '../models/course.model';
-import ClassCard from './ClassCard';
+import ClassCard from './Pieces/ClassCard';
 import { CombineLatestSubscriber } from 'rxjs/internal/observable/combineLatest';
 
 export interface MainProps {

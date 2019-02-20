@@ -6,7 +6,7 @@ import Fade from '@material-ui/core/Fade';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import RootRef from '@material-ui/core/RootRef';
-import { CourseType } from '../store/course';
+import { CourseType } from '../../store/course';
 
 export interface SelectMenuProps {
   sort: (type: CourseType) => void;

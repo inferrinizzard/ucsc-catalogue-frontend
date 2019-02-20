@@ -6,10 +6,10 @@ import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
 import RootRef from '@material-ui/core/RootRef';
 
-import SearchBar from './SearchBar';
-import SelectMenu from './SelectMenu';
-import FilterMenu from './FilterMenu';
-import QuarterMenu from './QuarterMenu';
+import SearchBar from './Pieces/SearchBar';
+import SelectMenu from './Pieces/SelectMenu';
+import FilterMenu from './Pieces/FilterMenu';
+import QuarterMenu from './Pieces/QuarterMenu';
 import { Filter, CourseType } from '../store/course';
 
 export interface SortDrawerProps {

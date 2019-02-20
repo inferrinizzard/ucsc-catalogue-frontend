@@ -7,7 +7,7 @@ import Chip from '@material-ui/core/Chip';
 import RootRef from '@material-ui/core/RootRef';
 import Tooltip from '@material-ui/core/Tooltip';
 
-import { Filter, CourseType } from '../store/course';
+import { Filter, CourseType } from '../../store/course';
 
 export interface FilterMenuProps {
   addFilter: (f: Filter) => void;
