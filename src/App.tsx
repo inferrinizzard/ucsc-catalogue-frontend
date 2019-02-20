@@ -10,13 +10,17 @@ import SortDrawer from './components/SortDrawer';
 import CourseDrawer from './components/CourseDrawer';
 import BottomLiner from './components/BottomLiner';
 
-import { Course, Filter } from './models/course.model';
+import { Course } from './models/course.model';
 import {
   fetchAction,
   sortAction,
   setActiveAction,
   addFilterAction,
   removeFilterAction,
+  Filter,
+  FilterList,
+  FilterDomain,
+  CourseType,
 } from './store/course';
 import { dispatch } from 'rxjs/internal/observable/pairs';
 
@@ -30,16 +34,16 @@ const Liner = styled.div`
 
 interface PropsFromStore {
   courses: Course[];
-  filters: Filter[];
-  sortKey: keyof Course;
+  filters: FilterList<FilterDomain, CourseType>;
+  sortKey: CourseType;
   activeCourse: Course | null;
 }
 
 interface PropsToDispatch {
-  load: () => void;
+  load: (q: number) => void;
   addFilter: (f: Filter) => void;
   removeFilter: (f: Filter) => void;
-  sort: (n: keyof Course) => void;
+  sort: (n: CourseType) => void;
   setActive: (c: Course | null) => void;
 }
 
@@ -65,10 +69,10 @@ class App extends React.Component<AppProps, AppState> {
   };
 
   public componentDidMount() {
-    this.props.load();
+    this.props.load(2190);
   }
-
-  sortCourses = (type: keyof Course) => {
+  //#region prop functions
+  sortCourses = (type: CourseType) => {
     this.props.sort(type);
   };
 
@@ -78,6 +82,10 @@ class App extends React.Component<AppProps, AppState> {
 
   removeFilter = (type: Filter) => {
     this.props.removeFilter(type);
+  };
+
+  changeQuarter = (q: number) => {
+    this.props.load(q);
   };
 
   setActive = (course: Course | null) => {
@@ -118,6 +126,17 @@ class App extends React.Component<AppProps, AppState> {
     this.setState({ ...this.state, drawerWidth: val });
   };
 
+  condenseFilter = (
+    filters: FilterList<FilterDomain, CourseType>
+  ): Filter[] => {
+    let list: Filter[] = [];
+    for (let type in filters)
+      filters[type].forEach(f =>
+        list.push({ type: type as CourseType, name: f })
+      );
+    return list;
+  };
+  //#endregion
   render() {
     return (
       <div id={'app'}>
@@ -130,7 +149,8 @@ class App extends React.Component<AppProps, AppState> {
             setDrawerWidth={this.setDrawerWidth}
             addFilter={this.addFilter}
             removeFilter={this.removeFilter}
-            activeFilters={this.props.filters}
+            activeFilters={this.condenseFilter(this.props.filters)}
+            changeQuarter={this.changeQuarter}
           />
           <Main
             courses={this.props.courses}
@@ -168,7 +188,7 @@ const mapStateToProps = (state: ReduxState): PropsFromStore => ({
 const mapDispatchToProps = (
   dispatch: Dispatch<ReduxAction>
 ): PropsToDispatch => ({
-  load: () => dispatch(fetchAction()),
+  load: quarter => dispatch(fetchAction(quarter)),
   sort: key => dispatch(sortAction(key)),
   setActive: course => dispatch(setActiveAction(course)),
   addFilter: type => dispatch(addFilterAction(type)),

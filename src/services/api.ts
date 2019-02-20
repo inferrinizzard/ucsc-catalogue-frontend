@@ -53,13 +53,32 @@ function convertAndMergeCourse(
       instructor: s.ins,
       capacity: s.cap,
     })),
-    subjectCode: subject + ' ' + t.c,
-    level:
-      t.c < '100'
+    subjectCode:
+      subject +
+      ' ' +
+      (
+        '00' +
+        (t.c.endsWith('0') ||
+        t.c.endsWith('1') ||
+        t.c.endsWith('2') ||
+        t.c.endsWith('3') ||
+        t.c.endsWith('4') ||
+        t.c.endsWith('5') ||
+        t.c.endsWith('6') ||
+        t.c.endsWith('7') ||
+        t.c.endsWith('8') ||
+        t.c.endsWith('9')
+          ? t.c + '0'
+          : t.c)
+      ).slice(-4),
+    level: (() => {
+      const n = parseInt(t.c);
+      return n < 100
         ? 'Lower Div'
-        : t.c >= '100' && t.c < '200'
+        : n >= 100 && n < 200
         ? 'Upper Div'
-        : 'Graduate',
+        : 'Graduate';
+    })(),
   };
 }
 
@@ -91,16 +110,13 @@ function convertTracking(
 class _API {
   private endpoint = 'https://andromeda.miragespace.net/slugsurvival';
   private coursesCache?: model.Course[];
-  public async courses(termId: string): Promise<model.Course[]> {
-    if (this.coursesCache) {
-      return this.coursesCache;
-    }
+  public async courses(termId: string | number): Promise<model.Course[]> {
     const [termsData, coursesData] = await Promise.all([
       ky
-        .get(`${this.endpoint}/data/fetch/terms/${termId}.json`)
+        .get(`${this.endpoint}/data/fetch/terms/${termId.toString()}.json`)
         .json() as Promise<ApiResponseModel.TermsApiResponse>,
       ky
-        .get(`${this.endpoint}/data/fetch/courses/${termId}.json`)
+        .get(`${this.endpoint}/data/fetch/courses/${termId.toString()}.json`)
         .json() as Promise<ApiResponseModel.CoursesApiResponse>,
     ]);
     return (this.coursesCache = Object.entries(termsData).reduce<

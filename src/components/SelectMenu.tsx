@@ -2,23 +2,23 @@ import * as React from 'react';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
+import Fade from '@material-ui/core/Fade';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import RootRef from '@material-ui/core/RootRef';
-import { Course } from '../models/course.model';
+import { CourseType } from '../store/course';
 
 export interface SelectMenuProps {
-  sort: (type: keyof Course) => void;
-  sortKey: keyof Course;
+  sort: (type: CourseType) => void;
+  sortKey: CourseType;
 }
 export interface SelectMenuState {
-  selectedIndex: number;
   anchor: HTMLElement | null;
   widthRef: React.RefObject<HTMLElement>;
   width: number;
 }
 
-const keyNameMap: { [K in keyof Course]?: string } = {
+const keyNameMap: { [K in CourseType]?: string } = {
   subjectCode: 'Course Name',
   capacity: 'Capacity',
   type: 'Type',
@@ -32,14 +32,13 @@ class SelectMenu extends React.Component<SelectMenuProps, SelectMenuState> {
     event:
       | React.MouseEvent<HTMLElement, MouseEvent>
       | React.SyntheticEvent<{}, Event>,
-    key: keyof Course
+    key: CourseType
   ) => {
     if (key !== this.props.sortKey) this.props.sort(key);
     this.setState({ ...this.state, anchor: null });
   };
 
   state = {
-    selectedIndex: 0,
     anchor: null,
     widthRef: React.createRef<HTMLElement>(),
     width: 0,
@@ -59,6 +58,7 @@ class SelectMenu extends React.Component<SelectMenuProps, SelectMenuState> {
           <List component="nav">
             <ListItem
               button
+              aria-owns={open ? 'fade-menu' : undefined}
               aria-haspopup="true"
               aria-controls="lock-menu"
               onClick={event => this.handleOpen(event)}
@@ -74,8 +74,10 @@ class SelectMenu extends React.Component<SelectMenuProps, SelectMenuState> {
           </List>
         </RootRef>
         <Menu
+          id="fade-menu"
           open={Boolean(this.state.anchor)}
           anchorEl={this.state.anchor}
+          TransitionComponent={Fade}
           onBackdropClick={event => this.handleClose(event, this.props.sortKey)}
           PaperProps={{
             style: {
@@ -83,26 +85,15 @@ class SelectMenu extends React.Component<SelectMenuProps, SelectMenuState> {
             },
           }}
         >
-          {(Object.keys(keyNameMap) as (keyof Course)[]).map((key, index) => (
+          {(Object.keys(keyNameMap) as (CourseType)[]).map(key => (
             <MenuItem
               key={key}
               selected={key === this.props.sortKey}
               onClick={event => this.handleClose(event, key)}
             >
               {keyNameMap[key]}
-              {/* {key} */}
             </MenuItem>
           ))}
-          {/*}
-          {options.map((option, index) => (
-            <MenuItem
-              key={option}
-              selected={index == this.state.selectedIndex}
-              onClick={event => this.handleClose(event, index)}
-            >
-              {option}
-            </MenuItem>
-          ))}*/}
         </Menu>
       </React.Fragment>
     );

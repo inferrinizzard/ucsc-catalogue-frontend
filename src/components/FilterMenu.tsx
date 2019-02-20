@@ -5,15 +5,17 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Fade from '@material-ui/core/Fade';
 import Chip from '@material-ui/core/Chip';
 import RootRef from '@material-ui/core/RootRef';
+import Tooltip from '@material-ui/core/Tooltip';
 
-import { Course, Filter } from '../models/course.model';
+import { Filter, CourseType } from '../store/course';
 
 export interface FilterMenuProps {
   addFilter: (f: Filter) => void;
   removeFilter: (f: Filter) => void;
-  category: keyof Course;
+  category: CourseType;
   activeFilters: Filter[];
   filterList: string[];
+  toolTips: string[];
 }
 export interface FilterMenuState {
   anchorEl: HTMLElement | null;
@@ -34,6 +36,11 @@ class FilterMenu extends React.Component<FilterMenuProps, FilterMenuState> {
 
   handleClose = () => {
     this.setState({ ...this.state, anchorEl: null });
+  };
+
+  addFilterAndClose = (filt: Filter) => {
+    this.props.addFilter(filt);
+    this.handleClose();
   };
 
   ITEM_HEIGHT = 48;
@@ -71,28 +78,42 @@ class FilterMenu extends React.Component<FilterMenuProps, FilterMenuState> {
             },
           }}
         >
-          {this.props.filterList.map((f, index) => (
-            <MenuItem
-              key={index}
-              // selected={}
-              onClick={event =>
-                this.props.addFilter({ type: this.props.category, filter: f })
+          {this.props.filterList
+            // filter out active elements
+            .filter(f => {
+              if (this.props.activeFilters.map(x => x.name).includes(f)) {
+                return false; // if it is already active, omit it
+              } else {
+                return true;
               }
-            >
-              {f}
-            </MenuItem>
-          ))}
+            })
+            .map((f, index) => (
+              <Tooltip
+                key={index}
+                title={this.props.toolTips[this.props.filterList.indexOf(f)]}
+                placement="right"
+              >
+                <MenuItem
+                  onClick={event =>
+                    this.addFilterAndClose({
+                      type: this.props.category,
+                      name: f,
+                    })
+                  }
+                >
+                  {f}
+                </MenuItem>
+              </Tooltip>
+            ))}
         </Menu>
         <div>
-          {this.props.activeFilters
-            .filter(f => f.type === this.props.category)
-            .map((af, index) => (
-              <Chip
-                key={af.filter}
-                label={af.filter}
-                onDelete={event => this.props.removeFilter(af)}
-              />
-            ))}
+          {this.props.activeFilters.map((af, index) => (
+            <Chip
+              key={af.name}
+              label={af.name}
+              onDelete={event => this.props.removeFilter(af)}
+            />
+          ))}
         </div>
       </React.Fragment>
     );

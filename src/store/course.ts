@@ -1,27 +1,51 @@
 import { Action } from 'redux';
-import * as APIModel from '../models/course.model';
+import { Course } from '../models/course.model';
 import API from '../services/api';
 import { Epic, combineEpics } from 'redux-observable';
-import { filter, map, switchMap, delay } from 'rxjs/operators';
-import { any } from 'prop-types';
+import { filter, map, switchMap, delay, mergeMap } from 'rxjs/operators';
 
 export interface CourseState {
   loading: boolean;
-  filters: APIModel.Filter[];
-  sort: keyof APIModel.Course;
-  courses: APIModel.Course[];
-  activeCourse: APIModel.Course | null;
+  filters: FilterList<FilterDomain, CourseType>;
+  sort: CourseType;
+  courses: Course[];
+  backup: Course[];
+  activeCourse: Course | null;
+  quarter: number;
 }
-export type Filter = { type: keyof APIModel.Course; filter: string };
+
+export type CourseType = keyof Course;
+export type Filter = { type: CourseType; name: string };
+export enum FilterDomain {
+  subject = 'subject',
+  level = 'level',
+  ge = 'ge',
+  type = 'type',
+}
+export declare type DefineFilterKey<CourseType> = {
+  [key: string]: string[];
+};
+export declare type FilterList<
+  FilterDomain extends string,
+  CourseType
+> = DefineFilterKey<CourseType> &
+  { readonly [value in FilterDomain]: string[] };
 
 const initialState: CourseState = {
   loading: true,
-  filters: [],
-  sort: 'code',
+  filters: {
+    subject: [],
+    level: [],
+    ge: [],
+    type: [],
+  },
+  sort: 'subjectCode',
   courses: [],
+  backup: [],
   activeCourse: null,
+  quarter: 2190,
 };
-
+//#region actions
 enum ActionTypes {
   ADD_FILTER = 'add-filter',
   REMOVE_FILTER = 'remove-filter',
@@ -34,58 +58,54 @@ enum ActionTypes {
 
 interface FetchAction extends Action {
   type: ActionTypes.FETCH_API;
+  quarter: number;
 }
-export const fetchAction = (): FetchAction => ({
+export const fetchAction = (quarter: number): FetchAction => ({
   type: ActionTypes.FETCH_API,
+  quarter,
 });
 
 interface FetchSuccessAction extends Action {
   type: ActionTypes.FETCH_API_SUCCESS;
-  data: APIModel.Course[];
+  data: Course[];
 }
-export const fetchSuccessAction = (
-  data: APIModel.Course[]
-): FetchSuccessAction => ({
+export const fetchSuccessAction = (data: Course[]): FetchSuccessAction => ({
   type: ActionTypes.FETCH_API_SUCCESS,
   data,
 });
 
 interface SortAction extends Action {
   type: ActionTypes.SORT;
-  sort: keyof APIModel.Course;
+  sort: CourseType;
 }
-export const sortAction = (sort: keyof APIModel.Course): SortAction => ({
+export const sortAction = (sort: CourseType): SortAction => ({
   type: ActionTypes.SORT,
   sort,
 });
 
 interface AddFilterAction extends Action {
   type: ActionTypes.ADD_FILTER;
-  filter: APIModel.Filter;
+  filter: Filter;
 }
-export const addFilterAction = (filter: APIModel.Filter): AddFilterAction => ({
+export const addFilterAction = (filter: Filter): AddFilterAction => ({
   type: ActionTypes.ADD_FILTER,
   filter,
 });
 
 interface RemoveFilterAction extends Action {
   type: ActionTypes.REMOVE_FILTER;
-  filter: APIModel.Filter;
+  filter: Filter;
 }
-export const removeFilterAction = (
-  filter: APIModel.Filter
-): RemoveFilterAction => ({
+export const removeFilterAction = (filter: Filter): RemoveFilterAction => ({
   type: ActionTypes.REMOVE_FILTER,
   filter,
 });
 
 interface SetActiveAction extends Action {
   type: ActionTypes.SET_ACTIVE;
-  course: APIModel.Course | null;
+  course: Course | null;
 }
-export const setActiveAction = (
-  course: APIModel.Course | null
-): SetActiveAction => ({
+export const setActiveAction = (course: Course | null): SetActiveAction => ({
   type: ActionTypes.SET_ACTIVE,
   course,
 });
@@ -98,42 +118,52 @@ export type CourseActions =
   | RemoveFilterAction
   | SetActiveAction;
 
+//#endregion
 export default function courseReducer(
   state: CourseState = initialState,
   action: CourseActions
 ): CourseState {
   switch (action.type) {
     case ActionTypes.FETCH_API:
-      return { ...state, loading: true };
+      return { ...state, loading: true, quarter: action.quarter };
     case ActionTypes.FETCH_API_SUCCESS:
-      return { ...state, loading: false, courses: action.data };
+      return {
+        ...state,
+        loading: false,
+        courses: Sort(Filter(action.data, state.filters), state.sort),
+        backup: action.data,
+      };
     case ActionTypes.SORT:
       return {
         ...state,
         sort: action.sort,
-        courses: Sort(state, action.sort),
+        courses: Sort(state.courses, action.sort),
       };
     case ActionTypes.ADD_FILTER:
-      return !checkFilter(state.filters, action.filter)
+      return state.filters[action.filter.type].every(
+        f => f != action.filter.name
+      )
         ? {
             ...state,
-            filters: [...state.filters, action.filter],
-            courses: Filter(state.courses, [...state.filters, action.filter]),
+            courses: Sort(
+              Filter(
+                state.backup,
+                setFilters(state.filters, action.filter, 'add')
+              ),
+              state.sort
+            ),
           }
         : state;
     case ActionTypes.REMOVE_FILTER:
-      return checkFilter(state.filters, action.filter)
+      return state.filters[action.filter.type].includes(action.filter.name)
         ? {
             ...state,
-            filters: [...state.filters].splice(
-              state.filters.indexOf(action.filter),
-              1
-            ),
-            courses: Filter(
-              API.courses('2190').then(value => {
-                return value;
-              }),
-              [...state.filters, action.filter]
+            courses: Sort(
+              Filter(
+                state.backup,
+                setFilters(state.filters, action.filter, 'remove')
+              ),
+              state.sort
             ),
           }
         : state;
@@ -143,27 +173,14 @@ export default function courseReducer(
       return state;
   }
 }
-
-function checkFilter(list: Filter[], filter: Filter): boolean {
-  let hasFilter = false;
-  list.forEach(f => (hasFilter = f === filter ? true : hasFilter));
-  return hasFilter;
+//#region sort and filter functions
+function Sort(courses: Course[], sort: CourseType): Course[] {
+  return ([] as Course[])
+    .concat(courses)
+    .sort((a: Course, b: Course) => InnerSort(a, b, sort));
 }
 
-function Sort(
-  state: CourseState,
-  sort: keyof APIModel.Course
-): APIModel.Course[] {
-  return ([] as APIModel.Course[])
-    .concat(state.courses)
-    .sort((a: APIModel.Course, b: APIModel.Course) => InnerSort(a, b, sort));
-}
-
-function InnerSort(
-  a: APIModel.Course,
-  b: APIModel.Course,
-  sort: keyof APIModel.Course
-): number {
+function InnerSort(a: Course, b: Course, sort: CourseType): number {
   const left = a[sort];
   const right = b[sort];
   if (left && right) {
@@ -173,24 +190,58 @@ function InnerSort(
   return 0;
 }
 
-//TODO: filter by union for same type, intersction for different
-function Filter(
-  courses: APIModel.Course[],
-  filters: APIModel.Filter[]
-): APIModel.Course[] {
-  let courseTemp: APIModel.Course[] = ([] as APIModel.Course[]).concat(courses);
-  filters.forEach(f =>
-    courseTemp.filter(course => course[f.type] === f.filter)
-  );
-  return courseTemp;
+function setFilters(
+  filters: FilterList<FilterDomain, CourseType>,
+  val: Filter,
+  action: string
+): FilterList<FilterDomain, CourseType> {
+  let temp: FilterList<FilterDomain, CourseType> = { ...filters };
+  if (action === 'add') {
+    temp[val.type].push(val.name);
+  } else if (action === 'remove') {
+    temp[val.type].splice(temp[val.type].indexOf(val.name), 1);
+  }
+  return temp;
 }
 
+function Filter(
+  courses: Course[],
+  filterListObj: FilterList<FilterDomain, CourseType>
+): Course[] {
+  // see if a course passes a single filter
+  const SingleFilter = (course: Course, filter: Filter): boolean => {
+    if (Array.isArray(course[filter.type])) {
+      return (course[filter.type] as Array<any>).includes(filter.name);
+    }
+    return course[filter.type] === filter.name;
+  };
+
+  // see if the course satisfies 1 or more filters (OR conditioning)
+  const CourseFilterOR = (course: Course, filters: Filter[]): boolean => {
+    return filters.some(filter => SingleFilter(course, filter));
+  };
+
+  let processing = [...courses]; // copy into processing
+
+  Object.keys(filterListObj).forEach(_key => {
+    const key = _key as CourseType;
+    const filters: Filter[] = filterListObj[key].map(x => ({
+      type: key,
+      name: x,
+    }));
+    if (filters.length == 0) return;
+
+    // for each iteration, update processing
+    processing = processing.filter(course => CourseFilterOR(course, filters));
+  });
+  // those who survive will be returned
+  return processing;
+}
+//#endregion
 const fetchCoursesEpic: Epic<CourseActions> = (action$, state$) =>
-  action$.pipe(
-    filter(action => action.type === ActionTypes.FETCH_API),
+  action$.ofType(ActionTypes.FETCH_API).pipe(
     map(action => action as FetchAction),
-    // map(action => action.eventId),
-    switchMap(() => API.courses('2190')),
+    switchMap(action => API.courses(action.quarter)),
     map(courses => fetchSuccessAction(courses))
   );
 
