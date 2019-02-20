@@ -82,14 +82,14 @@ const quarters: { [quarter: string]: number } = {
 
 class QuarterMenu extends React.Component<QuarterMenuProps, QuarterMenuState> {
   handleOpen = (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
-    this.setState({ ...this.state, anchor: event.currentTarget });
+    this.setState({ anchor: event.currentTarget });
   };
   handleClose = (
     event:
       | React.MouseEvent<HTMLElement, MouseEvent>
       | React.SyntheticEvent<{}, Event>
   ) => {
-    this.setState({ ...this.state, anchor: null });
+    this.setState({ anchor: null });
   };
   changeQuarterAndClose(
     event:
@@ -99,7 +99,6 @@ class QuarterMenu extends React.Component<QuarterMenuProps, QuarterMenuState> {
   ) {
     this.props.changeQuarter(quarters[q]);
     this.setState({
-      ...this.state,
       active: q,
     });
     this.handleClose(event);
@@ -114,7 +113,6 @@ class QuarterMenu extends React.Component<QuarterMenuProps, QuarterMenuState> {
 
   componentDidMount() {
     this.setState({
-      ...this.state,
       width: this.state.widthRef.current!.offsetWidth,
     });
   }
