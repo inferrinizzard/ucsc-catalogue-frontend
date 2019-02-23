@@ -11,7 +11,7 @@ import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 
 import TextBlock from '../Pieces/TextBlock';
-import { Course } from '../../models/course.model';
+import { Course, CourseEnrollment } from '../../models/course.model';
 
 const StyleCard = styled(Card)<any>`
   margin: 0.5em;
@@ -20,6 +20,7 @@ const StyleCard = styled(Card)<any>`
 
 export interface DescCardProps {
   courseData: Course | null;
+  tracking: CourseEnrollment;
 }
 
 const DescCard: React.SFC<DescCardProps> = props => {
@@ -38,11 +39,16 @@ const DescCard: React.SFC<DescCardProps> = props => {
           <TextBlock
             type="body2"
             text={
-              'Date and Time: ' + props.courseData.settings
+              'Date and Time: ' +
+              (props.courseData.settings!.length > 0
                 ? props.courseData.settings![0].day.reduce((d, s, i) => {
                     return (i === 0 ? '' : d) + s.substring(0, 2);
-                  })
-                : 'N/a'
+                  }, '') +
+                  ' ' +
+                  props.courseData.settings![0].time.start +
+                  '-' +
+                  props.courseData.settings![0].time.end
+                : 'TBA')
             }
           />
           <TextBlock
@@ -59,21 +65,39 @@ const DescCard: React.SFC<DescCardProps> = props => {
             text={'Course Number:' + props.courseData.number}
           />
           <div />
-          <TextBlock type="body2" text={'Number Enrolled'} />
-          {/* <TextBlock type="body2" text={props.courseData.} /> */}
-          <TextBlock type="body2" text={'Number Waitlist'} />
+          <TextBlock
+            type="body2"
+            text={
+              'Number Enrolled: '
+              // +
+              // props.tracking.enrolled +
+              // '/' +
+              // props.tracking.capacity
+            }
+          />
+          <TextBlock
+            type="body2"
+            text={
+              'Number Waitlist: '
+              //  +
+              // props.tracking.waitlistTotal +
+              // '/' +
+              // props.tracking.waitlistCapacity
+            }
+          />
           <div />
           <TextBlock
             type="body2"
             text={
-              props.courseData.instructor
-                ? props.courseData.instructor.first +
+              'Professor: ' +
+              (props.courseData.instructor
+                ? props.courseData.instructor!.first +
                   ' ' +
-                  (props.courseData.instructor.middle
-                    ? props.courseData.instructor.middle + ' '
+                  (props.courseData.instructor!.middle
+                    ? props.courseData.instructor!.middle + ' '
                     : '') +
-                  props.courseData.instructor.last
-                : 'STAFF'
+                  props.courseData.instructor!.last
+                : 'STAFF')
             }
           />
           <TextBlock type="body2" text={'Grade Average'} />
@@ -87,7 +111,7 @@ const DescCard: React.SFC<DescCardProps> = props => {
                 <Typography>{props.courseData.description}</Typography>
               </ExpansionPanelDetails>
             </ExpansionPanel>
-            <ExpansionPanel>
+            <ExpansionPanel disabled={!props.courseData.prerequisites}>
               <ExpansionPanelSummary>
                 <Typography variant="body2">Prerequisites</Typography>
                 {!props.courseData.prerequisites && (

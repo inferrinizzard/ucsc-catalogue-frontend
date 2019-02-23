@@ -41,7 +41,8 @@ const Main: React.SFC<MainProps & MainDivProps> = props => {
                 height={height}
                 rowCount={rows}
                 rowHeight={props.cardHeight}
-                overscanRowCount={2}
+                overscanRowCount={4}
+                // scrollToRow={}
                 rowRenderer={({
                   index,
                   key,

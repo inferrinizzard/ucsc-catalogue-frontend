@@ -11,12 +11,13 @@ import ProfCard from './Cards/ProfCard';
 import MajorCard from './Cards/MajorCard';
 import LocCard from './Cards/LocCard';
 
-import { Course } from '../models/course.model';
+import { Course, CourseEnrollment } from '../models/course.model';
 
 export interface CourseDrawerProps {
   open: boolean;
   closeDetail: () => void;
   course: Course | null;
+  tracking: CourseEnrollment[];
 }
 export interface CourseDrawerState {}
 
@@ -54,8 +55,11 @@ class CourseDrawer extends React.Component<
         }}
       >
         <Spacer />
-        <DescCard courseData={this.props.course} />
-        <EnrollCard />
+        <DescCard
+          courseData={this.props.course}
+          tracking={this.props.tracking[0]}
+        />
+        <EnrollCard tracking={this.props.tracking} />
         <GradesCard />
         <div>
           <Third>
@@ -65,7 +69,13 @@ class CourseDrawer extends React.Component<
             <MajorCard />
           </Third>
           <Third>
-            <LocCard />
+            <LocCard
+              location={
+                this.props.course && this.props.course!.settings!.length > 0
+                  ? this.props.course!.settings![0].location
+                  : 'TBA'
+              }
+            />
           </Third>
         </div>
         <FloatButton onClick={this.props.closeDetail}>BACK</FloatButton>

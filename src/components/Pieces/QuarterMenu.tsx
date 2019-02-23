@@ -20,6 +20,7 @@ export interface QuarterMenuState {
 }
 
 const quarters: { [quarter: string]: number } = {
+  'Spring Quarter 2019': 2192,
   'Winter Quarter 2019': 2190,
   'Fall Quarter 2018': 2188,
   'Summer Quarter 2018': 2184,

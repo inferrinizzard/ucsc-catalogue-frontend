@@ -1,17 +1,19 @@
 import { Action } from 'redux';
-import { Course } from '../models/course.model';
+import { Course, CourseEnrollment } from '../models/course.model';
 import API from '../services/api';
 import { Epic, combineEpics } from 'redux-observable';
 import { filter, map, switchMap, delay, mergeMap } from 'rxjs/operators';
 
 export interface CourseState {
   loading: boolean;
+  fetchTracking: boolean;
   filters: FilterList<FilterDomain, CourseType>;
   sort: CourseType;
   courses: Course[];
   backup: Course[];
   activeCourse: Course | null;
   quarter: number;
+  tracking: CourseEnrollment[];
 }
 
 export type CourseType = keyof Course;
@@ -33,6 +35,7 @@ export declare type FilterList<
 
 const initialState: CourseState = {
   loading: true,
+  fetchTracking: false,
   filters: {
     subject: [],
     level: [],
@@ -44,6 +47,7 @@ const initialState: CourseState = {
   backup: [],
   activeCourse: null,
   quarter: 2190,
+  tracking: [],
 };
 //#region actions
 enum ActionTypes {
@@ -54,6 +58,7 @@ enum ActionTypes {
   FETCH_API_SUCCESS = 'fetch-success',
   UPDATE = 'update',
   SET_ACTIVE = 'set-active',
+  TRACK_COURSE = 'track-course',
 }
 
 interface FetchAction extends Action {
@@ -104,10 +109,26 @@ export const removeFilterAction = (filter: Filter): RemoveFilterAction => ({
 interface SetActiveAction extends Action {
   type: ActionTypes.SET_ACTIVE;
   course: Course | null;
+  quarter: string;
 }
-export const setActiveAction = (course: Course | null): SetActiveAction => ({
+export const setActiveAction = (
+  course: Course | null,
+  quarter: string
+): SetActiveAction => ({
   type: ActionTypes.SET_ACTIVE,
   course,
+  quarter,
+});
+
+interface TrackCourseAction extends Action {
+  type: ActionTypes.TRACK_COURSE;
+  data: CourseEnrollment[];
+}
+export const trackCourseAction = (
+  data: CourseEnrollment[]
+): TrackCourseAction => ({
+  type: ActionTypes.TRACK_COURSE,
+  data,
 });
 
 export type CourseActions =
@@ -116,7 +137,8 @@ export type CourseActions =
   | SortAction
   | AddFilterAction
   | RemoveFilterAction
-  | SetActiveAction;
+  | SetActiveAction
+  | TrackCourseAction;
 
 //#endregion
 export default function courseReducer(
@@ -168,7 +190,10 @@ export default function courseReducer(
           }
         : state;
     case ActionTypes.SET_ACTIVE:
-      return { ...state, activeCourse: action.course };
+      return { ...state, fetchTracking: true, activeCourse: action.course };
+    case ActionTypes.TRACK_COURSE:
+      console.log(action.data);
+      return { ...state, fetchTracking: false, tracking: action.data };
     default:
       return state;
   }
@@ -245,4 +270,13 @@ const fetchCoursesEpic: Epic<CourseActions> = (action$, state$) =>
     map(courses => fetchSuccessAction(courses))
   );
 
-export const CourseEpics = combineEpics(fetchCoursesEpic);
+const trackCourseEpic: Epic<CourseActions> = (action$, state$) =>
+  action$.ofType(ActionTypes.SET_ACTIVE).pipe(
+    map(action => action as SetActiveAction),
+    switchMap(action =>
+      action.course ? API.tracking(action.course.number, action.quarter) : []
+    ),
+    map(data => trackCourseAction(data))
+  );
+
+export const CourseEpics = combineEpics(fetchCoursesEpic, trackCourseEpic);
