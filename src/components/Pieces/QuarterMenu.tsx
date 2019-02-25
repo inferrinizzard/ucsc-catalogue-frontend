@@ -7,7 +7,7 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import RootRef from '@material-ui/core/RootRef';
 import { CourseType } from '../../store/course';
-import { keyframes } from 'styled-components';
+import { Term } from '../../models/course.model';
 
 export interface QuarterMenuProps {
   changeQuarter: (n: number) => void;
@@ -19,67 +19,67 @@ export interface QuarterMenuState {
   active: string;
 }
 
-const quarters: { [quarter: string]: number } = {
-  'Spring Quarter 2019': 2192,
-  'Winter Quarter 2019': 2190,
-  'Fall Quarter 2018': 2188,
-  'Summer Quarter 2018': 2184,
-  'Spring Quarter 2018': 2182,
-  'Winter Quarter 2018': 2180,
-  'Fall Quarter 2017': 2178,
-  'Summer Quarter 2017': 2174,
-  'Spring Quarter 2017': 2172,
-  'Winter Quarter 2017': 2170,
-  'Fall Quarter 2016': 2168,
-  'Summer Quarter 2016': 2164,
-  'Spring Quarter 2016': 2162,
-  'Winter Quarter 2016': 2160,
-  'Fall Quarter 2015': 2158,
-  'Summer Quarter 2015': 2154,
-  'Spring Quarter 2015': 2152,
-  'Winter Quarter 2015': 2150,
-  'Fall Quarter 2014': 2148,
-  'Summer Quarter 2014': 2144,
-  'Spring Quarter 2014': 2142,
-  'Winter Quarter 2014': 2140,
-  'Fall Quarter 2013': 2138,
-  'Summer Quarter 2013': 2134,
-  'Spring Quarter 2013': 2132,
-  'Winter Quarter 2013': 2130,
-  'Fall Quarter 2012': 2128,
-  'Summer Quarter 2012': 2124,
-  'Spring Quarter 2012': 2122,
-  'Winter Quarter 2012': 2120,
-  'Fall Quarter 2011': 2118,
-  'Summer Quarter 2011': 2114,
-  'Spring Quarter 2011': 2112,
-  'Winter Quarter 2011': 2110,
-  // 'Fall Quarter 2010': 2108,
-  // 'Summer Quarter 2010': 2104,
-  // 'Spring Quarter 2010': 2102,
-  // 'Winter Quarter 2010': 2100,
-  // 'Fall Quarter 2009': 2098,
-  // 'Summer Quarter 2009': 2094,
-  // 'Spring Quarter 2009': 2092,
-  // 'Winter Quarter 2009': 2090,
-  // 'Fall Quarter 2008': 2088,
-  // 'Summer Quarter 2008': 2084,
-  // 'Spring Quarter 2008': 2082,
-  // 'Winter Quarter 2008': 2080,
-  // 'Fall Quarter 2007': 2078,
-  // 'Summer Quarter 2007': 2074,
-  // 'Spring Quarter 2007': 2072,
-  // 'Winter Quarter 2007': 2070,
-  // 'Fall Quarter 2006': 2068,
-  // 'Summer Quarter 2006': 2064,
-  // 'Spring Quarter 2006': 2062,
-  // 'Winter Quarter 2006': 2060,
-  // 'Fall Quarter 2005': 2058,
-  // 'Summer Quarter 2005': 2054,
-  // 'Spring Quarter 2005': 2052,
-  // 'Winter Quarter 2005': 2050,
-  // 'Fall Quarter 2004': 2048,
-};
+const quarters: Term[] = [
+  { name: 'Spring Quarter 2019', code: 2192 },
+  { name: 'Winter Quarter 2019', code: 2190 },
+  { name: 'Fall Quarter 2018', code: 2188 },
+  { name: 'Summer Quarter 2018', code: 2184 },
+  { name: 'Spring Quarter 2018', code: 2182 },
+  { name: 'Winter Quarter 2018', code: 2180 },
+  { name: 'Fall Quarter 2017', code: 2178 },
+  { name: 'Summer Quarter 2017', code: 2174 },
+  { name: 'Spring Quarter 2017', code: 2172 },
+  { name: 'Winter Quarter 2017', code: 2170 },
+  { name: 'Fall Quarter 2016', code: 2168 },
+  { name: 'Summer Quarter 2016', code: 2164 },
+  { name: 'Spring Quarter 2016', code: 2162 },
+  { name: 'Winter Quarter 2016', code: 2160 },
+  { name: 'Fall Quarter 2015', code: 2158 },
+  { name: 'Summer Quarter 2015', code: 2154 },
+  { name: 'Spring Quarter 2015', code: 2152 },
+  { name: 'Winter Quarter 2015', code: 2150 },
+  { name: 'Fall Quarter 2014', code: 2148 },
+  { name: 'Summer Quarter 2014', code: 2144 },
+  { name: 'Spring Quarter 2014', code: 2142 },
+  { name: 'Winter Quarter 2014', code: 2140 },
+  { name: 'Fall Quarter 2013', code: 2138 },
+  { name: 'Summer Quarter 2013', code: 2134 },
+  { name: 'Spring Quarter 2013', code: 2132 },
+  { name: 'Winter Quarter 2013', code: 2130 },
+  { name: 'Fall Quarter 2012', code: 2128 },
+  { name: 'Summer Quarter 2012', code: 2124 },
+  { name: 'Spring Quarter 2012', code: 2122 },
+  { name: 'Winter Quarter 2012', code: 2120 },
+  { name: 'Fall Quarter 2011', code: 2118 },
+  { name: 'Summer Quarter 2011', code: 2114 },
+  { name: 'Spring Quarter 2011', code: 2112 },
+  { name: 'Winter Quarter 2011', code: 2110 },
+  // { name: 'Fall Quarter 2010', code: 2108 },
+  // { name: 'Summer Quarter 2010', code: 2104 },
+  // { name: 'Spring Quarter 2010', code: 2102 },
+  // { name: 'Winter Quarter 2010', code: 2100 },
+  // { name: 'Fall Quarter 2009', code: 2098 },
+  // { name: 'Summer Quarter 2009', code: 2094 },
+  // { name: 'Spring Quarter 2009', code: 2092 },
+  // { name: 'Winter Quarter 2009', code: 2090 },
+  // { name: 'Fall Quarter 2008', code: 2088 },
+  // { name: 'Summer Quarter 2008', code: 2084 },
+  // { name: 'Spring Quarter 2008', code: 2082 },
+  // { name: 'Winter Quarter 2008', code: 2080 },
+  // { name: 'Fall Quarter 2007', code: 2078 },
+  // { name: 'Summer Quarter 2007', code: 2074 },
+  // { name: 'Spring Quarter 2007', code: 2072 },
+  // { name: 'Winter Quarter 2007', code: 2070 },
+  // { name: 'Fall Quarter 2006', code: 2068 },
+  // { name: 'Summer Quarter 2006', code: 2064 },
+  // { name: 'Spring Quarter 2006', code: 2062 },
+  // { name: 'Winter Quarter 2006', code: 2060 },
+  // { name: 'Fall Quarter 2005', code: 2058 },
+  // { name: 'Summer Quarter 2005', code: 2054 },
+  // { name: 'Spring Quarter 2005', code: 2052 },
+  // { name: 'Winter Quarter 2005', code: 2050 },
+  // { name: 'Fall Quarter 2004', code: 2048 },
+];
 
 class QuarterMenu extends React.Component<QuarterMenuProps, QuarterMenuState> {
   handleOpen = (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
@@ -96,11 +96,11 @@ class QuarterMenu extends React.Component<QuarterMenuProps, QuarterMenuState> {
     event:
       | React.MouseEvent<HTMLElement, MouseEvent>
       | React.SyntheticEvent<{}, Event>,
-    q: string
+    t: Term
   ) {
-    this.props.changeQuarter(quarters[q]);
+    this.props.changeQuarter(t.code);
     this.setState({
-      active: q,
+      active: t.name,
     });
     this.handleClose(event);
   }
@@ -148,13 +148,13 @@ class QuarterMenu extends React.Component<QuarterMenuProps, QuarterMenuState> {
             },
           }}
         >
-          {Object.keys(quarters).map(key => (
+          {quarters.map((t, index) => (
             <MenuItem
-              key={key}
-              selected={key === this.state.active}
-              onClick={event => this.changeQuarterAndClose(event, key)}
+              key={index}
+              selected={t.name === this.state.active}
+              onClick={event => this.changeQuarterAndClose(event, t)}
             >
-              {key}
+              {t.name}
             </MenuItem>
           ))}
         </Menu>

@@ -2,7 +2,15 @@ import { Action } from 'redux';
 import { Course, CourseEnrollment } from '../models/course.model';
 import API from '../services/api';
 import { Epic, combineEpics } from 'redux-observable';
-import { filter, map, switchMap, delay, concatMap } from 'rxjs/operators';
+import {
+  filter,
+  map,
+  switchMap,
+  delay,
+  concatMap,
+  mergeMap,
+} from 'rxjs/operators';
+import { CardActionArea } from '@material-ui/core';
 
 export interface CourseState {
   loading: boolean;
@@ -121,27 +129,18 @@ export const setActiveAction = (
   quarter,
 });
 
-interface ActiveSuccessAction extends Action {
-  type: ActionTypes.ACTIVE_SUCCESS;
-  course: Course;
-}
-export const activeSuccessAction = (course: Course): ActiveSuccessAction => ({
-  type: ActionTypes.ACTIVE_SUCCESS,
-  course,
-});
-
 interface TrackCourseAction extends Action {
   type: ActionTypes.TRACK_COURSE;
   data: CourseEnrollment[];
-  // course: Course;
+  course: Course;
 }
 export const trackCourseAction = (
-  data: CourseEnrollment[]
-  // course: Course
+  data: CourseEnrollment[],
+  course: Course
 ): TrackCourseAction => ({
   type: ActionTypes.TRACK_COURSE,
   data,
-  // course,
+  course,
 });
 
 export type CourseActions =
@@ -209,7 +208,7 @@ export default function courseReducer(
         ...state,
         fetchTracking: false,
         tracking: action.data,
-        // activeCourse: action.course,
+        activeCourse: action.course,
       };
     default:
       return state;
@@ -290,20 +289,30 @@ const fetchCoursesEpic: Epic<CourseActions> = (action$, state$) =>
 const trackCourseEpic: Epic<CourseActions> = (action$, state$) =>
   action$.ofType(ActionTypes.SET_ACTIVE).pipe(
     map(action => action as SetActiveAction),
+    switchMap(async action => {
+      const fullName = await (action.course
+        ? API.fetchName(action.course!.number, action.quarter)
+        : '');
+      const tracking = await (action.course
+        ? API.tracking(action.course!.number, action.quarter)
+        : []);
+      const course = { ...action.course } as Course;
+      course['fullName'] = fullName;
+      return { tracking: tracking, course: course };
+    }),
+    map(data => trackCourseAction(data['tracking'], data['course']))
+    /*
     switchMap(action =>
-      action.course ? API.tracking(action.course.number, action.quarter) : []
-    ),
-    map(data => trackCourseAction(data))
+      action.course
+        ? Promise.all([
+            API.tracking(action.course.number, action.quarter),
+            {
+              ...action.course,
+              fullName: API.fetchName(action.course.number, action.quarter),
+            },
+          ])
+        : []
+    ),*/
   );
-
-// const fetchNameEpic: Epic<CourseActions> = (action$, state$) =>
-//   action$.ofType(ActionTypes.SET_ACTIVE).pipe(
-//     map(action => action as SetActiveAction),
-//     switchMap(action =>
-//       action.course ? API.fetchName(action.course.number, action.quarter) : ''
-//     ),
-//     map(data => activeSuccessAction())
-//   );
-//combine/duplicate epic, fire tracking and fetchName on set-active call, then fire success/add data in tracking
 
 export const CourseEpics = combineEpics(fetchCoursesEpic, trackCourseEpic);

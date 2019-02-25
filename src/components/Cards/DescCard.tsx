@@ -29,7 +29,11 @@ const DescCard: React.SFC<DescCardProps> = props => {
       {props.courseData && (
         <CardHeader
           title={props.courseData.subject + ' ' + props.courseData.code}
-          subheader={props.courseData.name}
+          subheader={
+            props.courseData.fullName
+              ? props.courseData.fullName
+              : props.courseData.name
+          }
         />
       )}
       {/* <CardMedia /> */}
@@ -68,21 +72,19 @@ const DescCard: React.SFC<DescCardProps> = props => {
           <TextBlock
             type="body2"
             text={
-              'Number Enrolled: '
-              // +
-              // props.tracking.enrolled +
-              // '/' +
-              // props.tracking.capacity
+              'Number Enrolled: ' +
+              props.tracking.enrolled +
+              '/' +
+              props.tracking.capacity
             }
           />
           <TextBlock
             type="body2"
             text={
-              'Number Waitlist: '
-              //  +
-              // props.tracking.waitlistTotal +
-              // '/' +
-              // props.tracking.waitlistCapacity
+              'Number Waitlist: ' +
+              props.tracking.waitlistTotal +
+              '/' +
+              props.tracking.waitlistCapacity
             }
           />
           <div />

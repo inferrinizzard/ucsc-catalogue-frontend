@@ -1,5 +1,5 @@
 export interface Term {
-  code: string;
+  code: number;
   name: string;
 }
 
