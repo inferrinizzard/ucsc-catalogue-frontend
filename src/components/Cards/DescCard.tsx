@@ -92,7 +92,7 @@ const DescCard: React.SFC<DescCardProps> = props => {
             type="body2"
             text={
               'Professor: ' +
-              (props.courseData.instructor
+              (props.courseData.instructor && props.courseData.instructor.first
                 ? props.courseData.instructor!.first +
                   ' ' +
                   (props.courseData.instructor!.middle

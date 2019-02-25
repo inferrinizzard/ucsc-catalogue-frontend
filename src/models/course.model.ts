@@ -64,7 +64,7 @@ export interface SectionEnrollment {
 export interface CourseEnrollment {
   termId: string;
   courseNum: number;
-  date: number;
+  date: string;
   status: EnrollmentStatus;
   available: number;
   capacity: number;

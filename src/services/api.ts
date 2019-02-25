@@ -88,7 +88,11 @@ function convertTracking(
   return rawResults.map<model.CourseEnrollment>(x => ({
     termId: x.termId,
     courseNum: x.courseNum,
-    date: x.date,
+    date: [x.date].map(s => {
+      let d = new Date(0);
+      d.setUTCSeconds(s);
+      return d.toDateString();
+    })[0],
     status: x.status,
     available: x.avail,
     capacity: x.cap,

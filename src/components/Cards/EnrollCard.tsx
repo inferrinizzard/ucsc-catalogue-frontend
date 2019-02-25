@@ -26,7 +26,9 @@ const EnrollCard: React.SFC<EnrollCardProps> = props => {
         <Plot
           data={[
             {
-              x: Object.keys(props.tracking),
+              x: props.tracking.reduceRight((x: string[], val) => {
+                return x.concat(val.date.substr(4));
+              }, []),
               y: props.tracking.reduceRight((x: number[], val) => {
                 return x.concat(val.enrolled);
               }, []),
@@ -34,17 +36,73 @@ const EnrollCard: React.SFC<EnrollCardProps> = props => {
               fill: 'tozeroy',
             },
           ]}
-          style={{ width: '100%', height: '100%' }}
+          style={{ width: 'calc(100% - 20px)', height: '100%' }}
           layout={{
+            fixedrange: true,
             showlegend: false,
-            // 'yaxis.range': [0, props.tracking[0].capacity],
+            // xaxis: { tickangle: 45 },
+            yaxis: {
+              range:
+                props.tracking.length > 0
+                  ? [
+                      0,
+                      Math.max(
+                        props.tracking[0].capacity,
+                        props.tracking.reduce((max: number, val) => {
+                          return max > val.enrolled ? max : val.enrolled;
+                        }, 0)
+                      ),
+                    ]
+                  : undefined,
+            },
+            margin: { l: 25, r: 25, b: 50, t: 10 },
           }}
-          config={{ displayModeBar: false }}
+          config={{
+            displayModeBar: false,
+          }}
         />
       </div>
       <CardContent>
-        <TextBlock text="Enrolled: " type={'h5'} />
-        <TextBlock text="Waitlisted: " type={'h5'} />
+        <TextBlock
+          text={
+            'Enrolled: ' +
+            (props.tracking.length > 0
+              ? props.tracking[0].enrolled +
+                '/' +
+                props.tracking[0].capacity +
+                (props.tracking[0].capacity != 0
+                  ? ' - ' +
+                    (
+                      (props.tracking[0].enrolled /
+                        props.tracking[0].capacity) *
+                      100
+                    ).toFixed(0) +
+                    '%'
+                  : '')
+              : '')
+          }
+          type={'h5'}
+        />
+        <TextBlock
+          text={
+            'Waitlisted: ' +
+            (props.tracking.length > 0
+              ? props.tracking[0].waitlistTotal +
+                '/' +
+                props.tracking[0].waitlistCapacity +
+                (props.tracking[0].waitlistCapacity != 0
+                  ? ' - ' +
+                    (
+                      (props.tracking[0].waitlistTotal /
+                        props.tracking[0].waitlistCapacity) *
+                      100
+                    ).toFixed(0) +
+                    '%'
+                  : '')
+              : '')
+          }
+          type={'h5'}
+        />
       </CardContent>
     </StyleCard>
   );
