@@ -54,7 +54,7 @@ const Main: React.SFC<MainProps & MainDivProps> = props => {
                 }) => {
                   const items = [];
                   const fromIndex: number = index * columns;
-                  const toIndex = Math.min(
+                  const toIndex: number = Math.min(
                     fromIndex + columns,
                     props.courses.length
                   );

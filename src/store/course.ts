@@ -2,7 +2,7 @@ import { Action } from 'redux';
 import { Course, CourseEnrollment } from '../models/course.model';
 import API from '../services/api';
 import { Epic, combineEpics } from 'redux-observable';
-import { filter, map, switchMap, delay, mergeMap } from 'rxjs/operators';
+import { filter, map, switchMap, delay, concatMap } from 'rxjs/operators';
 
 export interface CourseState {
   loading: boolean;
@@ -59,6 +59,7 @@ enum ActionTypes {
   UPDATE = 'update',
   SET_ACTIVE = 'set-active',
   TRACK_COURSE = 'track-course',
+  ACTIVE_SUCCESS = 'active-success',
 }
 
 interface FetchAction extends Action {
@@ -120,15 +121,27 @@ export const setActiveAction = (
   quarter,
 });
 
+interface ActiveSuccessAction extends Action {
+  type: ActionTypes.ACTIVE_SUCCESS;
+  course: Course;
+}
+export const activeSuccessAction = (course: Course): ActiveSuccessAction => ({
+  type: ActionTypes.ACTIVE_SUCCESS,
+  course,
+});
+
 interface TrackCourseAction extends Action {
   type: ActionTypes.TRACK_COURSE;
   data: CourseEnrollment[];
+  // course: Course;
 }
 export const trackCourseAction = (
   data: CourseEnrollment[]
+  // course: Course
 ): TrackCourseAction => ({
   type: ActionTypes.TRACK_COURSE,
   data,
+  // course,
 });
 
 export type CourseActions =
@@ -190,10 +203,14 @@ export default function courseReducer(
           }
         : state;
     case ActionTypes.SET_ACTIVE:
-      return { ...state, fetchTracking: true, activeCourse: action.course };
+      return { ...state, fetchTracking: true };
     case ActionTypes.TRACK_COURSE:
-      console.log(action.data);
-      return { ...state, fetchTracking: false, tracking: action.data };
+      return {
+        ...state,
+        fetchTracking: false,
+        tracking: action.data,
+        // activeCourse: action.course,
+      };
     default:
       return state;
   }
@@ -278,5 +295,15 @@ const trackCourseEpic: Epic<CourseActions> = (action$, state$) =>
     ),
     map(data => trackCourseAction(data))
   );
+
+// const fetchNameEpic: Epic<CourseActions> = (action$, state$) =>
+//   action$.ofType(ActionTypes.SET_ACTIVE).pipe(
+//     map(action => action as SetActiveAction),
+//     switchMap(action =>
+//       action.course ? API.fetchName(action.course.number, action.quarter) : ''
+//     ),
+//     map(data => activeSuccessAction())
+//   );
+//combine/duplicate epic, fire tracking and fetchName on set-active call, then fire success/add data in tracking
 
 export const CourseEpics = combineEpics(fetchCoursesEpic, trackCourseEpic);

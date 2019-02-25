@@ -31,6 +31,7 @@ export interface Course {
   code: string; // code in the subject e.g. 80T
   classSection: string; //
   name: string;
+  fullName?: string;
   description: string;
   type: string; // Lecture, Studio, etc.
   credit: number; // number of credits
