@@ -290,29 +290,16 @@ const trackCourseEpic: Epic<CourseActions> = (action$, state$) =>
   action$.ofType(ActionTypes.SET_ACTIVE).pipe(
     map(action => action as SetActiveAction),
     switchMap(async action => {
-      const fullName = await (action.course
-        ? API.fetchName(action.course!.number, action.quarter)
-        : '');
-      const tracking = await (action.course
-        ? API.tracking(action.course!.number, action.quarter)
-        : []);
+      const tracking = action.course
+        ? await API.tracking(action.course!.number, action.quarter)
+        : [];
       const course = { ...action.course } as Course;
-      course['fullName'] = fullName;
+      course['fullName'] = action.course
+        ? await API.fetchName(action.course!.number, action.quarter)
+        : '';
       return { tracking: tracking, course: course };
     }),
     map(data => trackCourseAction(data['tracking'], data['course']))
-    /*
-    switchMap(action =>
-      action.course
-        ? Promise.all([
-            API.tracking(action.course.number, action.quarter),
-            {
-              ...action.course,
-              fullName: API.fetchName(action.course.number, action.quarter),
-            },
-          ])
-        : []
-    ),*/
   );
 
 export const CourseEpics = combineEpics(fetchCoursesEpic, trackCourseEpic);

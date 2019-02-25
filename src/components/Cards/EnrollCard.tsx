@@ -34,13 +34,44 @@ const EnrollCard: React.SFC<EnrollCardProps> = props => {
               }, []),
               type: 'scatter',
               fill: 'tozeroy',
+              name: 'Enrolled',
+            },
+            {
+              x: props.tracking.reduceRight((x: string[], val) => {
+                return x.concat(val.date.substr(4));
+              }, []),
+              y: props.tracking.reduceRight((x: number[], val) => {
+                return x.concat(val.enrolled + val.waitlistTotal);
+              }, []),
+              type: 'scatter',
+              fill: 'tonexty',
+              name: 'Waitlisted',
+              hoverinfo: 'text',
+              text: props.tracking.reduceRight((x: string[], val) => {
+                return x.concat(val.waitlistTotal.toString());
+              }, []),
+              hoverlabel: {},
+            },
+            {
+              x: props.tracking.reduceRight((x: string[], val) => {
+                return x.concat(val.date.substr(4));
+              }, []),
+              y: props.tracking.reduceRight((x: number[], val) => {
+                return x.concat(val.capacity);
+              }, []),
+              type: 'scatter',
+              name: 'Capacity',
+              // hoverinfo: 'none',
             },
           ]}
           style={{ width: 'calc(100% - 20px)', height: '100%' }}
           layout={{
             fixedrange: true,
             showlegend: false,
-            // xaxis: { tickangle: 45 },
+            xaxis: {
+              hoverformat: '',
+              // tickangle: 45
+            },
             yaxis: {
               range:
                 props.tracking.length > 0
@@ -49,7 +80,9 @@ const EnrollCard: React.SFC<EnrollCardProps> = props => {
                       Math.max(
                         props.tracking[0].capacity,
                         props.tracking.reduce((max: number, val) => {
-                          return max > val.enrolled ? max : val.enrolled;
+                          return max > val.enrolled + val.waitlistTotal
+                            ? max
+                            : val.enrolled + val.waitlistTotal;
                         }, 0)
                       ),
                     ]
@@ -60,6 +93,7 @@ const EnrollCard: React.SFC<EnrollCardProps> = props => {
           config={{
             displayModeBar: false,
           }}
+          useResizeHandler
         />
       </div>
       <CardContent>
