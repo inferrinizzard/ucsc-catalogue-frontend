@@ -199,7 +199,8 @@ export default function courseReducer(
                 state.backup.filter(
                   f =>
                     f.subjectCode.includes(action.name) ||
-                    f.name.toUpperCase().includes(action.name)
+                    f.name.toUpperCase().includes(action.name) ||
+                    (f.subject + ' ' + f.code).includes(action.name)
                 ),
                 state.sort
               )
