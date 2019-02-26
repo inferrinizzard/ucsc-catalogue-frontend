@@ -40,6 +40,8 @@ interface PropsFromStore {
   activeCourse: Course | null;
   quarter: number;
   tracking: CourseEnrollment[];
+  start: Date;
+  loading: boolean;
 }
 
 interface PropsToDispatch {
@@ -161,12 +163,16 @@ class App extends React.Component<AppProps, AppState> {
             openDetail={this.openDetail}
             cardHeight={this.state.cardHeight}
             cardWidth={this.state.cardWidth}
+            active={this.props.activeCourse}
           />
           <CourseDrawer
             open={this.state.drawerOpen}
             closeDetail={this.closeDetail}
             course={this.props.activeCourse}
             tracking={this.props.tracking}
+            start={this.props.start}
+            quarter={this.props.quarter}
+            loading={this.props.loading}
           />
         </div>
         <BottomLiner
@@ -188,6 +194,8 @@ const mapStateToProps = (state: ReduxState): PropsFromStore => ({
   activeCourse: state.course.activeCourse,
   quarter: state.course.quarter,
   tracking: state.course.tracking,
+  start: state.course.start,
+  loading: state.course.fetchTracking,
 });
 const mapDispatchToProps = (
   dispatch: Dispatch<ReduxAction>

@@ -18,6 +18,9 @@ export interface CourseDrawerProps {
   closeDetail: () => void;
   course: Course | null;
   tracking: CourseEnrollment[];
+  start: Date;
+  quarter: number;
+  loading: boolean;
 }
 export interface CourseDrawerState {}
 
@@ -42,7 +45,9 @@ class CourseDrawer extends React.Component<
   CourseDrawerState
 > {
   render() {
-    return (
+    return this.props.loading ? (
+      <div>{'Loading...'}</div>
+    ) : (
       <Drawer
         anchor="right"
         open={Boolean(this.props.course)}
@@ -59,7 +64,11 @@ class CourseDrawer extends React.Component<
           courseData={this.props.course}
           tracking={this.props.tracking[0]}
         />
-        <EnrollCard tracking={this.props.tracking} />
+        <EnrollCard
+          tracking={this.props.tracking}
+          start={this.props.start}
+          quarter={this.props.quarter}
+        />
         <GradesCard />
         <div>
           <Third>

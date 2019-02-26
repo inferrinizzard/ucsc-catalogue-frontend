@@ -20,10 +20,10 @@ class ProfCard extends React.Component<ProfCardProps, ProfCardState> {
       <StyleCard>
         <CardHeader title="Professor" />
         {/* <CardMedia /> */}
-        <div>image goes here</div>
-        <CardContent>
+        <div>Work in progress, to be implemented soon!</div>
+        {/* <CardContent>
           <div>name</div>
-        </CardContent>
+        </CardContent> */}
       </StyleCard>
     );
   }

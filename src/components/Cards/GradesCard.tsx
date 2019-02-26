@@ -22,11 +22,11 @@ class GradesCard extends React.Component<GradesCardProps, GradesCardState> {
       <StyleCard>
         <CardHeader title="Grades" />
         {/* <CardMedia /> */}
-        <div>chart goes here</div>
-        <CardContent>
+        <div>Work in Progress, to be implemented soon!</div>
+        {/* <CardContent>
           <TextBlock text="Grade: " type={'h5'} />
           <TextBlock text="Wuh: " type={'h5'} />
-        </CardContent>
+        </CardContent> */}
       </StyleCard>
     );
   }

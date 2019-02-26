@@ -22,6 +22,7 @@ export interface CourseState {
   activeCourse: Course | null;
   quarter: number;
   tracking: CourseEnrollment[];
+  start: Date;
 }
 
 export type CourseType = keyof Course;
@@ -56,6 +57,7 @@ const initialState: CourseState = {
   activeCourse: null,
   quarter: 2190,
   tracking: [],
+  start: new Date(0),
 };
 //#region actions
 enum ActionTypes {
@@ -81,10 +83,15 @@ export const fetchAction = (quarter: number): FetchAction => ({
 interface FetchSuccessAction extends Action {
   type: ActionTypes.FETCH_API_SUCCESS;
   data: Course[];
+  start: Date;
 }
-export const fetchSuccessAction = (data: Course[]): FetchSuccessAction => ({
+export const fetchSuccessAction = (
+  data: Course[],
+  start: Date
+): FetchSuccessAction => ({
   type: ActionTypes.FETCH_API_SUCCESS,
   data,
+  start,
 });
 
 interface SortAction extends Action {
@@ -173,6 +180,7 @@ export default function courseReducer(
       return {
         ...state,
         loading: false,
+        start: action.start,
         courses: Sort(Filter(action.data, state.filters), state.sort),
         backup: action.data,
       };
@@ -303,8 +311,13 @@ function Filter(
 const fetchCoursesEpic: Epic<CourseActions> = (action$, state$) =>
   action$.ofType(ActionTypes.FETCH_API).pipe(
     map(action => action as FetchAction),
-    switchMap(action => API.courses(action.quarter)),
-    map(courses => fetchSuccessAction(courses))
+    switchMap(async action => {
+      return {
+        courses: await API.courses(action.quarter),
+        start: await API.fetchDate(action.quarter),
+      };
+    }),
+    map(courses => fetchSuccessAction(courses['courses'], courses['start']))
   );
 
 const trackCourseEpic: Epic<CourseActions> = (action$, state$) =>
