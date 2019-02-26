@@ -4,7 +4,7 @@
   "description": "slugstayalive",
   "main": "index.js",
   "scripts": {
-    "postinstall": "webpack --config misc/plotly/webpack.config.plotly.js",
+    "postinstall": "webpack --config misc/plotly/webpack.plotly.config.js",
     "start": "webpack-dev-server --config webpack.config.dev.js",
     "build:dev": "webpack --config webpack.config.dev.js",
     "build:prod": "webpack --config webpack.config.prod.js",
