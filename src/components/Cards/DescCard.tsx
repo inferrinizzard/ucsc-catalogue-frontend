@@ -10,8 +10,8 @@ import ExpansionPanel from '@material-ui/core/ExpansionPanel';
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 
-import TextBlock from '../TextBlock';
-import { Course } from '../../models/course.model';
+import TextBlock from '../Pieces/TextBlock';
+import { Course, CourseEnrollment } from '../../models/course.model';
 
 const StyleCard = styled(Card)<any>`
   margin: 0.5em;
@@ -20,6 +20,7 @@ const StyleCard = styled(Card)<any>`
 
 export interface DescCardProps {
   courseData: Course | null;
+  tracking: CourseEnrollment;
 }
 
 const DescCard: React.SFC<DescCardProps> = props => {
@@ -28,43 +29,88 @@ const DescCard: React.SFC<DescCardProps> = props => {
       {props.courseData && (
         <CardHeader
           title={props.courseData.subject + ' ' + props.courseData.code}
-          subheader={props.courseData.name}
+          subheader={
+            props.courseData.fullName
+              ? props.courseData.fullName
+              : props.courseData.name
+          }
         />
       )}
       {/* <CardMedia /> */}
       <Divider />
       {props.courseData && (
         <CardContent>
-          <TextBlock type="body2" text={'Grade Average'} />
           <TextBlock
             type="body2"
             text={
-              'Credits: ' +
-              props.courseData.credit +
-              ', Course Number:' +
-              props.courseData.number
-            }
-          />
-          <div />
-          <TextBlock type="body2" text={'Number Enrolled'} />
-          {/* <TextBlock type="body2" text={props.courseData.} /> */}
-          <TextBlock type="body2" text={'Number Waitlist'} />
-          <div />
-          <TextBlock type="body2" text={'Date and Time, class type'} />
-          {/* <TextBlock type="body2" text={props.courseData.day} /> */}
-          <TextBlock
-            type="body2"
-            text={
-              props.courseData.instructor
-                ? props.courseData.instructor.first +
+              'Date and Time: ' +
+              (props.courseData.settings!.length > 0
+                ? props.courseData.settings![0].day.reduce((d, s, i) => {
+                    return (i === 0 ? '' : d) + s.substring(0, 2);
+                  }, '') +
                   ' ' +
-                  (props.courseData.instructor.middle
-                    ? props.courseData.instructor.middle + ' '
-                    : '') +
-                  props.courseData.instructor.last
-                : 'STAFF'
+                  props.courseData.settings![0].time.start +
+                  '-' +
+                  props.courseData.settings![0].time.end
+                : 'TBA')
             }
           />
+          <TextBlock
+            type="body2"
+            text={'Class type: ' + props.courseData.type}
+          />
+          <div />
+          <TextBlock
+            type="body2"
+            text={
+              'GE: ' +
+              props.courseData.ge.reduce((x, c) => {
+                return x + c + ' ';
+              }) +
+              ', ' +
+              'Credits: ' +
+              props.courseData.credit
+            }
+          />
+          <TextBlock
+            type="body2"
+            text={'Course Number: ' + props.courseData.number}
+          />
+          <div />
+          <TextBlock
+            type="body2"
+            text={
+              'Number Enrolled: ' +
+              props.tracking.enrolled +
+              '/' +
+              props.tracking.capacity
+            }
+          />
+          <TextBlock
+            type="body2"
+            text={
+              'Number Waitlist: ' +
+              props.tracking.waitlistTotal +
+              '/' +
+              props.tracking.waitlistCapacity
+            }
+          />
+          <div />
+          <TextBlock
+            type="body2"
+            text={
+              'Professor: ' +
+              (props.courseData.instructor && props.courseData.instructor.first
+                ? props.courseData.instructor!.first +
+                  ' ' +
+                  (props.courseData.instructor!.middle
+                    ? props.courseData.instructor!.middle + ' '
+                    : '') +
+                  props.courseData.instructor!.last
+                : 'STAFF')
+            }
+          />
+          <TextBlock type="body2" text={'Grade Average'} />
           <Divider />
           <div>
             <ExpansionPanel>
@@ -75,7 +121,7 @@ const DescCard: React.SFC<DescCardProps> = props => {
                 <Typography>{props.courseData.description}</Typography>
               </ExpansionPanelDetails>
             </ExpansionPanel>
-            <ExpansionPanel>
+            <ExpansionPanel disabled={!props.courseData.prerequisites}>
               <ExpansionPanelSummary>
                 <Typography variant="body2">Prerequisites</Typography>
                 {!props.courseData.prerequisites && (

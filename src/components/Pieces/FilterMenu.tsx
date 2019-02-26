@@ -7,7 +7,7 @@ import Chip from '@material-ui/core/Chip';
 import RootRef from '@material-ui/core/RootRef';
 import Tooltip from '@material-ui/core/Tooltip';
 
-import { Filter, CourseType } from '../store/course';
+import { Filter, CourseType } from '../../store/course';
 
 export interface FilterMenuProps {
   addFilter: (f: Filter) => void;
@@ -73,7 +73,7 @@ class FilterMenu extends React.Component<FilterMenuProps, FilterMenuState> {
           onBackdropClick={this.handleClose}
           PaperProps={{
             style: {
-              maxHeight: this.ITEM_HEIGHT * 4.5,
+              maxHeight: this.ITEM_HEIGHT * 7.5,
               width: this.state.width !== 0 ? this.state.width : 'auto',
             },
           }}

@@ -1,17 +1,27 @@
 import { Action } from 'redux';
-import { Course } from '../models/course.model';
+import { Course, CourseEnrollment } from '../models/course.model';
 import API from '../services/api';
 import { Epic, combineEpics } from 'redux-observable';
-import { filter, map, switchMap, delay, mergeMap } from 'rxjs/operators';
+import {
+  filter,
+  map,
+  switchMap,
+  delay,
+  concatMap,
+  mergeMap,
+} from 'rxjs/operators';
+import { CardActionArea } from '@material-ui/core';
 
 export interface CourseState {
   loading: boolean;
+  fetchTracking: boolean;
   filters: FilterList<FilterDomain, CourseType>;
   sort: CourseType;
   courses: Course[];
   backup: Course[];
   activeCourse: Course | null;
   quarter: number;
+  tracking: CourseEnrollment[];
 }
 
 export type CourseType = keyof Course;
@@ -33,6 +43,7 @@ export declare type FilterList<
 
 const initialState: CourseState = {
   loading: true,
+  fetchTracking: false,
   filters: {
     subject: [],
     level: [],
@@ -44,16 +55,18 @@ const initialState: CourseState = {
   backup: [],
   activeCourse: null,
   quarter: 2190,
+  tracking: [],
 };
 //#region actions
 enum ActionTypes {
-  ADD_FILTER = 'add-filter',
-  REMOVE_FILTER = 'remove-filter',
-  SORT = 'sort',
   FETCH_API = 'fetch',
   FETCH_API_SUCCESS = 'fetch-success',
-  UPDATE = 'update',
+  SORT = 'sort',
+  SEARCH = 'search',
+  ADD_FILTER = 'add-filter',
+  REMOVE_FILTER = 'remove-filter',
   SET_ACTIVE = 'set-active',
+  ACTIVE_SUCCESS = 'active-success',
 }
 
 interface FetchAction extends Action {
@@ -83,6 +96,15 @@ export const sortAction = (sort: CourseType): SortAction => ({
   sort,
 });
 
+interface SearchAction extends Action {
+  type: ActionTypes.SEARCH;
+  name: string;
+}
+export const searchAction = (name: string): SearchAction => ({
+  type: ActionTypes.SEARCH,
+  name,
+});
+
 interface AddFilterAction extends Action {
   type: ActionTypes.ADD_FILTER;
   filter: Filter;
@@ -104,9 +126,28 @@ export const removeFilterAction = (filter: Filter): RemoveFilterAction => ({
 interface SetActiveAction extends Action {
   type: ActionTypes.SET_ACTIVE;
   course: Course | null;
+  quarter: string;
 }
-export const setActiveAction = (course: Course | null): SetActiveAction => ({
+export const setActiveAction = (
+  course: Course | null,
+  quarter: string
+): SetActiveAction => ({
   type: ActionTypes.SET_ACTIVE,
+  course,
+  quarter,
+});
+
+interface ActiveSuccessAction extends Action {
+  type: ActionTypes.ACTIVE_SUCCESS;
+  data: CourseEnrollment[];
+  course: Course;
+}
+export const activeSuccessAction = (
+  data: CourseEnrollment[],
+  course: Course
+): ActiveSuccessAction => ({
+  type: ActionTypes.ACTIVE_SUCCESS,
+  data,
   course,
 });
 
@@ -114,9 +155,11 @@ export type CourseActions =
   | FetchAction
   | FetchSuccessAction
   | SortAction
+  | SearchAction
   | AddFilterAction
   | RemoveFilterAction
-  | SetActiveAction;
+  | SetActiveAction
+  | ActiveSuccessAction;
 
 //#endregion
 export default function courseReducer(
@@ -138,6 +181,18 @@ export default function courseReducer(
         ...state,
         sort: action.sort,
         courses: Sort(state.courses, action.sort),
+      };
+    case ActionTypes.SEARCH:
+      return {
+        ...state,
+        courses:
+          action.name.length > 0
+            ? state.backup.filter(
+                f =>
+                  f.subjectCode.includes(action.name) ||
+                  f.name.toUpperCase().includes(action.name)
+              )
+            : Sort(state.backup, state.sort),
       };
     case ActionTypes.ADD_FILTER:
       return state.filters[action.filter.type].every(
@@ -168,7 +223,14 @@ export default function courseReducer(
           }
         : state;
     case ActionTypes.SET_ACTIVE:
-      return { ...state, activeCourse: action.course };
+      return { ...state, fetchTracking: true };
+    case ActionTypes.ACTIVE_SUCCESS:
+      return {
+        ...state,
+        fetchTracking: false,
+        tracking: action.data,
+        activeCourse: action.course,
+      };
     default:
       return state;
   }
@@ -245,4 +307,20 @@ const fetchCoursesEpic: Epic<CourseActions> = (action$, state$) =>
     map(courses => fetchSuccessAction(courses))
   );
 
-export const CourseEpics = combineEpics(fetchCoursesEpic);
+const trackCourseEpic: Epic<CourseActions> = (action$, state$) =>
+  action$.ofType(ActionTypes.SET_ACTIVE).pipe(
+    map(action => action as SetActiveAction),
+    switchMap(async action => {
+      const tracking = action.course
+        ? await API.tracking(action.course!.number, action.quarter)
+        : [];
+      const course = { ...action.course } as Course;
+      course['fullName'] = action.course
+        ? await API.fetchName(action.course!.number, action.quarter)
+        : '';
+      return { tracking: tracking, course: course };
+    }),
+    map(data => activeSuccessAction(data['tracking'], data['course']))
+  );
+
+export const CourseEpics = combineEpics(fetchCoursesEpic, trackCourseEpic);

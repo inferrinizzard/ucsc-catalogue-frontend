@@ -4,7 +4,7 @@ import CardActionArea from '@material-ui/core/CardActionArea';
 import CardContent from '@material-ui/core/CardContent';
 import Typography from '@material-ui/core/Typography';
 import styled from 'styled-components';
-import { Course } from '../models/course.model';
+import { Course } from '../../models/course.model';
 
 const StyleCard = styled(Card)<any>`
   margin: 0.15em 0.25em

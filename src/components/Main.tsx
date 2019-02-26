@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import { AutoSizer, List } from 'react-virtualized';
 
 import { Course } from '../models/course.model';
-import ClassCard from './ClassCard';
+import ClassCard from './Pieces/ClassCard';
 import { CombineLatestSubscriber } from 'rxjs/internal/observable/combineLatest';
 
 export interface MainProps {
@@ -41,7 +41,8 @@ const Main: React.SFC<MainProps & MainDivProps> = props => {
                 height={height}
                 rowCount={rows}
                 rowHeight={props.cardHeight}
-                overscanRowCount={2}
+                overscanRowCount={4}
+                // scrollToRow={}
                 rowRenderer={({
                   index,
                   key,
@@ -53,7 +54,7 @@ const Main: React.SFC<MainProps & MainDivProps> = props => {
                 }) => {
                   const items = [];
                   const fromIndex: number = index * columns;
-                  const toIndex = Math.min(
+                  const toIndex: number = Math.min(
                     fromIndex + columns,
                     props.courses.length
                   );

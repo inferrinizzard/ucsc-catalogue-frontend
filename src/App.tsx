@@ -8,12 +8,13 @@ import { ReduxState, ReduxAction } from './store';
 import Main from './components/Main';
 import SortDrawer from './components/SortDrawer';
 import CourseDrawer from './components/CourseDrawer';
-import BottomLiner from './components/BottomLiner';
+import BottomLiner from './components/Pieces/BottomLiner';
 
-import { Course } from './models/course.model';
+import { Course, CourseEnrollment } from './models/course.model';
 import {
   fetchAction,
   sortAction,
+  searchAction,
   setActiveAction,
   addFilterAction,
   removeFilterAction,
@@ -37,6 +38,8 @@ interface PropsFromStore {
   filters: FilterList<FilterDomain, CourseType>;
   sortKey: CourseType;
   activeCourse: Course | null;
+  quarter: number;
+  tracking: CourseEnrollment[];
 }
 
 interface PropsToDispatch {
@@ -44,7 +47,8 @@ interface PropsToDispatch {
   addFilter: (f: Filter) => void;
   removeFilter: (f: Filter) => void;
   sort: (n: CourseType) => void;
-  setActive: (c: Course | null) => void;
+  search: (name: string) => void;
+  setActive: (c: Course | null, q: string) => void;
 }
 
 type AppProps = PropsFromStore & PropsToDispatch;
@@ -89,13 +93,12 @@ class App extends React.Component<AppProps, AppState> {
   };
 
   setActive = (course: Course | null) => {
-    this.props.setActive(course);
+    this.props.setActive(course, this.props.quarter.toString());
   };
 
   openDetail = (course: Course) => {
     this.setActive(course);
     this.setState({
-      ...this.state,
       drawerOpen: true,
     });
   };
@@ -103,27 +106,24 @@ class App extends React.Component<AppProps, AppState> {
   closeDetail = () => {
     this.setActive(null);
     this.setState({
-      ...this.state,
       drawerOpen: false,
     });
   };
 
   openLiner = () => {
     this.setState({
-      ...this.state,
       linerOpen: true,
     });
   };
 
   closeLiner = () => {
     this.setState({
-      ...this.state,
       linerOpen: false,
     });
   };
 
   setDrawerWidth = (val: number) => {
-    this.setState({ ...this.state, drawerWidth: val });
+    this.setState({ drawerWidth: val });
   };
 
   condenseFilter = (
@@ -151,6 +151,7 @@ class App extends React.Component<AppProps, AppState> {
             removeFilter={this.removeFilter}
             activeFilters={this.condenseFilter(this.props.filters)}
             changeQuarter={this.changeQuarter}
+            search={this.props.search}
           />
           <Main
             courses={this.props.courses}
@@ -165,6 +166,7 @@ class App extends React.Component<AppProps, AppState> {
             open={this.state.drawerOpen}
             closeDetail={this.closeDetail}
             course={this.props.activeCourse}
+            tracking={this.props.tracking}
           />
         </div>
         <BottomLiner
@@ -184,13 +186,16 @@ const mapStateToProps = (state: ReduxState): PropsFromStore => ({
   filters: state.course.filters,
   sortKey: state.course.sort,
   activeCourse: state.course.activeCourse,
+  quarter: state.course.quarter,
+  tracking: state.course.tracking,
 });
 const mapDispatchToProps = (
   dispatch: Dispatch<ReduxAction>
 ): PropsToDispatch => ({
   load: quarter => dispatch(fetchAction(quarter)),
   sort: key => dispatch(sortAction(key)),
-  setActive: course => dispatch(setActiveAction(course)),
+  search: name => dispatch(searchAction(name)),
+  setActive: (course, quarter) => dispatch(setActiveAction(course, quarter)),
   addFilter: type => dispatch(addFilterAction(type)),
   removeFilter: type => dispatch(removeFilterAction(type)),
 });

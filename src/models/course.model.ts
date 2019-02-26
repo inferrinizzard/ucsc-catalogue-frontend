@@ -1,5 +1,5 @@
 export interface Term {
-  code: string;
+  code: number;
   name: string;
 }
 
@@ -31,6 +31,7 @@ export interface Course {
   code: string; // code in the subject e.g. 80T
   classSection: string; //
   name: string;
+  fullName?: string;
   description: string;
   type: string; // Lecture, Studio, etc.
   credit: number; // number of credits
@@ -63,7 +64,7 @@ export interface SectionEnrollment {
 export interface CourseEnrollment {
   termId: string;
   courseNum: number;
-  date: number;
+  date: string;
   status: EnrollmentStatus;
   available: number;
   capacity: number;
@@ -72,3 +73,5 @@ export interface CourseEnrollment {
   waitlistTotal: number;
   sections: SectionEnrollment[];
 }
+
+export type Filter = { type: keyof Course; filter: string };
