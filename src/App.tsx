@@ -23,7 +23,6 @@ import {
   FilterDomain,
   CourseType,
 } from './store/course';
-import { dispatch } from 'rxjs/internal/observable/pairs';
 
 const Liner = styled.div`
   width: 100%;

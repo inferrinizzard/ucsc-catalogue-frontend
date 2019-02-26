@@ -3,14 +3,9 @@ import { Course, CourseEnrollment } from '../models/course.model';
 import API from '../services/api';
 import { Epic, combineEpics } from 'redux-observable';
 import {
-  filter,
   map,
-  switchMap,
-  delay,
-  concatMap,
-  mergeMap,
+  switchMap
 } from 'rxjs/operators';
-import { CardActionArea } from '@material-ui/core';
 
 export interface CourseState {
   loading: boolean;

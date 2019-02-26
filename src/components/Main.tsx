@@ -7,7 +7,6 @@ import { List } from 'react-virtualized/dist/es/List';
 
 import { Course } from '../models/course.model';
 import ClassCard from './Pieces/ClassCard';
-import { CombineLatestSubscriber } from 'rxjs/internal/observable/combineLatest';
 
 export interface MainProps {
   courses: Course[];
