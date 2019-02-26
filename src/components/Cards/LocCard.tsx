@@ -26,7 +26,7 @@ class LocCard extends React.Component<LocCardProps, LocCardState> {
         {/* <div>image goes here</div> */}
         <CardContent>
           <Typography>{'Location: ' + this.props.location}</Typography>
-          <div>Google Maps this</div>
+          {/* <div>Google Maps this</div> */}
         </CardContent>
       </StyleCard>
     );

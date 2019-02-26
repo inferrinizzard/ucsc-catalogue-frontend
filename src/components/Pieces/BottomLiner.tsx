@@ -29,7 +29,8 @@ const BottomLiner: React.SFC<BottomLinerProps> = props => {
         <Typography>About</Typography>
       </Button>
       <Collapse in={props.open}>
-        <Typography>Content</Typography>
+        <Typography>Made by Sean Song and Shun Kashiwa</Typography>
+        <Typography>Data provided by slugsurvival</Typography>
       </Collapse>
     </Liner>
   );

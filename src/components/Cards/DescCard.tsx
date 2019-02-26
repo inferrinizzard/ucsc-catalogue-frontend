@@ -64,9 +64,11 @@ const DescCard: React.SFC<DescCardProps> = props => {
             type="body2"
             text={
               'GE: ' +
-              props.courseData.ge.reduce((x, c) => {
-                return x + c + ' ';
-              }) +
+              (props.courseData.ge.length > 0
+                ? props.courseData.ge.reduce((x, c) => {
+                    return x + c + ' ';
+                  })
+                : 'N/a') +
               ', ' +
               'Credits: ' +
               props.courseData.credit

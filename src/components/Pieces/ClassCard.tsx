@@ -15,12 +15,22 @@ const StyleCard = styled(Card)<any>`
 export interface ClassCardProps {
   openDetail: (course: Course) => void;
   courseData: Course;
+  active: Course | null;
+  k: number;
 }
 
 const ClassCard: React.SFC<ClassCardProps> = props => {
   return (
     <StyleCard>
-      <CardActionArea onClick={event => props.openDetail(props.courseData)}>
+      <CardActionArea
+        style={{
+          backgroundColor:
+            props.active && props.active.number === props.courseData.number
+              ? '#92c2ff'
+              : 'transparent',
+        }}
+        onClick={event => props.openDetail(props.courseData)}
+      >
         <CardContent>
           <Typography gutterBottom variant="h5" component="h2">
             {props.courseData.subject + ' ' + props.courseData.code}

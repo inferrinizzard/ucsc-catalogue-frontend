@@ -11,6 +11,8 @@ import TextBlock from '../Pieces/TextBlock';
 
 export interface EnrollCardProps {
   tracking: CourseEnrollment[];
+  start: Date;
+  quarter: number;
 }
 
 const StyleCard = styled(Card)<any>`
@@ -24,6 +26,11 @@ const EnrollCard: React.SFC<EnrollCardProps> = props => {
       <CardHeader title="Enrollment" />
       <div>
         <Plot
+          //dates:
+          //enrollment for fall is 51 days after start of previous spring
+          //enrollment for spring is 51 days after winter
+          //enrollment for winter is 53 days after fall
+          //second pass 8 days after
           data={[
             {
               x: props.tracking.reduceRight((x: string[], val) => {
@@ -64,6 +71,16 @@ const EnrollCard: React.SFC<EnrollCardProps> = props => {
               hoverlabel: { bordercolor: '#FFF' },
               line: { color: 'rgb(255, 127, 14)' },
             },
+            // {
+            //   x: [
+            //     props.start.toDateString().substr(4),
+            //     new Date(props.start.getDate() + 51).toDateString().substr(4),
+            //   ],
+            //   y: [0, 0],
+            //   type: 'scatter',
+            //   hoverinfo: 'skip',
+            //   // type: 'rect',
+            // },
           ]}
           style={{ width: 'calc(100% - 20px)', height: '100%' }}
           layout={{

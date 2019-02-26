@@ -189,6 +189,14 @@ class _API {
       )
       .then(s => s.substr(s.lastIndexOf(';') + 1).trim());
   }
+
+  public async fetchDate(term: string | number): Promise<Date> {
+    return new Date(
+      await fetch(this.endpoint + '/data/fetch/terms.json')
+        .then(x => x.text())
+        .then(s => s.substr(s.indexOf(term.toString()) + 40, 8))
+    );
+  }
 }
 
 const API = new _API();

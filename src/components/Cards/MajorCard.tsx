@@ -19,10 +19,12 @@ class MajorCard extends React.Component<MajorCardProps, MajorCardState> {
       <StyleCard>
         <CardHeader title="Major" />
         {/* <CardMedia /> */}
-        <div>image goes here</div>
-        <CardContent>
+        <div style={{ textAlign: 'center', fontFamily: 'Roboto' }}>
+          Work in progress, to be implemented soon!
+        </div>
+        {/* <CardContent>
           <div>reqs</div>
-        </CardContent>
+        </CardContent> */}
       </StyleCard>
     );
   }
