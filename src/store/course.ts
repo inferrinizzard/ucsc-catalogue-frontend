@@ -2,10 +2,7 @@ import { Action } from 'redux';
 import { Course, CourseEnrollment } from '../models/course.model';
 import API from '../services/api';
 import { Epic, combineEpics } from 'redux-observable';
-import {
-  map,
-  switchMap
-} from 'rxjs/operators';
+import { map, switchMap } from 'rxjs/operators';
 
 export interface CourseState {
   loading: boolean;
