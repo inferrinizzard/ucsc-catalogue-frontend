@@ -332,7 +332,6 @@ class SortDrawer extends React.Component<SortDrawerProps, SortDrawerState> {
               </React.Fragment>
             ))}
             <QuarterMenu changeQuarter={this.props.changeQuarter} />
-            {/* which quarter, default to current */}
           </Section>
         </Drawer>
       </RootRef>

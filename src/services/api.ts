@@ -134,6 +134,13 @@ class _API {
       []
     );
   }
+  // public async latestStatus(
+  //   courseNum: number | string,
+  //   termId: number | string
+  // ): Promise<model.CourseEnrollment[]> {}
+
+  // https://andromeda.miragespace.net/slugsurvival/tracking/latestOne?termId=:termCode&courseNum=:courseNum
+
   public async tracking(
     courseNum: number | string,
     termId: number | string
@@ -192,7 +199,8 @@ class _API {
 
   public async fetchDate(term: string | number): Promise<Date> {
     return new Date(
-      await fetch(this.endpoint + '/data/fetch/terms.json')
+      await ky
+        .get(this.endpoint + '/data/fetch/terms.json')
         .then(x => x.text())
         .then(s => s.substr(s.indexOf(term.toString()) + 40, 8))
     );

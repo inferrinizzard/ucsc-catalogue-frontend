@@ -24,7 +24,7 @@ const EnrollCard: React.SFC<EnrollCardProps> = props => {
   return (
     <StyleCard>
       <CardHeader title="Enrollment" />
-      <div>
+      <div style={{ marginBottom: '5px' }}>
         <Plot
           //dates:
           //enrollment for fall is 51 days after start of previous spring
@@ -116,6 +116,7 @@ const EnrollCard: React.SFC<EnrollCardProps> = props => {
           useResizeHandler
         />
       </div>
+      <Divider />
       <CardContent>
         <TextBlock
           text={

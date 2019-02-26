@@ -46,6 +46,7 @@
   },
   "dependencies": {
     "@material-ui/core": "^3.8.3",
+    "@material-ui/icons": "^3.0.2",
     "@types/react-plotly.js": "^2.2.2",
     "css-loader": "^1.0.0",
     "ky": "^0.9.0",
