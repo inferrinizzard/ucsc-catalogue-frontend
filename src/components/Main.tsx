@@ -1,7 +1,9 @@
 import * as React from 'react';
 import { PureComponent } from 'react';
 import styled from 'styled-components';
-import { AutoSizer, List } from 'react-virtualized';
+
+import { AutoSizer } from 'react-virtualized/dist/es/AutoSizer';
+import { List } from 'react-virtualized/dist/es/List';
 
 import { Course } from '../models/course.model';
 import ClassCard from './Pieces/ClassCard';
