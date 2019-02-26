@@ -195,10 +195,13 @@ export default function courseReducer(
         ...state,
         courses:
           action.name.length > 0
-            ? state.backup.filter(
-                f =>
-                  f.subjectCode.includes(action.name) ||
-                  f.name.toUpperCase().includes(action.name)
+            ? Sort(
+                state.backup.filter(
+                  f =>
+                    f.subjectCode.includes(action.name) ||
+                    f.name.toUpperCase().includes(action.name)
+                ),
+                state.sort
               )
             : Sort(state.backup, state.sort),
       };
@@ -324,13 +327,13 @@ const trackCourseEpic: Epic<CourseActions> = (action$, state$) =>
   action$.ofType(ActionTypes.SET_ACTIVE).pipe(
     map(action => action as SetActiveAction),
     switchMap(async action => {
-      const tracking = action.course
-        ? await API.tracking(action.course!.number, action.quarter)
-        : [];
       const course = { ...action.course } as Course;
       course['fullName'] = action.course
         ? await API.fetchName(action.course!.number, action.quarter)
         : '';
+      const tracking = action.course
+        ? await API.tracking(action.course!.number, action.quarter)
+        : [];
       return { tracking: tracking, course: course };
     }),
     map(data => activeSuccessAction(data['tracking'], data['course']))

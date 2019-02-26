@@ -55,7 +55,7 @@ class CourseDrawer extends React.Component<
         elevation={1}
         PaperProps={{
           style: {
-            width: '50%',
+            width: '48%',
           },
         }}
       >
