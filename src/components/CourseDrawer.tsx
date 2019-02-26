@@ -45,9 +45,12 @@ class CourseDrawer extends React.Component<
   CourseDrawerState
 > {
   render() {
-    return this.props.loading ? (
-      <div>{'Loading...'}</div>
-    ) : (
+    return (
+      //  this.props.loading ? (
+      //   <div style={{ width: '100%', height: '100%', backgroundColor: '#333' }}>
+      //     {'Loading...'}
+      //   </div>
+      // ) : (
       <Drawer
         anchor="right"
         open={Boolean(this.props.course)}
@@ -55,7 +58,7 @@ class CourseDrawer extends React.Component<
         elevation={1}
         PaperProps={{
           style: {
-            width: '50%',
+            width: '48%',
           },
         }}
       >

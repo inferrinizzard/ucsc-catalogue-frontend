@@ -68,7 +68,7 @@ class App extends React.Component<AppProps, AppState> {
   state = {
     drawerOpen: false,
     linerWidth: 30,
-    drawerWidth: 250,
+    drawerWidth: 225,
     cardHeight: 100,
     cardWidth: 210,
     linerOpen: false,
@@ -142,7 +142,11 @@ class App extends React.Component<AppProps, AppState> {
   render() {
     return (
       <div id={'app'}>
-        <Liner>UCSC-Catalogue</Liner>
+        <Liner
+          style={{ height: '25px', textAlign: 'center', fontFamily: 'Roboto' }}
+        >
+          SlugCourses
+        </Liner>
         <div id={'main'}>
           <SortDrawer
             sort={this.sortCourses}
