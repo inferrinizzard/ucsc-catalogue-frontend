@@ -142,7 +142,11 @@ class App extends React.Component<AppProps, AppState> {
   render() {
     return (
       <div id={'app'}>
-        <Liner>UCSC-Catalogue</Liner>
+        <Liner
+          style={{ height: '25px', textAlign: 'center', fontFamily: 'Roboto' }}
+        >
+          SlugCourses
+        </Liner>
         <div id={'main'}>
           <SortDrawer
             sort={this.sortCourses}
