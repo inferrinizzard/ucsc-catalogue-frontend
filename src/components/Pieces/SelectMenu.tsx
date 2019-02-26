@@ -20,8 +20,8 @@ export interface SelectMenuState {
 
 const keyNameMap: { [K in CourseType]?: string } = {
   subjectCode: 'Course Name',
-  capacity: 'Capacity',
-  type: 'Type',
+  capacity: 'Capacity (WIP)',
+  type: 'Class Type',
 };
 
 class SelectMenu extends React.Component<SelectMenuProps, SelectMenuState> {

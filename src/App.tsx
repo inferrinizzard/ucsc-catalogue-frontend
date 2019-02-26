@@ -14,6 +14,7 @@ import { Course, CourseEnrollment } from './models/course.model';
 import {
   fetchAction,
   sortAction,
+  searchAction,
   setActiveAction,
   addFilterAction,
   removeFilterAction,
@@ -46,6 +47,7 @@ interface PropsToDispatch {
   addFilter: (f: Filter) => void;
   removeFilter: (f: Filter) => void;
   sort: (n: CourseType) => void;
+  search: (name: string) => void;
   setActive: (c: Course | null, q: string) => void;
 }
 
@@ -149,6 +151,7 @@ class App extends React.Component<AppProps, AppState> {
             removeFilter={this.removeFilter}
             activeFilters={this.condenseFilter(this.props.filters)}
             changeQuarter={this.changeQuarter}
+            search={this.props.search}
           />
           <Main
             courses={this.props.courses}
@@ -191,6 +194,7 @@ const mapDispatchToProps = (
 ): PropsToDispatch => ({
   load: quarter => dispatch(fetchAction(quarter)),
   sort: key => dispatch(sortAction(key)),
+  search: name => dispatch(searchAction(name)),
   setActive: (course, quarter) => dispatch(setActiveAction(course, quarter)),
   addFilter: type => dispatch(addFilterAction(type)),
   removeFilter: type => dispatch(removeFilterAction(type)),

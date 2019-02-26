@@ -21,6 +21,7 @@ export interface SortDrawerProps {
   removeFilter: (f: Filter) => void;
   changeQuarter: (n: number) => void;
   activeFilters: Filter[];
+  search: (name: string) => void;
 }
 export interface SortDrawerState {
   widthRef: React.RefObject<HTMLElement>;
@@ -38,6 +39,7 @@ const Section = styled(Card)<any>`
 const catMap: { [K in CourseType]?: string[] } = {
   subject: [
     'ACEN',
+    'AM',
     'AMS',
     'AMST',
     'ANTH',
@@ -62,9 +64,11 @@ const catMap: { [K in CourseType]?: string[] } = {
     'CRES',
     'CRSN',
     'CRWN',
+    'CSE',
     'CSP',
     'DANM',
     'EART',
+    'ECE',
     'ECON',
     'EDUC',
     'EE',
@@ -125,6 +129,7 @@ const catMap: { [K in CourseType]?: string[] } = {
     'SPAN',
     'SPHS',
     'SPSS',
+    'STAT',
     'STEV',
     'THEA',
     'TIM',
@@ -157,6 +162,7 @@ const catMap: { [K in CourseType]?: string[] } = {
 const toolTip: { [K in CourseType]?: string[] } = {
   subject: [
     'Academic English',
+    'Applied Mathematics',
     'Applied Math and Statistics',
     'American Studies',
     'Anthropology',
@@ -181,9 +187,11 @@ const toolTip: { [K in CourseType]?: string[] } = {
     'Critical Race and Ethnics Studies',
     'Rachel Carson College',
     'Crown College',
+    'Computer Science and Engineering',
     'Coastal Science and Policy',
     'Digital Arts and New Media',
     'Earth Sciences',
+    'Electrical and Computer Engineering',
     'Economics',
     'Education',
     'Electrical Engineering',
@@ -244,6 +252,7 @@ const toolTip: { [K in CourseType]?: string[] } = {
     'Spanish',
     'Spanish for Heritage Speakers',
     'Spanish for Spanish Speakers',
+    'Statistics',
     'Stevenson College',
     'Theatre',
     'Technology and Information Management',
@@ -300,9 +309,7 @@ class SortDrawer extends React.Component<SortDrawerProps, SortDrawerState> {
           }}
         >
           <Spacer />
-          <Section>
-            <SearchBar />
-          </Section>
+          <SearchBar search={this.props.search} />
           <Section>
             <CardHeader title="Sorting" />
             <SelectMenu sort={this.props.sort} sortKey={this.props.sortKey} />

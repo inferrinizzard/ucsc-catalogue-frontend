@@ -46,11 +46,11 @@ const EnrollCard: React.SFC<EnrollCardProps> = props => {
               type: 'scatter',
               fill: 'tonexty',
               name: 'Waitlisted',
-              hoverinfo: 'text',
+              hoverinfo: 'x+text+name', //requires 'x+text+name' type in @types/plotly.js/index.d.ts
               text: props.tracking.reduceRight((x: string[], val) => {
                 return x.concat(val.waitlistTotal.toString());
               }, []),
-              hoverlabel: {},
+              line: { color: 'rgb(44, 160, 44)' },
             },
             {
               x: props.tracking.reduceRight((x: string[], val) => {
@@ -61,7 +61,8 @@ const EnrollCard: React.SFC<EnrollCardProps> = props => {
               }, []),
               type: 'scatter',
               name: 'Capacity',
-              // hoverinfo: 'none',
+              hoverlabel: { bordercolor: '#FFF' },
+              line: { color: 'rgb(255, 127, 14)' },
             },
           ]}
           style={{ width: 'calc(100% - 20px)', height: '100%' }}
@@ -69,10 +70,12 @@ const EnrollCard: React.SFC<EnrollCardProps> = props => {
             fixedrange: true,
             showlegend: false,
             xaxis: {
+              fixedrange: true,
               hoverformat: '',
               // tickangle: 45
             },
             yaxis: {
+              fixedrange: true,
               range:
                 props.tracking.length > 0
                   ? [

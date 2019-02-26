@@ -62,11 +62,19 @@ const DescCard: React.SFC<DescCardProps> = props => {
           <div />
           <TextBlock
             type="body2"
-            text={'Credits: ' + props.courseData.credit}
+            text={
+              'GE: ' +
+              props.courseData.ge.reduce((x, c) => {
+                return x + c + ' ';
+              }) +
+              ', ' +
+              'Credits: ' +
+              props.courseData.credit
+            }
           />
           <TextBlock
             type="body2"
-            text={'Course Number:' + props.courseData.number}
+            text={'Course Number: ' + props.courseData.number}
           />
           <div />
           <TextBlock

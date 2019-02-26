@@ -59,14 +59,13 @@ const initialState: CourseState = {
 };
 //#region actions
 enum ActionTypes {
-  ADD_FILTER = 'add-filter',
-  REMOVE_FILTER = 'remove-filter',
-  SORT = 'sort',
   FETCH_API = 'fetch',
   FETCH_API_SUCCESS = 'fetch-success',
-  UPDATE = 'update',
+  SORT = 'sort',
+  SEARCH = 'search',
+  ADD_FILTER = 'add-filter',
+  REMOVE_FILTER = 'remove-filter',
   SET_ACTIVE = 'set-active',
-  TRACK_COURSE = 'track-course',
   ACTIVE_SUCCESS = 'active-success',
 }
 
@@ -95,6 +94,15 @@ interface SortAction extends Action {
 export const sortAction = (sort: CourseType): SortAction => ({
   type: ActionTypes.SORT,
   sort,
+});
+
+interface SearchAction extends Action {
+  type: ActionTypes.SEARCH;
+  name: string;
+}
+export const searchAction = (name: string): SearchAction => ({
+  type: ActionTypes.SEARCH,
+  name,
 });
 
 interface AddFilterAction extends Action {
@@ -129,16 +137,16 @@ export const setActiveAction = (
   quarter,
 });
 
-interface TrackCourseAction extends Action {
-  type: ActionTypes.TRACK_COURSE;
+interface ActiveSuccessAction extends Action {
+  type: ActionTypes.ACTIVE_SUCCESS;
   data: CourseEnrollment[];
   course: Course;
 }
-export const trackCourseAction = (
+export const activeSuccessAction = (
   data: CourseEnrollment[],
   course: Course
-): TrackCourseAction => ({
-  type: ActionTypes.TRACK_COURSE,
+): ActiveSuccessAction => ({
+  type: ActionTypes.ACTIVE_SUCCESS,
   data,
   course,
 });
@@ -147,10 +155,11 @@ export type CourseActions =
   | FetchAction
   | FetchSuccessAction
   | SortAction
+  | SearchAction
   | AddFilterAction
   | RemoveFilterAction
   | SetActiveAction
-  | TrackCourseAction;
+  | ActiveSuccessAction;
 
 //#endregion
 export default function courseReducer(
@@ -172,6 +181,18 @@ export default function courseReducer(
         ...state,
         sort: action.sort,
         courses: Sort(state.courses, action.sort),
+      };
+    case ActionTypes.SEARCH:
+      return {
+        ...state,
+        courses:
+          action.name.length > 0
+            ? state.backup.filter(
+                f =>
+                  f.subjectCode.includes(action.name) ||
+                  f.name.toUpperCase().includes(action.name)
+              )
+            : Sort(state.backup, state.sort),
       };
     case ActionTypes.ADD_FILTER:
       return state.filters[action.filter.type].every(
@@ -203,7 +224,7 @@ export default function courseReducer(
         : state;
     case ActionTypes.SET_ACTIVE:
       return { ...state, fetchTracking: true };
-    case ActionTypes.TRACK_COURSE:
+    case ActionTypes.ACTIVE_SUCCESS:
       return {
         ...state,
         fetchTracking: false,
@@ -299,7 +320,7 @@ const trackCourseEpic: Epic<CourseActions> = (action$, state$) =>
         : '';
       return { tracking: tracking, course: course };
     }),
-    map(data => trackCourseAction(data['tracking'], data['course']))
+    map(data => activeSuccessAction(data['tracking'], data['course']))
   );
 
 export const CourseEpics = combineEpics(fetchCoursesEpic, trackCourseEpic);

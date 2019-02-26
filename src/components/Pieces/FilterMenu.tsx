@@ -73,7 +73,7 @@ class FilterMenu extends React.Component<FilterMenuProps, FilterMenuState> {
           onBackdropClick={this.handleClose}
           PaperProps={{
             style: {
-              maxHeight: this.ITEM_HEIGHT * 4.5,
+              maxHeight: this.ITEM_HEIGHT * 7.5,
               width: this.state.width !== 0 ? this.state.width : 'auto',
             },
           }}
