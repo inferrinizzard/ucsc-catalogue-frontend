@@ -55,7 +55,6 @@ interface PropsToDispatch {
 type AppProps = PropsFromStore & PropsToDispatch;
 
 export interface AppState {
-  drawerOpen: boolean;
   linerWidth: number;
   drawerWidth: number;
   cardHeight: number;
@@ -65,7 +64,6 @@ export interface AppState {
 
 class App extends React.Component<AppProps, AppState> {
   state = {
-    drawerOpen: false,
     linerWidth: 30,
     drawerWidth: 225,
     cardHeight: 100,
@@ -99,16 +97,10 @@ class App extends React.Component<AppProps, AppState> {
 
   openDetail = (course: Course) => {
     this.setActive(course);
-    this.setState({
-      drawerOpen: true,
-    });
   };
 
   closeDetail = () => {
     this.setActive(null);
-    this.setState({
-      drawerOpen: false,
-    });
   };
 
   openLiner = () => {
@@ -150,7 +142,7 @@ class App extends React.Component<AppProps, AppState> {
           <SortDrawer
             sort={this.sortCourses}
             sortKey={this.props.sortKey}
-            open={!this.state.drawerOpen}
+            open={!Boolean(this.props.activeCourse)}
             setDrawerWidth={this.setDrawerWidth}
             addFilter={this.addFilter}
             removeFilter={this.removeFilter}
@@ -160,7 +152,7 @@ class App extends React.Component<AppProps, AppState> {
           />
           <Main
             courses={this.props.courses}
-            open={this.state.drawerOpen}
+            open={Boolean(this.props.activeCourse)}
             linerWidth={this.state.linerWidth}
             drawerWidth={this.state.drawerWidth}
             openDetail={this.openDetail}
@@ -169,7 +161,7 @@ class App extends React.Component<AppProps, AppState> {
             active={this.props.activeCourse}
           />
           <CourseDrawer
-            open={this.state.drawerOpen}
+            open={Boolean(this.props.activeCourse)}
             closeDetail={this.closeDetail}
             course={this.props.activeCourse}
             tracking={this.props.tracking}

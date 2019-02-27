@@ -8,12 +8,12 @@ import { Course } from '../../models/course.model';
 
 const StyleCard = styled(Card)<any>`
   margin: 0.15em 0.25em
-	min-width: 200px;
+	width: 200px;
   display: inline-block;
 `;
 
 export interface ClassCardProps {
-  openDetail: (course: Course) => void;
+  openDetail: (course: Course, k: number) => void;
   courseData: Course;
   active: Course | null;
   k: number;
@@ -29,7 +29,7 @@ const ClassCard: React.SFC<ClassCardProps> = props => {
               ? '#92c2ff'
               : 'transparent',
         }}
-        onClick={event => props.openDetail(props.courseData)}
+        onClick={event => props.openDetail(props.courseData, props.k)}
       >
         <CardContent>
           <Typography gutterBottom variant="h5" component="h2">
