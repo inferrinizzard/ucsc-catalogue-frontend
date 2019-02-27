@@ -5,9 +5,13 @@ import CardContent from '@material-ui/core/CardContent';
 import Divider from '@material-ui/core/Divider';
 import styled from 'styled-components';
 
+<<<<<<< HEAD
 const Plotly = require('./../../misc/plotly/bundle.js');
 
 // const Plotly = require('../../../misc/plotly/bundle');
+=======
+import Plotly from 'plotly.js-basic-dist';
+>>>>>>> parent of 9321eb9... [wip] custom bundle plotly.js
 import createPlotlyComponent from 'react-plotly.js/factory';
 const Plot = createPlotlyComponent(Plotly);
 
