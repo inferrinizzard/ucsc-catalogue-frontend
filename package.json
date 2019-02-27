@@ -4,10 +4,7 @@
   "description": "slugstayalive",
   "main": "index.js",
   "scripts": {
-<<<<<<< HEAD
     "postinstall": "webpack --config misc/plotly/webpack.plotly.config.js",
-=======
->>>>>>> parent of 9321eb9... [wip] custom bundle plotly.js
     "start": "webpack-dev-server --config webpack.config.dev.js",
     "build:dev": "webpack --config webpack.config.dev.js",
     "build:prod": "webpack --config webpack.config.prod.js",
