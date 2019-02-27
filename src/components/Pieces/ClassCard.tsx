@@ -8,7 +8,7 @@ import { Course } from '../../models/course.model';
 
 const StyleCard = styled(Card)<any>`
   margin: 0.15em 0.25em
-	min-width: 200px;
+	width: 200px;
   display: inline-block;
 `;
 

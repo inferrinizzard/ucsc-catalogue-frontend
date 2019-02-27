@@ -106,7 +106,7 @@ class FilterMenu extends React.Component<FilterMenuProps, FilterMenuState> {
               </Tooltip>
             ))}
         </Menu>
-        <div>
+        <div style={{ maxWidth: '220px' }}>
           {this.props.activeFilters.map((af, index) => (
             <Chip
               key={af.name}

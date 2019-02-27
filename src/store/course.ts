@@ -23,6 +23,7 @@ export interface CourseState {
   quarter: number;
   tracking: CourseEnrollment[];
   start: Date;
+  search: string;
 }
 
 export type CourseType = keyof Course;
@@ -58,6 +59,7 @@ const initialState: CourseState = {
   quarter: 2190,
   tracking: [],
   start: new Date(0),
+  search: '',
 };
 //#region actions
 enum ActionTypes {
@@ -181,7 +183,10 @@ export default function courseReducer(
         ...state,
         loading: false,
         start: action.start,
-        courses: Sort(Filter(action.data, state.filters), state.sort),
+        courses: Sort(
+          Search(Filter(action.data, state.filters), state.search),
+          state.sort
+        ),
         backup: action.data,
       };
     case ActionTypes.SORT:
@@ -193,18 +198,8 @@ export default function courseReducer(
     case ActionTypes.SEARCH:
       return {
         ...state,
-        courses:
-          action.name.length > 0
-            ? Sort(
-                state.backup.filter(
-                  f =>
-                    f.subjectCode.includes(action.name) ||
-                    f.name.toUpperCase().includes(action.name) ||
-                    (f.subject + ' ' + f.code).includes(action.name)
-                ),
-                state.sort
-              )
-            : Sort(state.backup, state.sort),
+        search: action.name,
+        courses: Sort(Search(state.backup, action.name), state.sort),
       };
     case ActionTypes.ADD_FILTER:
       return state.filters[action.filter.type].every(
@@ -262,6 +257,17 @@ function InnerSort(a: Course, b: Course, sort: CourseType): number {
     if (left < right) return -1;
   }
   return 0;
+}
+
+function Search(courses: Course[], search: string): Course[] {
+  return search.length > 0
+    ? courses.filter(
+        f =>
+          f.subjectCode.includes(search) ||
+          f.name.toUpperCase().includes(search) ||
+          (f.subject + ' ' + f.code).includes(search)
+      )
+    : courses;
 }
 
 function setFilters(
