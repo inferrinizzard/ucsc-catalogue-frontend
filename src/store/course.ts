@@ -188,6 +188,7 @@ export default function courseReducer(
           state.sort
         ),
         backup: action.data,
+        activeCourse: null,
       };
     case ActionTypes.SORT:
       return {
@@ -210,7 +211,7 @@ export default function courseReducer(
             courses: Sort(
               Filter(
                 state.backup,
-                setFilters(state.filters, action.filter, 'add')
+                SetFilters(state.filters, action.filter, 'add')
               ),
               state.sort
             ),
@@ -223,7 +224,7 @@ export default function courseReducer(
             courses: Sort(
               Filter(
                 state.backup,
-                setFilters(state.filters, action.filter, 'remove')
+                SetFilters(state.filters, action.filter, 'remove')
               ),
               state.sort
             ),
@@ -270,7 +271,7 @@ function Search(courses: Course[], search: string): Course[] {
     : courses;
 }
 
-function setFilters(
+function SetFilters(
   filters: FilterList<FilterDomain, CourseType>,
   val: Filter,
   action: string

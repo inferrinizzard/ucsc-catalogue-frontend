@@ -13,7 +13,7 @@ const StyleCard = styled(Card)<any>`
 `;
 
 export interface ClassCardProps {
-  openDetail: (course: Course) => void;
+  openDetail: (course: Course, k: number) => void;
   courseData: Course;
   active: Course | null;
   k: number;
@@ -29,7 +29,7 @@ const ClassCard: React.SFC<ClassCardProps> = props => {
               ? '#92c2ff'
               : 'transparent',
         }}
-        onClick={event => props.openDetail(props.courseData)}
+        onClick={event => props.openDetail(props.courseData, props.k)}
       >
         <CardContent>
           <Typography gutterBottom variant="h5" component="h2">

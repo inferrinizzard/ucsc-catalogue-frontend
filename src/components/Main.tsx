@@ -34,10 +34,11 @@ const MainDiv = styled.div`
 
 class Main extends React.Component<MainProps & MainDivProps, MainState> {
   state = { activeNum: 0 };
-  setActive(c: Course, k: number) {
+  setActive = (c: Course, k: number) => {
     this.props.openDetail(c);
-    this.setState({ activeNum: c ? k : 0 });
-  }
+    // this.setState({ activeNum: c ? k : 0 });
+    //need to set logic for mod the rowcount before and after
+  };
   render() {
     return (
       <MainDiv {...this.props}>
@@ -53,7 +54,7 @@ class Main extends React.Component<MainProps & MainDivProps, MainState> {
                   rowCount={rows}
                   rowHeight={this.props.cardHeight}
                   overscanRowCount={4}
-                  scrollToIndex={this.state.activeNum}
+                  scrollToRow={this.state.activeNum}
                   rowRenderer={({
                     index,
                     key,
@@ -74,11 +75,11 @@ class Main extends React.Component<MainProps & MainDivProps, MainState> {
                       items.push(
                         <ClassCard
                           key={i}
-                          k={i}
+                          k={index}
                           courseData={course}
                           active={this.props.active}
                           // setActive={this.setActive}
-                          openDetail={this.props.openDetail}
+                          openDetail={this.setActive}
                         />
                       );
                     }
