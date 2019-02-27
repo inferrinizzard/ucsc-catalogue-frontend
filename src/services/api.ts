@@ -12,7 +12,7 @@ function convertAndMergeCourse(
     code: t.c,
     classSection: t.s,
     name: t.n,
-    description: c.desc,
+    description: c.desc ? c.desc : '',
     number: t.num,
     settings: !!t.loct
       ? t.loct
@@ -126,9 +126,11 @@ class _API {
       (prev, [subject, rawTermCourses]) => {
         return [
           ...prev,
-          ...rawTermCourses.map((x: any) =>
-            convertAndMergeCourse(subject, x, coursesData[x.num])
-          ),
+          ...rawTermCourses
+            .filter(x => coursesData[x.num])
+            .map((x: any) =>
+              convertAndMergeCourse(subject, x, coursesData[x.num])
+            ),
         ];
       },
       []
