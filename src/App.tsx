@@ -136,7 +136,7 @@ class App extends React.Component<AppProps, AppState> {
         <Liner
           style={{ height: '25px', textAlign: 'center', fontFamily: 'Roboto' }}
         >
-          SlugCourses
+          CruzAssist
         </Liner>
         <div id={'main'}>
           <SortDrawer
