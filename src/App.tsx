@@ -72,7 +72,7 @@ class App extends React.Component<AppProps, AppState> {
   };
 
   public componentDidMount() {
-    this.props.load(2190);
+    this.props.load(2192);
   }
   //#region prop functions
   sortCourses = (type: CourseType) => {

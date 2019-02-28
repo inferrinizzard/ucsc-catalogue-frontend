@@ -20,6 +20,7 @@ export interface QuarterMenuState {
 }
 
 const quarters: Term[] = [
+  // { name: 'Summer Quarter 2019', code: 2194 },
   { name: 'Spring Quarter 2019', code: 2192 },
   { name: 'Winter Quarter 2019', code: 2190 },
   { name: 'Fall Quarter 2018', code: 2188 },
@@ -109,7 +110,7 @@ class QuarterMenu extends React.Component<QuarterMenuProps, QuarterMenuState> {
     anchor: null,
     widthRef: React.createRef<HTMLElement>(),
     width: 0,
-    active: 'Winter Quarter 2019',
+    active: quarters[0].name,
   };
 
   componentDidMount() {
