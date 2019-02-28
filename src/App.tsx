@@ -66,8 +66,8 @@ class App extends React.Component<AppProps, AppState> {
   state = {
     linerWidth: 30,
     drawerWidth: 225,
-    cardHeight: 100,
-    cardWidth: 210,
+    cardHeight: 6,
+    cardWidth: 12.5,
     linerOpen: false,
   };
 
