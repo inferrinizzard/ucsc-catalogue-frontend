@@ -6,6 +6,7 @@ import CardMedia from '@material-ui/core/CardMedia';
 import CardContent from '@material-ui/core/CardContent';
 import Typography from '@material-ui/core/Typography';
 import Divider from '@material-ui/core/Divider';
+import KeyboardArrowDownRounded from '@material-ui/icons/KeyboardArrowDownRounded';
 import ExpansionPanel from '@material-ui/core/ExpansionPanel';
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
@@ -68,10 +69,11 @@ const DescCard: React.SFC<DescCardProps> = props => {
                 ? props.courseData.ge.reduce((x, c) => {
                     return x + c + ' ';
                   })
-                : 'N/a') +
-              ', ' +
-              'Credits: ' +
-              props.courseData.credit
+                : 'N/a')
+              // 	+
+              // ', ' +
+              // 'Credits: ' +
+              // props.courseData.credit
             }
           />
           <TextBlock
@@ -112,12 +114,19 @@ const DescCard: React.SFC<DescCardProps> = props => {
                 : 'STAFF')
             }
           />
-          <TextBlock type="body2" text={'Grade Average'} />
+          <TextBlock
+            type="body2"
+            text={
+              // 'Grade Average'
+              'Credits: ' + props.courseData.credit
+            }
+          />
           <Divider />
           <div>
             <ExpansionPanel>
               <ExpansionPanelSummary>
                 <Typography variant="body2">Description</Typography>
+                <KeyboardArrowDownRounded />
               </ExpansionPanelSummary>
               <ExpansionPanelDetails>
                 <Typography>{props.courseData.description}</Typography>
@@ -125,7 +134,8 @@ const DescCard: React.SFC<DescCardProps> = props => {
             </ExpansionPanel>
             <ExpansionPanel disabled={!props.courseData.prerequisites}>
               <ExpansionPanelSummary>
-                <Typography variant="body2">Prerequisites</Typography>
+                <Typography variant="body2">Prerequisites </Typography>
+                {props.courseData.prerequisites && <KeyboardArrowDownRounded />}
                 {!props.courseData.prerequisites && (
                   <Typography variant="body2"> - None</Typography>
                 )}

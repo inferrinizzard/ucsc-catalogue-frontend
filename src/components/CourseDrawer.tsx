@@ -1,7 +1,6 @@
 import * as React from 'react';
 import styled from 'styled-components';
 import Drawer from '@material-ui/core/Drawer';
-import Paper from '@material-ui/core/Paper';
 import Fab from '@material-ui/core/Fab';
 
 import DescCard from './Cards/DescCard';
@@ -46,11 +45,6 @@ class CourseDrawer extends React.Component<
 > {
   render() {
     return (
-      //  this.props.loading ? (
-      //   <div style={{ width: '100%', height: '100%', backgroundColor: '#333' }}>
-      //     {'Loading...'}
-      //   </div>
-      // ) : (
       <Drawer
         anchor="right"
         open={Boolean(this.props.course)}
@@ -90,7 +84,7 @@ class CourseDrawer extends React.Component<
             />
           </Third>
         </div>
-        <FloatButton onClick={this.props.closeDetail}>BACK</FloatButton>
+        {/* <FloatButton onClick={this.props.closeDetail}>BACK</FloatButton> */}
       </Drawer>
     );
   }

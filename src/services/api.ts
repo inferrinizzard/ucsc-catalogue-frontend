@@ -12,7 +12,7 @@ function convertAndMergeCourse(
     code: t.c,
     classSection: t.s,
     name: t.n,
-    description: c.desc,
+    description: c.desc ? c.desc : '',
     number: t.num,
     settings: !!t.loct
       ? t.loct
@@ -126,14 +126,23 @@ class _API {
       (prev, [subject, rawTermCourses]) => {
         return [
           ...prev,
-          ...rawTermCourses.map((x: any) =>
-            convertAndMergeCourse(subject, x, coursesData[x.num])
-          ),
+          ...rawTermCourses
+            .filter(x => coursesData[x.num])
+            .map((x: any) =>
+              convertAndMergeCourse(subject, x, coursesData[x.num])
+            ),
         ];
       },
       []
     );
   }
+  // public async latestStatus(
+  //   courseNum: number | string,
+  //   termId: number | string
+  // ): Promise<model.CourseEnrollment[]> {}
+
+  // https://andromeda.miragespace.net/slugsurvival/tracking/latestOne?termId=:termCode&courseNum=:courseNum
+
   public async tracking(
     courseNum: number | string,
     termId: number | string
@@ -192,7 +201,8 @@ class _API {
 
   public async fetchDate(term: string | number): Promise<Date> {
     return new Date(
-      await fetch(this.endpoint + '/data/fetch/terms.json')
+      await ky
+        .get(this.endpoint + '/data/fetch/terms.json')
         .then(x => x.text())
         .then(s => s.substr(s.indexOf(term.toString()) + 40, 8))
     );
