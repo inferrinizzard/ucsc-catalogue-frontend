@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { PureComponent } from 'react';
 import styled from 'styled-components';
+import toPX from 'to-px';
 
 import { AutoSizer } from 'react-virtualized/dist/es/AutoSizer';
 import { List } from 'react-virtualized/dist/es/List';
@@ -30,7 +30,7 @@ const MainDiv = styled.div`
   margin-top: ${(p: MainDivProps) => p.linerWidth}px;
   margin-left: ${p => p.drawerWidth}px;
   width: calc(${p => (p.open ? 52 : 100)}% - ${p => p.drawerWidth}px);
-  height: calc(100% - ${p => p.linerWidth * 2}px);
+  height: calc(100% - ${p => p.linerWidth}px);
 `;
 
 class Main extends React.Component<MainProps & MainDivProps, MainState> {
@@ -45,7 +45,9 @@ class Main extends React.Component<MainProps & MainDivProps, MainState> {
       <MainDiv {...this.props}>
         <AutoSizer>
           {({ height, width }: { height: number; width: number }) => {
-            const columns = Math.floor(width / this.props.cardWidth);
+            const columns = Math.floor(
+              width / toPX(this.props.cardWidth + 'em')
+            );
             const rows = Math.ceil(this.props.courses.length / columns);
             return (
               <div>
@@ -53,7 +55,7 @@ class Main extends React.Component<MainProps & MainDivProps, MainState> {
                   width={width}
                   height={height}
                   rowCount={rows}
-                  rowHeight={this.props.cardHeight}
+                  rowHeight={toPX(this.props.cardHeight + 'em')}
                   overscanRowCount={4}
                   scrollToRow={this.state.activeNum}
                   rowRenderer={({
