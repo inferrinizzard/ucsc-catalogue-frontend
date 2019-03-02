@@ -16,21 +16,21 @@ function convertAndMergeCourse(
     number: t.num,
     settings: !!t.loct
       ? t.loct
-          .filter(x => x.loc && x.t)
-          .map(x => ({
-            day: x.t.day,
-            time: x.t.time,
-            location: x.loc,
-          }))
+        .filter(x => x.loc && x.t)
+        .map(x => ({
+          day: x.t.day,
+          time: x.t.time,
+          location: x.loc,
+        }))
       : null,
     capacity: t.cap,
     instructor: t.ins
       ? {
-          display: t.ins.d,
-          first: t.ins.f,
-          last: t.ins.l,
-          middle: t.ins.m,
-        }
+        display: t.ins.d,
+        first: t.ins.f,
+        last: t.ins.l,
+        middle: t.ins.m,
+      }
       : null,
     subject,
     type: c.ty,
@@ -43,12 +43,12 @@ function convertAndMergeCourse(
       classSection: s.sec,
       settings: !!t.loct
         ? t.loct
-            .filter(x => x.loc && x.t)
-            .map(x => ({
-              day: x.t.day,
-              time: x.t.time,
-              location: x.loc,
-            }))
+          .filter(x => x.loc && x.t)
+          .map(x => ({
+            day: x.t.day,
+            time: x.t.time,
+            location: x.loc,
+          }))
         : null,
       instructor: s.ins,
       capacity: s.cap,
@@ -59,15 +59,15 @@ function convertAndMergeCourse(
       (
         '00' +
         (t.c.endsWith('0') ||
-        t.c.endsWith('1') ||
-        t.c.endsWith('2') ||
-        t.c.endsWith('3') ||
-        t.c.endsWith('4') ||
-        t.c.endsWith('5') ||
-        t.c.endsWith('6') ||
-        t.c.endsWith('7') ||
-        t.c.endsWith('8') ||
-        t.c.endsWith('9')
+          t.c.endsWith('1') ||
+          t.c.endsWith('2') ||
+          t.c.endsWith('3') ||
+          t.c.endsWith('4') ||
+          t.c.endsWith('5') ||
+          t.c.endsWith('6') ||
+          t.c.endsWith('7') ||
+          t.c.endsWith('8') ||
+          t.c.endsWith('9')
           ? t.c + '0'
           : t.c)
       ).slice(-4),
@@ -76,8 +76,8 @@ function convertAndMergeCourse(
       return n < 100
         ? 'Lower Div'
         : n >= 100 && n < 200
-        ? 'Upper Div'
-        : 'Graduate';
+          ? 'Upper Div'
+          : 'Graduate';
     })(),
   };
 }
@@ -143,14 +143,36 @@ class _API {
 
   // https://andromeda.miragespace.net/slugsurvival/tracking/latestOne?termId=:termCode&courseNum=:courseNum
 
+  private trackingAvailableTerms?: (number | string)[];
+  private async trackingAvailable(termId: string): Promise<boolean> {
+    if (!this.trackingAvailableTerms) {
+      const res = this.trackingAvailableTerms = (await ky
+        .get(
+          `${
+          this.endpoint
+          }/tracking/available`
+        )
+        .json()) as any;
+      if(!res.ok) {
+        throw new Error('Error fetching tracking available terms');
+      }
+      this.trackingAvailableTerms = res.results;
+    }
+    return this.trackingAvailableTerms!.map(x => `${x}`).includes(termId);
+  }
+
   public async tracking(
     courseNum: number | string,
-    termId: number | string
+    termId: string
   ): Promise<model.CourseEnrollment[]> {
+    if(!await this.trackingAvailable(termId)) {
+      console.log('not available')
+      return [];
+    }
     const res = (await ky
       .get(
         `${
-          this.endpoint
+        this.endpoint
         }/tracking/fetch?termId=${termId}&courseNum=${courseNum}`
       )
       .json()) as any;

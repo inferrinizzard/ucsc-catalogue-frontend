@@ -81,24 +81,28 @@ const DescCard: React.SFC<DescCardProps> = props => {
             text={'Course Number: ' + props.courseData.number}
           />
           <div />
-          <TextBlock
-            type="body2"
-            text={
-              'Number Enrolled: ' +
-              props.tracking.enrolled +
-              '/' +
-              props.tracking.capacity
-            }
-          />
-          <TextBlock
-            type="body2"
-            text={
-              'Number Waitlist: ' +
-              props.tracking.waitlistTotal +
-              '/' +
-              props.tracking.waitlistCapacity
-            }
-          />
+          {props.tracking && (
+            <>
+              <TextBlock
+                type="body2"
+                text={
+                  'Number Enrolled: ' +
+                  props.tracking.enrolled +
+                  '/' +
+                  props.tracking.capacity
+                }
+              />
+              <TextBlock
+                type="body2"
+                text={
+                  'Number Waitlist: ' +
+                  props.tracking.waitlistTotal +
+                  '/' +
+                  props.tracking.waitlistCapacity
+                }
+              />
+            </>
+          )}
           <div />
           <TextBlock
             type="body2"
