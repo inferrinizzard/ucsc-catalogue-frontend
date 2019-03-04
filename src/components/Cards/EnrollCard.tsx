@@ -24,6 +24,11 @@ const StyleCard = styled(Card)<any>`
 `;
 
 const EnrollCard: React.SFC<EnrollCardProps> = props => {
+  if(props.tracking.length <= 0) {
+    return <StyleCard>
+        <CardHeader title="Tracking Data Unavailable for this term" />
+      </StyleCard>
+  }
   return (
     <StyleCard>
       <CardHeader title="Enrollment" />
