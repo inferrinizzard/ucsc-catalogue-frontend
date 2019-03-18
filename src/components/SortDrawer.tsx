@@ -10,7 +10,8 @@ import SearchBar from './Pieces/SearchBar';
 import SelectMenu from './Pieces/SelectMenu';
 import FilterMenu from './Pieces/FilterMenu';
 import QuarterMenu from './Pieces/QuarterMenu';
-import { Filter, CourseType } from '../store/course';
+import Basket from './Pieces/Basket';
+import { Filter, Course, CourseType } from '../store/course';
 
 export interface SortDrawerProps {
   sort: (type: CourseType) => void;
@@ -25,12 +26,9 @@ export interface SortDrawerProps {
 }
 export interface SortDrawerState {
   widthRef: React.RefObject<HTMLElement>;
+  basket: Course[];
 }
 
-const linerWidth = 30;
-const Spacer = styled.div`
-  margin-top: ${linerWidth}px;
-`;
 const Section = styled(Card)<any>`
   margin: 0.5em 0.3em;
   padding: 0.2em;
@@ -292,6 +290,7 @@ const toolTip: { [K in CourseType]?: string[] } = {
 class SortDrawer extends React.Component<SortDrawerProps, SortDrawerState> {
   state = {
     widthRef: React.createRef<HTMLElement>(),
+    basket: [],
   };
   ComponentDidMount() {
     this.props.setDrawerWidth(this.state.widthRef.current!.offsetWidth);
@@ -306,11 +305,11 @@ class SortDrawer extends React.Component<SortDrawerProps, SortDrawerState> {
           variant="permanent"
           PaperProps={{
             style: {
-              padding: '0 0.25em',
+              marginTop: '32px',
+              padding: '0.25em',
             },
           }}
         >
-          <Spacer />
           <SearchBar search={this.props.search} />
           <Section>
             <CardHeader title="Sorting" />
@@ -334,6 +333,9 @@ class SortDrawer extends React.Component<SortDrawerProps, SortDrawerState> {
               </React.Fragment>
             ))}
             <QuarterMenu changeQuarter={this.props.changeQuarter} />
+          </Section>
+          <Section>
+            <Basket />
           </Section>
         </Drawer>
       </RootRef>

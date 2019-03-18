@@ -6,9 +6,10 @@ import { connect } from 'react-redux';
 import { ReduxState, ReduxAction } from './store';
 
 import Main from './components/Main';
+import Basket from './components/Pieces/Basket';
 import SortDrawer from './components/SortDrawer';
 import CourseDrawer from './components/CourseDrawer';
-import BottomLiner from './components/Pieces/BottomLiner';
+import TopLiner from './components/Pieces/TopLiner';
 
 import { Course, CourseEnrollment } from './models/course.model';
 import {
@@ -55,20 +56,22 @@ interface PropsToDispatch {
 type AppProps = PropsFromStore & PropsToDispatch;
 
 export interface AppState {
-  linerWidth: number;
+  topLinerHeight: number;
+  basketHeight: number;
   drawerWidth: number;
   cardHeight: number;
   cardWidth: number;
-  linerOpen: boolean;
+  aboutOpen: boolean;
 }
 
 class App extends React.Component<AppProps, AppState> {
   state = {
-    linerWidth: 30,
+    topLinerHeight: 30,
+    basketHeight: 30,
     drawerWidth: 13.75,
     cardHeight: 6,
     cardWidth: 12.5,
-    linerOpen: false,
+    aboutOpen: false,
   };
 
   public componentDidMount() {
@@ -103,15 +106,15 @@ class App extends React.Component<AppProps, AppState> {
     this.setActive(null);
   };
 
-  openLiner = () => {
+  openAbout = () => {
     this.setState({
-      linerOpen: true,
+      aboutOpen: true,
     });
   };
 
-  closeLiner = () => {
+  closeAbout = () => {
     this.setState({
-      linerOpen: false,
+      aboutOpen: false,
     });
   };
 
@@ -133,11 +136,14 @@ class App extends React.Component<AppProps, AppState> {
   render() {
     return (
       <div id={'app'}>
-        <Liner
-          style={{ height: '25px', textAlign: 'center', fontFamily: 'Roboto' }}
+        <TopLiner
+          open={this.state.aboutOpen}
+          openAbout={this.openAbout}
+          closeAbout={this.closeAbout}
+          height={this.state.topLinerHeight}
         >
-          CruzAssist
-        </Liner>
+          About
+        </TopLiner>
         <div id={'main'}>
           <SortDrawer
             sort={this.sortCourses}
@@ -153,13 +159,15 @@ class App extends React.Component<AppProps, AppState> {
           <Main
             courses={this.props.courses}
             open={Boolean(this.props.activeCourse)}
-            linerWidth={this.state.linerWidth}
+            topLinerHeight={this.state.topLinerHeight}
+            basketHeight={this.state.basketHeight}
             drawerWidth={this.state.drawerWidth}
             openDetail={this.openDetail}
             cardHeight={this.state.cardHeight}
             cardWidth={this.state.cardWidth}
             active={this.props.activeCourse}
           />
+          <Basket />
           <CourseDrawer
             open={Boolean(this.props.activeCourse)}
             closeDetail={this.closeDetail}
@@ -170,13 +178,6 @@ class App extends React.Component<AppProps, AppState> {
             loading={this.props.loading}
           />
         </div>
-        <BottomLiner
-          open={this.state.linerOpen}
-          openLiner={this.openLiner}
-          closeLiner={this.closeLiner}
-        >
-          About
-        </BottomLiner>
       </div>
     );
   }

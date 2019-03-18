@@ -18,8 +18,9 @@ export interface CourseState {
   start: Date;
   search: string;
 }
-
+//#region define types
 export type CourseType = keyof Course;
+export type Course = Course;
 export type Filter = { type: CourseType; name: string };
 export enum FilterDomain {
   subject = 'subject',
@@ -35,7 +36,7 @@ export declare type FilterList<
   CourseType
 > = DefineFilterKey<CourseType> &
   { readonly [value in FilterDomain]: string[] };
-
+//#endregion
 const initialState: CourseState = {
   loading: true,
   fetchTracking: false,
@@ -193,7 +194,10 @@ export default function courseReducer(
       return {
         ...state,
         search: action.name,
-        courses: Sort(Search(state.backup, action.name), state.sort),
+        courses: Sort(
+          Filter(Search(state.backup, action.name), state.filters),
+          state.sort
+        ),
       };
     case ActionTypes.ADD_FILTER:
       return state.filters[action.filter.type].every(
@@ -202,9 +206,12 @@ export default function courseReducer(
         ? {
             ...state,
             courses: Sort(
-              Filter(
-                state.backup,
-                SetFilters(state.filters, action.filter, 'add')
+              Search(
+                Filter(
+                  state.backup,
+                  SetFilters(state.filters, action.filter, 'add')
+                ),
+                state.search
               ),
               state.sort
             ),
@@ -215,9 +222,12 @@ export default function courseReducer(
         ? {
             ...state,
             courses: Sort(
-              Filter(
-                state.backup,
-                SetFilters(state.filters, action.filter, 'remove')
+              Search(
+                Filter(
+                  state.backup,
+                  SetFilters(state.filters, action.filter, 'remove')
+                ),
+                state.search
               ),
               state.sort
             ),

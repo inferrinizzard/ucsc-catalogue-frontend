@@ -18,7 +18,8 @@ export interface MainProps {
 
 export interface MainDivProps {
   open: boolean;
-  linerWidth: number;
+  topLinerHeight: number;
+  basketHeight: number;
   drawerWidth: number;
 }
 
@@ -27,12 +28,12 @@ export interface MainState {
 }
 
 const MainDiv = styled.div`
-  margin-top: ${(p: MainDivProps) => p.linerWidth}px;
+  margin-top: ${(p: MainDivProps) => p.topLinerHeight}px;
   margin-left: ${p => toPX(p.drawerWidth + 'em')}px;
   width: calc(
     ${p => (p.open ? 52 : 100)}% - ${p => toPX(p.drawerWidth + 'em')}px
   );
-  height: calc(100% - ${p => p.linerWidth}px);
+  height: calc(100% - ${p => p.basketHeight}px);
 `;
 
 class Main extends React.Component<MainProps & MainDivProps, MainState> {
