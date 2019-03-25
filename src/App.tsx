@@ -25,14 +25,6 @@ import {
   CourseType,
 } from './store/course';
 
-const Liner = styled.div`
-  width: 100%;
-  background: #5d92dd;
-  z-index: 1201;
-  position: fixed;
-  top: 0;
-`;
-
 interface PropsFromStore {
   courses: Course[];
   filters: FilterList<FilterDomain, CourseType>;
@@ -58,6 +50,8 @@ type AppProps = PropsFromStore & PropsToDispatch;
 export interface AppState {
   topLinerHeight: number;
   basketHeight: number;
+  basketOpen: boolean;
+  basketCourses: Course[];
   drawerWidth: number;
   cardHeight: number;
   cardWidth: number;
@@ -68,6 +62,8 @@ class App extends React.Component<AppProps, AppState> {
   state = {
     topLinerHeight: 30,
     basketHeight: 30,
+    basketOpen: true,
+    basketCourses: [],
     drawerWidth: 13.75,
     cardHeight: 6,
     cardWidth: 12.5,
@@ -96,6 +92,11 @@ class App extends React.Component<AppProps, AppState> {
 
   setActive = (course: Course | null) => {
     this.props.setActive(course, this.props.quarter.toString());
+    this.setState({
+      basketCourses: course
+        ? [...this.state.basketCourses, course]
+        : this.state.basketCourses.filter(f => f != course),
+    });
   };
 
   openDetail = (course: Course) => {
@@ -141,9 +142,7 @@ class App extends React.Component<AppProps, AppState> {
           openAbout={this.openAbout}
           closeAbout={this.closeAbout}
           height={this.state.topLinerHeight}
-        >
-          About
-        </TopLiner>
+        />
         <div id={'main'}>
           <SortDrawer
             sort={this.sortCourses}
@@ -167,7 +166,14 @@ class App extends React.Component<AppProps, AppState> {
             cardWidth={this.state.cardWidth}
             active={this.props.activeCourse}
           />
-          <Basket />
+          <Basket
+            basketOpen={this.state.basketOpen}
+            courses={this.state.basketCourses}
+            cardHeight={this.state.cardHeight}
+            active={this.props.activeCourse}
+            activeOpen={Boolean(this.props.activeCourse)}
+            openDetail={this.openDetail}
+          />
           <CourseDrawer
             open={Boolean(this.props.activeCourse)}
             closeDetail={this.closeDetail}

@@ -10,7 +10,6 @@ import SearchBar from './Pieces/SearchBar';
 import SelectMenu from './Pieces/SelectMenu';
 import FilterMenu from './Pieces/FilterMenu';
 import QuarterMenu from './Pieces/QuarterMenu';
-import Basket from './Pieces/Basket';
 import { Filter, Course, CourseType } from '../store/course';
 
 export interface SortDrawerProps {
@@ -303,6 +302,7 @@ class SortDrawer extends React.Component<SortDrawerProps, SortDrawerState> {
         <Drawer
           open={this.props.open}
           variant="permanent"
+          elevation={1}
           PaperProps={{
             style: {
               marginTop: '32px',
@@ -332,10 +332,8 @@ class SortDrawer extends React.Component<SortDrawerProps, SortDrawerState> {
                 />
               </React.Fragment>
             ))}
+            <Divider />
             <QuarterMenu changeQuarter={this.props.changeQuarter} />
-          </Section>
-          <Section>
-            <Basket />
           </Section>
         </Drawer>
       </RootRef>

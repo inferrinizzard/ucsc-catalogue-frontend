@@ -22,14 +22,15 @@ const Liner = styled.div`
 const TopLiner: React.SFC<TopLinerProps> = props => {
   return (
     <Liner>
-      <span
-        style={{
-          height: props.height + 'px',
-          textAlign: 'center',
-          fontFamily: 'Roboto',
-        }}
-      >
-        CruzAssist
+      <span>
+        <Typography
+          style={{
+            height: props.height + 'px',
+            display: 'inline',
+          }}
+        >
+          CruzAssist
+        </Typography>
       </span>
       <span style={{ float: 'right' }}>
         <Button
