@@ -1,11 +1,10 @@
 import * as React from 'react';
 import styled from 'styled-components';
 import Drawer from '@material-ui/core/Drawer';
-import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 
-import ClassCard from './ClassCard';
-import { Course } from '../../models/course.model';
+import BasketCard from './BasketCard';
+import { Course, CourseEnrollment } from '../../models/course.model';
 
 export interface BasketProps {
   basketOpen: boolean;
@@ -14,6 +13,7 @@ export interface BasketProps {
   cardHeight: number;
   activeOpen: boolean;
   openDetail: (c: Course) => void;
+  tracking: CourseEnrollment[];
 }
 
 const Basket: React.SFC<BasketProps> = props => {
@@ -33,12 +33,13 @@ const Basket: React.SFC<BasketProps> = props => {
     >
       {props.courses.map((course, index) => {
         return (
-          <ClassCard
+          <BasketCard
             key={index}
             k={index}
             active={props.active}
             courseData={course}
             openDetail={props.openDetail}
+            tracking={props.tracking[0]}
           />
         );
       })}

@@ -96,7 +96,12 @@ class App extends React.Component<AppProps, AppState> {
 
   addBasket = (course: Course) => {
     this.setState({
-      basketCourses: this.state.basketCourses.includes(course)
+      basketCourses: this.state.basketCourses
+        .reduce(
+          (numbers: number[], cur: Course) => [...numbers, cur.number],
+          []
+        )
+        .includes(course.number)
         ? this.state.basketCourses
         : [...this.state.basketCourses, course],
     });
@@ -182,6 +187,7 @@ class App extends React.Component<AppProps, AppState> {
             active={this.props.activeCourse}
             activeOpen={Boolean(this.props.activeCourse)}
             openDetail={this.openDetail}
+            tracking={this.props.tracking}
           />
           <CourseDrawer
             addBasket={this.addBasket}
