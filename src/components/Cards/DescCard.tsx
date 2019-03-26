@@ -1,18 +1,22 @@
 import * as React from 'react';
 import styled from 'styled-components';
+import Button from '@material-ui/core/Button';
 import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
 import CardMedia from '@material-ui/core/CardMedia';
 import CardContent from '@material-ui/core/CardContent';
-import Typography from '@material-ui/core/Typography';
 import Divider from '@material-ui/core/Divider';
-import KeyboardArrowDownRounded from '@material-ui/icons/KeyboardArrowDownRounded';
 import ExpansionPanel from '@material-ui/core/ExpansionPanel';
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
+import KeyboardArrowDownRounded from '@material-ui/icons/KeyboardArrowDownRounded';
+import Typography from '@material-ui/core/Typography';
+import Bookmark from '@material-ui/icons/Bookmark';
+import BookmarkBorder from '@material-ui/icons/BookmarkBorder';
 
 import TextBlock from '../Pieces/TextBlock';
 import { Course, CourseEnrollment } from '../../models/course.model';
+import { IconButton } from '@material-ui/core';
 
 const StyleCard = styled(Card)<any>`
   margin: 0.5em;
@@ -20,8 +24,11 @@ const StyleCard = styled(Card)<any>`
 `;
 
 export interface DescCardProps {
+  basketCourses: Course[];
   courseData: Course | null;
   tracking: CourseEnrollment;
+  addBasket: (c: Course) => void;
+  removeBasket: (c: Course) => void;
 }
 
 const DescCard: React.SFC<DescCardProps> = props => {
@@ -34,6 +41,25 @@ const DescCard: React.SFC<DescCardProps> = props => {
             props.courseData.fullName
               ? props.courseData.fullName
               : props.courseData.name
+          }
+          action={
+            <Button
+              variant="outlined"
+              onClick={event =>
+                props.basketCourses.includes(props.courseData as Course)
+                  ? props.removeBasket(props.courseData as Course)
+                  : props.addBasket(props.courseData as Course)
+              }
+            >
+              {props.basketCourses.includes(props.courseData)
+                ? 'Remove'
+                : 'Bookmark'}
+              {props.basketCourses.includes(props.courseData) ? (
+                <Bookmark />
+              ) : (
+                <BookmarkBorder />
+              )}
+            </Button>
           }
         />
       )}

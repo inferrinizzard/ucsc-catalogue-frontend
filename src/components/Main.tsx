@@ -33,7 +33,7 @@ const MainDiv = styled.div`
   width: calc(
     ${p => (p.open ? 52 : 100)}% - ${p => toPX(p.drawerWidth + 'em')}px
   );
-  height: calc(100% - ${p => p.basketHeight}px);
+  height: 100%;
 `;
 
 class Main extends React.Component<MainProps & MainDivProps, MainState> {

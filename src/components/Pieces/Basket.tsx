@@ -1,6 +1,7 @@
 import * as React from 'react';
 import styled from 'styled-components';
 import Drawer from '@material-ui/core/Drawer';
+import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 
 import ClassCard from './ClassCard';
@@ -24,23 +25,23 @@ const Basket: React.SFC<BasketProps> = props => {
       elevation={1}
       PaperProps={{
         style: {
-          // height: props.cardHeight + 'em',
+          // maxHeight: props.cardHeight + 0.5 + 'em',
           width: (props.activeOpen ? 52 : 100) + '%',
+          flexDirection: 'row',
         },
       }}
     >
-      <Typography>
-        {props.courses.map((course, index) => {
-          return (
-            <ClassCard
-              k={index}
-              active={props.active}
-              courseData={course}
-              openDetail={props.openDetail}
-            />
-          );
-        })}
-      </Typography>
+      {props.courses.map((course, index) => {
+        return (
+          <ClassCard
+            key={index}
+            k={index}
+            active={props.active}
+            courseData={course}
+            openDetail={props.openDetail}
+          />
+        );
+      })}
     </Drawer>
   );
 };

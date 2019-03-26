@@ -63,7 +63,7 @@ class App extends React.Component<AppProps, AppState> {
     topLinerHeight: 30,
     basketHeight: 30,
     basketOpen: true,
-    basketCourses: [],
+    basketCourses: [] as Course[],
     drawerWidth: 13.75,
     cardHeight: 6,
     cardWidth: 12.5,
@@ -92,10 +92,19 @@ class App extends React.Component<AppProps, AppState> {
 
   setActive = (course: Course | null) => {
     this.props.setActive(course, this.props.quarter.toString());
+  };
+
+  addBasket = (course: Course) => {
     this.setState({
-      basketCourses: course
-        ? [...this.state.basketCourses, course]
-        : this.state.basketCourses.filter(f => f != course),
+      basketCourses: this.state.basketCourses.includes(course)
+        ? this.state.basketCourses
+        : [...this.state.basketCourses, course],
+    });
+  };
+
+  removeBasket = (course: Course) => {
+    this.setState({
+      basketCourses: this.state.basketCourses.filter(c => c != course),
     });
   };
 
@@ -175,6 +184,9 @@ class App extends React.Component<AppProps, AppState> {
             openDetail={this.openDetail}
           />
           <CourseDrawer
+            addBasket={this.addBasket}
+            removeBasket={this.removeBasket}
+            basketCourses={this.state.basketCourses}
             open={Boolean(this.props.activeCourse)}
             closeDetail={this.closeDetail}
             course={this.props.activeCourse}
