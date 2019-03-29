@@ -35,7 +35,12 @@ const ClassCard: React.SFC<ClassCardProps> = props => {
           <Typography gutterBottom variant="h5" component="h2">
             {props.courseData.subject + ' ' + props.courseData.code}
           </Typography>
-          <Typography component="p">{props.courseData.name}</Typography>
+          <Typography
+            component="p"
+            style={{ overflow: 'hidden', maxHeight: '20.444px' }}
+          >
+            {props.courseData.name}
+          </Typography>
         </CardContent>
       </CardActionArea>
     </Card>
