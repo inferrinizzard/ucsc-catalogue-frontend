@@ -11,8 +11,9 @@ export interface BasketCardProps {
   openDetail: (course: Course, k: number) => void;
   courseData: Course;
   active: Course | null;
-  k: number;
+  row: number;
   tracking: CourseEnrollment;
+  scrollTo: (row: number) => void;
 }
 
 export interface BasketCardState {
@@ -45,7 +46,7 @@ class BasketCard extends React.Component<BasketCardProps, BasketCardState> {
                 : 'transparent',
           }}
           onClick={event =>
-            this.props.openDetail(this.props.courseData, this.props.k)
+            this.props.openDetail(this.props.courseData, this.props.row)
           }
         >
           <CardContent>

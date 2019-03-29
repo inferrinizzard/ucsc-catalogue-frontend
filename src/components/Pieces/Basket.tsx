@@ -9,12 +9,13 @@ import { CourseEpics } from '../../store/course';
 
 export interface BasketProps {
   basketOpen: boolean;
-  courses: Course[];
+  courses: { c: Course; r: number }[];
   active: Course | null;
   cardHeight: number;
   activeOpen: boolean;
-  openDetail: (c: Course) => void;
+  openDetail: (c: Course, row: number) => void;
   tracking: CourseEnrollment[];
+  scrollTo: (row: number) => void;
 }
 
 const Basket: React.SFC<BasketProps> = props => {
@@ -37,15 +38,16 @@ const Basket: React.SFC<BasketProps> = props => {
           width: props.courses.length > 4 ? 'max-content' : 'auto',
         }}
       >
-        {props.courses.map((course, index) => {
+        {Object.keys(props.courses).map((key, index) => {
           return (
             <BasketCard
               key={index}
-              k={index}
+              row={props.courses[index].r}
               active={props.active}
-              courseData={course}
+              courseData={props.courses[index].c}
               openDetail={props.openDetail}
               tracking={props.tracking[0]}
+              scrollTo={props.scrollTo}
             />
           );
         })}

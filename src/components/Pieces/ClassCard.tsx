@@ -10,7 +10,7 @@ export interface ClassCardProps {
   openDetail: (course: Course, k: number) => void;
   courseData: Course;
   active: Course | null;
-  k: number;
+  row: number;
 }
 
 const ClassCard: React.SFC<ClassCardProps> = props => {
@@ -29,7 +29,7 @@ const ClassCard: React.SFC<ClassCardProps> = props => {
               ? '#92c2ff'
               : 'transparent',
         }}
-        onClick={event => props.openDetail(props.courseData, props.k)}
+        onClick={event => props.openDetail(props.courseData, props.row)}
       >
         <CardContent>
           <Typography gutterBottom variant="h5" component="h2">

@@ -51,11 +51,13 @@ export interface AppState {
   topLinerHeight: number;
   basketHeight: number;
   basketOpen: boolean;
-  basketCourses: Course[];
+  basketCourses: { c: Course; r: number }[];
   drawerWidth: number;
   cardHeight: number;
   cardWidth: number;
   aboutOpen: boolean;
+  scrollIndex: number;
+  curRow: number;
 }
 
 class App extends React.Component<AppProps, AppState> {
@@ -63,11 +65,13 @@ class App extends React.Component<AppProps, AppState> {
     topLinerHeight: 30,
     basketHeight: 30,
     basketOpen: true,
-    basketCourses: [] as Course[],
+    basketCourses: [] as { c: Course; r: number }[],
     drawerWidth: 13.75,
     cardHeight: 6,
     cardWidth: 12.5,
     aboutOpen: false,
+    scrollIndex: 0,
+    curRow: 0,
   };
 
   public componentDidMount() {
@@ -90,35 +94,45 @@ class App extends React.Component<AppProps, AppState> {
     this.props.load(q);
   };
 
-  setActive = (course: Course | null) => {
+  setActive = (course: Course | null, row: number) => {
     this.props.setActive(course, this.props.quarter.toString());
+    this.setState({ curRow: row, scrollIndex: row });
   };
 
   addBasket = (course: Course) => {
     this.setState({
       basketCourses: this.state.basketCourses
         .reduce(
-          (numbers: number[], cur: Course) => [...numbers, cur.number],
-          []
+          (courses, cur) => {
+            return courses.concat([cur.c.number]);
+          },
+          [] as number[]
         )
         .includes(course.number)
         ? this.state.basketCourses
-        : [...this.state.basketCourses, course],
+        : [...this.state.basketCourses, { c: course, r: this.state.curRow }],
     });
   };
 
   removeBasket = (course: Course) => {
     this.setState({
-      basketCourses: this.state.basketCourses.filter(c => c != course),
+      basketCourses: this.state.basketCourses.reduce(
+        (courses, cur, index) => {
+          return cur.c != course
+            ? courses.concat(this.state.basketCourses[index])
+            : courses;
+        },
+        [] as { c: Course; r: number }[]
+      ),
     });
   };
 
-  openDetail = (course: Course) => {
-    this.setActive(course);
+  openDetail = (course: Course, row: number) => {
+    this.setActive(course, row);
   };
 
   closeDetail = () => {
-    this.setActive(null);
+    this.setActive(null, 0);
   };
 
   openAbout = () => {
@@ -135,6 +149,13 @@ class App extends React.Component<AppProps, AppState> {
 
   setDrawerWidth = (val: number) => {
     this.setState({ drawerWidth: val });
+  };
+
+  scrollTo = (row: number) => {
+    this.setState({
+      scrollIndex:
+        this.state.scrollIndex === 0 ? Math.floor(row / 3) * 7 + 5 : row,
+    });
   };
 
   condenseFilter = (
@@ -179,6 +200,8 @@ class App extends React.Component<AppProps, AppState> {
             cardHeight={this.state.cardHeight}
             cardWidth={this.state.cardWidth}
             active={this.props.activeCourse}
+            scrollTo={this.scrollTo}
+            scrollIndex={this.state.scrollIndex}
           />
           <Basket
             basketOpen={this.state.basketOpen}
@@ -188,11 +211,17 @@ class App extends React.Component<AppProps, AppState> {
             activeOpen={Boolean(this.props.activeCourse)}
             openDetail={this.openDetail}
             tracking={this.props.tracking}
+            scrollTo={this.scrollTo}
           />
           <CourseDrawer
             addBasket={this.addBasket}
             removeBasket={this.removeBasket}
-            basketCourses={this.state.basketCourses}
+            basketCourses={this.state.basketCourses.reduce(
+              (courses, cur) => {
+                return courses.concat([cur.c]);
+              },
+              [] as Course[]
+            )}
             open={Boolean(this.props.activeCourse)}
             closeDetail={this.closeDetail}
             course={this.props.activeCourse}
