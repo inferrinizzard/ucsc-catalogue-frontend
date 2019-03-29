@@ -5,6 +5,7 @@ import Typography from '@material-ui/core/Typography';
 
 import BasketCard from './BasketCard';
 import { Course, CourseEnrollment } from '../../models/course.model';
+import { CourseEpics } from '../../store/course';
 
 export interface BasketProps {
   basketOpen: boolean;
@@ -27,22 +28,28 @@ const Basket: React.SFC<BasketProps> = props => {
         style: {
           // maxHeight: props.cardHeight + 0.5 + 'em',
           width: (props.activeOpen ? 52 : 100) + '%',
-          flexDirection: 'row',
         },
       }}
     >
-      {props.courses.map((course, index) => {
-        return (
-          <BasketCard
-            key={index}
-            k={index}
-            active={props.active}
-            courseData={course}
-            openDetail={props.openDetail}
-            tracking={props.tracking[0]}
-          />
-        );
-      })}
+      <div
+        style={{
+          flexDirection: 'row',
+          width: props.courses.length > 4 ? 'max-content' : 'auto',
+        }}
+      >
+        {props.courses.map((course, index) => {
+          return (
+            <BasketCard
+              key={index}
+              k={index}
+              active={props.active}
+              courseData={course}
+              openDetail={props.openDetail}
+              tracking={props.tracking[0]}
+            />
+          );
+        })}
+      </div>
     </Drawer>
   );
 };
