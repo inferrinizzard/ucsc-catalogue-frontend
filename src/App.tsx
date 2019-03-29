@@ -57,7 +57,6 @@ export interface AppState {
   cardWidth: number;
   aboutOpen: boolean;
   scrollIndex: number;
-  curRow: number;
 }
 
 class App extends React.Component<AppProps, AppState> {
@@ -71,7 +70,6 @@ class App extends React.Component<AppProps, AppState> {
     cardWidth: 12.5,
     aboutOpen: false,
     scrollIndex: 0,
-    curRow: 0,
   };
 
   public componentDidMount() {
@@ -96,7 +94,7 @@ class App extends React.Component<AppProps, AppState> {
 
   setActive = (course: Course | null, row: number) => {
     this.props.setActive(course, this.props.quarter.toString());
-    this.setState({ curRow: row, scrollIndex: row });
+    this.setState({ scrollIndex: row });
   };
 
   addBasket = (course: Course) => {
@@ -110,7 +108,10 @@ class App extends React.Component<AppProps, AppState> {
         )
         .includes(course.number)
         ? this.state.basketCourses
-        : [...this.state.basketCourses, { c: course, r: this.state.curRow }],
+        : [
+            ...this.state.basketCourses,
+            { c: course, r: this.state.scrollIndex },
+          ],
     });
   };
 
@@ -154,7 +155,7 @@ class App extends React.Component<AppProps, AppState> {
   scrollTo = (row: number) => {
     this.setState({
       scrollIndex:
-        this.state.scrollIndex === 0 ? Math.floor(row / 3) * 7 + 5 : row,
+        this.state.scrollIndex > 4 ? Math.floor(row / 3) * 7 + 5 : row,
     });
   };
 
