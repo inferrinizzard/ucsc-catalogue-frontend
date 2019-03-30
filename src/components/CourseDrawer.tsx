@@ -9,6 +9,7 @@ import GradesCard from './Cards/GradesCard';
 import ProfCard from './Cards/ProfCard';
 import MajorCard from './Cards/MajorCard';
 import LocCard from './Cards/LocCard';
+import SectionCard from './Cards/SectionCard';
 
 import { Course, CourseEnrollment } from '../models/course.model';
 
@@ -66,6 +67,10 @@ class CourseDrawer extends React.Component<
           prevStart={this.props.prevStart}
           quarter={this.props.quarter}
         />
+        {this.props.tracking[0] &&
+          this.props.tracking[0].sections.length > 0 && (
+            <SectionCard section={this.props.tracking[0].sections} />
+          )}
         <GradesCard />
         <div>
           <Third>

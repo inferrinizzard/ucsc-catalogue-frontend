@@ -152,7 +152,7 @@ const EnrollCard: React.SFC<EnrollCardProps> = props => {
                 y0: 0,
                 x1: firstPass.toDateString().substr(4),
                 y1: maxHeight,
-                line: {},
+                line: { hoverlabel: 'First Pass' },
               },
               {
                 type: 'line',
@@ -160,7 +160,7 @@ const EnrollCard: React.SFC<EnrollCardProps> = props => {
                 y0: 0,
                 x1: secondPass.toDateString().substr(4),
                 y1: maxHeight,
-                line: {},
+                line: { hoverlabel: 'Second Pass' },
               },
             ],
           }}
