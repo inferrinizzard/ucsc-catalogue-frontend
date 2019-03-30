@@ -14,7 +14,7 @@ import TextBlock from '../Pieces/TextBlock';
 
 export interface EnrollCardProps {
   tracking: CourseEnrollment[];
-  start: Date;
+  prevStart: Date;
   quarter: number;
 }
 
@@ -39,8 +39,7 @@ const EnrollCard: React.SFC<EnrollCardProps> = props => {
       else {
         let dates = [] as CourseEnrollment[];
         let step = new Date(0);
-        step.setUTCMilliseconds(cur.date.getTime());
-        step.setDate(step.getDate() + 1);
+        step.setUTCMilliseconds(temp.getTime());
         while (step.getDate() != next.date.getDate()) {
           const d = new Date(0);
           d.setUTCMilliseconds(step.getTime());
@@ -55,6 +54,28 @@ const EnrollCard: React.SFC<EnrollCardProps> = props => {
   const dates = tracking.reduceRight((x: string[], val) => {
     return x.concat(val.date.toDateString().substr(4));
   }, []);
+  const maxHeight =
+    tracking.length > 0
+      ? Math.max(
+          tracking[0].capacity,
+          tracking.reduce((max: number, val) => {
+            return max >
+              Math.max(val.enrolled + val.waitlistTotal, val.capacity)
+              ? max
+              : Math.max(val.enrolled + val.waitlistTotal, val.capacity);
+          }, tracking[0].capacity)
+        )
+      : 0;
+
+  let firstPass = new Date(0);
+  firstPass.setUTCMilliseconds(props.prevStart.getTime());
+  firstPass.setDate(
+    props.prevStart.getDate() + (props.prevStart.getMonth() === 8 ? 49 : 50)
+  );
+  let secondPass = new Date(0);
+  secondPass.setUTCMilliseconds(firstPass.getTime());
+  secondPass.setDate(secondPass.getDate() + 8);
+
   return (
     <StyleCard>
       <CardHeader title="Enrollment" />
@@ -105,7 +126,7 @@ const EnrollCard: React.SFC<EnrollCardProps> = props => {
             //     new Date(props.start.getDate() + 51).toDateString().substr(4),
             //   ],
             //   y: [0, 0],
-            //   type: 'scatter',
+            //   type: 'line',
             //   hoverinfo: 'skip',
             //   // type: 'rect',
             // },
@@ -121,29 +142,27 @@ const EnrollCard: React.SFC<EnrollCardProps> = props => {
             },
             yaxis: {
               fixedrange: true,
-              range:
-                tracking.length > 0
-                  ? [
-                      0,
-                      Math.max(
-                        tracking[0].capacity,
-                        tracking.reduce((max: number, val) => {
-                          return max >
-                            Math.max(
-                              val.enrolled + val.waitlistTotal,
-                              val.capacity
-                            )
-                            ? max
-                            : Math.max(
-                                val.enrolled + val.waitlistTotal,
-                                val.capacity
-                              );
-                        }, tracking[0].capacity)
-                      ),
-                    ]
-                  : undefined,
+              range: tracking.length > 0 ? [0, maxHeight] : undefined,
             },
             margin: { l: 25, r: 25, b: 50, t: 10 },
+            shapes: [
+              {
+                type: 'line',
+                x0: firstPass.toDateString().substr(4),
+                y0: 0,
+                x1: firstPass.toDateString().substr(4),
+                y1: maxHeight,
+                line: {},
+              },
+              {
+                type: 'line',
+                x0: secondPass.toDateString().substr(4),
+                y0: 0,
+                x1: secondPass.toDateString().substr(4),
+                y1: maxHeight,
+                line: {},
+              },
+            ],
           }}
           config={{
             displayModeBar: false,
@@ -178,15 +197,14 @@ const EnrollCard: React.SFC<EnrollCardProps> = props => {
             (tracking.length > 0
               ? tracking[0].waitlistTotal +
                 '/' +
-                tracking[0].waitlistCapacity +
-                (tracking[0].waitlistCapacity != 0
+                tracking[0].capacity +
+                (tracking[0].capacity != 0
                   ? ' - ' +
                     (
-                      (tracking[0].waitlistTotal /
-                        tracking[0].waitlistCapacity) *
+                      (tracking[0].waitlistTotal / tracking[0].capacity) *
                       100
                     ).toFixed(0) +
-                    '%'
+                    '% Over'
                   : '')
               : '')
           }

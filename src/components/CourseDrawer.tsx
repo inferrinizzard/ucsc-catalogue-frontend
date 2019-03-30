@@ -17,7 +17,7 @@ export interface CourseDrawerProps {
   closeDetail: () => void;
   course: Course | null;
   tracking: CourseEnrollment[];
-  start: Date;
+  prevStart: Date;
   quarter: number;
   loading: boolean;
 }
@@ -63,7 +63,7 @@ class CourseDrawer extends React.Component<
         />
         <EnrollCard
           tracking={this.props.tracking}
-          start={this.props.start}
+          prevStart={this.props.prevStart}
           quarter={this.props.quarter}
         />
         <GradesCard />
