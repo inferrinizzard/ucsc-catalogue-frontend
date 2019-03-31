@@ -1,11 +1,12 @@
 import * as React from 'react';
-import { PureComponent } from 'react';
 import styled from 'styled-components';
-import { AutoSizer, List } from 'react-virtualized';
+import toPX from 'to-px';
+
+import { AutoSizer } from 'react-virtualized/dist/es/AutoSizer';
+import { List } from 'react-virtualized/dist/es/List';
 
 import { Course } from '../models/course.model';
 import ClassCard from './Pieces/ClassCard';
-import { CombineLatestSubscriber } from 'rxjs/internal/observable/combineLatest';
 
 export interface MainProps {
   courses: Course[];
@@ -28,22 +29,25 @@ export interface MainState {
 const MainDiv = styled.div`
   margin-top: ${(p: MainDivProps) => p.linerWidth}px;
   margin-left: ${p => p.drawerWidth}px;
-  width: calc(${p => (p.open ? 50 : 100)}% - ${p => p.drawerWidth}px);
-  height: calc(100% - ${p => p.linerWidth * 2}px);
+  width: calc(${p => (p.open ? 52 : 100)}% - ${p => p.drawerWidth}px);
+  height: calc(100% - ${p => p.linerWidth}px);
 `;
 
 class Main extends React.Component<MainProps & MainDivProps, MainState> {
   state = { activeNum: 0 };
-  setActive(c: Course, k: number) {
+  setActive = (c: Course, k: number) => {
     this.props.openDetail(c);
-    this.setState({ activeNum: c ? k : 0 });
-  }
+    // this.setState({ activeNum: c ? k : 0 });
+    //need to set logic for mod the rowcount before and after
+  };
   render() {
     return (
       <MainDiv {...this.props}>
         <AutoSizer>
           {({ height, width }: { height: number; width: number }) => {
-            const columns = Math.floor(width / this.props.cardWidth);
+            const columns = Math.floor(
+              width / toPX(this.props.cardWidth + 'em')
+            );
             const rows = Math.ceil(this.props.courses.length / columns);
             return (
               <div>
@@ -51,9 +55,9 @@ class Main extends React.Component<MainProps & MainDivProps, MainState> {
                   width={width}
                   height={height}
                   rowCount={rows}
-                  rowHeight={this.props.cardHeight}
+                  rowHeight={toPX(this.props.cardHeight + 'em')}
                   overscanRowCount={4}
-                  scrollToIndex={this.state.activeNum}
+                  scrollToRow={this.state.activeNum}
                   rowRenderer={({
                     index,
                     key,
@@ -74,11 +78,11 @@ class Main extends React.Component<MainProps & MainDivProps, MainState> {
                       items.push(
                         <ClassCard
                           key={i}
-                          k={i}
+                          k={index}
                           courseData={course}
                           active={this.props.active}
                           // setActive={this.setActive}
-                          openDetail={this.props.openDetail}
+                          openDetail={this.setActive}
                         />
                       );
                     }

@@ -23,7 +23,6 @@ import {
   FilterDomain,
   CourseType,
 } from './store/course';
-import { dispatch } from 'rxjs/internal/observable/pairs';
 
 const Liner = styled.div`
   width: 100%;
@@ -56,7 +55,6 @@ interface PropsToDispatch {
 type AppProps = PropsFromStore & PropsToDispatch;
 
 export interface AppState {
-  drawerOpen: boolean;
   linerWidth: number;
   drawerWidth: number;
   cardHeight: number;
@@ -66,16 +64,15 @@ export interface AppState {
 
 class App extends React.Component<AppProps, AppState> {
   state = {
-    drawerOpen: false,
     linerWidth: 30,
-    drawerWidth: 250,
-    cardHeight: 100,
-    cardWidth: 210,
+    drawerWidth: 225,
+    cardHeight: 6,
+    cardWidth: 12.5,
     linerOpen: false,
   };
 
   public componentDidMount() {
-    this.props.load(2190);
+    this.props.load(2192);
   }
   //#region prop functions
   sortCourses = (type: CourseType) => {
@@ -100,16 +97,10 @@ class App extends React.Component<AppProps, AppState> {
 
   openDetail = (course: Course) => {
     this.setActive(course);
-    this.setState({
-      drawerOpen: true,
-    });
   };
 
   closeDetail = () => {
     this.setActive(null);
-    this.setState({
-      drawerOpen: false,
-    });
   };
 
   openLiner = () => {
@@ -142,12 +133,16 @@ class App extends React.Component<AppProps, AppState> {
   render() {
     return (
       <div id={'app'}>
-        <Liner>UCSC-Catalogue</Liner>
+        <Liner
+          style={{ height: '25px', textAlign: 'center', fontFamily: 'Roboto' }}
+        >
+          CruzAssist
+        </Liner>
         <div id={'main'}>
           <SortDrawer
             sort={this.sortCourses}
             sortKey={this.props.sortKey}
-            open={!this.state.drawerOpen}
+            open={!Boolean(this.props.activeCourse)}
             setDrawerWidth={this.setDrawerWidth}
             addFilter={this.addFilter}
             removeFilter={this.removeFilter}
@@ -157,7 +152,7 @@ class App extends React.Component<AppProps, AppState> {
           />
           <Main
             courses={this.props.courses}
-            open={this.state.drawerOpen}
+            open={Boolean(this.props.activeCourse)}
             linerWidth={this.state.linerWidth}
             drawerWidth={this.state.drawerWidth}
             openDetail={this.openDetail}
@@ -166,7 +161,7 @@ class App extends React.Component<AppProps, AppState> {
             active={this.props.activeCourse}
           />
           <CourseDrawer
-            open={this.state.drawerOpen}
+            open={Boolean(this.props.activeCourse)}
             closeDetail={this.closeDetail}
             course={this.props.activeCourse}
             tracking={this.props.tracking}

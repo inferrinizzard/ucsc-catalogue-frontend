@@ -4,7 +4,10 @@ import CardHeader from '@material-ui/core/CardHeader';
 import CardContent from '@material-ui/core/CardContent';
 import Divider from '@material-ui/core/Divider';
 import styled from 'styled-components';
-import Plot from 'react-plotly.js';
+
+import Plotly from 'plotly.js-basic-dist';
+import createPlotlyComponent from 'react-plotly.js/factory';
+const Plot = createPlotlyComponent(Plotly);
 
 import { CourseEnrollment } from '../../models/course.model';
 import TextBlock from '../Pieces/TextBlock';
@@ -24,7 +27,7 @@ const EnrollCard: React.SFC<EnrollCardProps> = props => {
   return (
     <StyleCard>
       <CardHeader title="Enrollment" />
-      <div>
+      <div style={{ marginBottom: '5px' }}>
         <Plot
           //dates:
           //enrollment for fall is 51 days after start of previous spring
@@ -53,7 +56,7 @@ const EnrollCard: React.SFC<EnrollCardProps> = props => {
               type: 'scatter',
               fill: 'tonexty',
               name: 'Waitlisted',
-              hoverinfo: 'x+text+name', //requires 'x+text+name' type in @types/plotly.js/index.d.ts
+              hoverinfo: 'x+text+name' as 'x+text', //requires 'x+text+name' type in @types/plotly.js/index.d.ts
               text: props.tracking.reduceRight((x: string[], val) => {
                 return x.concat(val.waitlistTotal.toString());
               }, []),
@@ -116,6 +119,7 @@ const EnrollCard: React.SFC<EnrollCardProps> = props => {
           useResizeHandler
         />
       </div>
+      <Divider />
       <CardContent>
         <TextBlock
           text={

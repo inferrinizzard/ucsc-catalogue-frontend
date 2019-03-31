@@ -56,6 +56,7 @@ const catMap: { [K in CourseType]?: string[] } = {
     'CHIN',
     'CLNI',
     'CLTE',
+    'CM',
     'CMMU',
     'CMPE',
     'CMPM',
@@ -179,6 +180,7 @@ const toolTip: { [K in CourseType]?: string[] } = {
     'Chinese',
     'College Nine',
     'College Ten',
+    'Computational Media',
     'Commmunity Studies',
     'Computer Engineering',
     'Computational Media',
@@ -332,7 +334,6 @@ class SortDrawer extends React.Component<SortDrawerProps, SortDrawerState> {
               </React.Fragment>
             ))}
             <QuarterMenu changeQuarter={this.props.changeQuarter} />
-            {/* which quarter, default to current */}
           </Section>
         </Drawer>
       </RootRef>

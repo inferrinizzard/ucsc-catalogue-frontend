@@ -90,3 +90,6 @@ dist
 src/store/post.ts
 src/store/store.ts
 src/store/store2.ts
+
+# misc
+misc/stats.json

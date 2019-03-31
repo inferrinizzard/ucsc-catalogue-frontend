@@ -19,7 +19,6 @@ const SearchBar: React.SFC<SearchBarProps> = props => {
         onChange={event => props.search(event.target.value.toUpperCase())}
       />
       {/* <InputBase placeholder="Search classes by name" /> */}
-      <IconButton aria-label="Search" />
     </React.Fragment>
   );
 };
