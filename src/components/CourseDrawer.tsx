@@ -11,7 +11,7 @@ import MajorCard from './Cards/MajorCard';
 import LocCard from './Cards/LocCard';
 import SectionCard from './Cards/SectionCard';
 
-import { Course, CourseEnrollment } from '../models/course.model';
+import { Course, CourseEnrollment, Setting } from '../models/course.model';
 
 export interface CourseDrawerProps {
   open: boolean;
@@ -68,8 +68,16 @@ class CourseDrawer extends React.Component<
           quarter={this.props.quarter}
         />
         {this.props.tracking[0] &&
+          this.props.course &&
           this.props.tracking[0].sections.length > 0 && (
-            <SectionCard section={this.props.tracking[0].sections} />
+            <SectionCard
+              section={this.props.tracking[0].sections}
+              setting={
+                this.props.course.settings
+                  ? this.props.course.settings.slice(1)
+                  : []
+              }
+            />
           )}
         <GradesCard />
         <div>
