@@ -65,7 +65,7 @@ export interface AppState {
 class App extends React.Component<AppProps, AppState> {
   state = {
     linerWidth: 30,
-    drawerWidth: 225,
+    drawerWidth: 13.75,
     cardHeight: 6,
     cardWidth: 12.5,
     linerOpen: false,
