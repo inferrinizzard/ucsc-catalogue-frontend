@@ -5,6 +5,7 @@ import Drawer from '@material-ui/core/Drawer';
 import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
 import RootRef from '@material-ui/core/RootRef';
+import Typography from '@material-ui/core/Typography';
 
 import SearchBar from './Pieces/SearchBar';
 import SelectMenu from './Pieces/SelectMenu';
@@ -34,8 +35,30 @@ const Spacer = styled.div`
   margin-top: ${linerWidth}px;
 `;
 const Section = styled(Card)<any>`
-  margin: 0.5em 0.3em;
-  padding: 0.2em;
+  margin: 0.25em 0.15em;
+  padding: 0;
+  box-shadow: none !important;
+`;
+
+const Fieldset = styled.fieldset`
+	padding: 0;
+	margin: 0;
+	transition: border-color 200ms cubic-bezier(0, 0, 0.2, 1) 0ms,
+    border-width 200ms cubic-bezier(0, 0, 0.2, 1) 0ms;
+  border-style: solid;
+  border-width: 1px;
+  border-radius: 4px;
+  border-color: rgba(0, 0, 0, 0.23);
+
+  &:hover(border-color: black;)
+  &:focus(border-color: #3f51b5; border-width: 2px;)`;
+
+const Legend = styled.legend`
+  padding: 0;
+  margin-left: 8px;
+  text-align: left;
+  transition: width 200ms cubic-bezier(0, 0, 0.2, 1) 0ms;
+  line-height: 11px;
 `;
 
 const catMap: { [K in CourseType]?: string[] } = subjectData;
@@ -65,27 +88,37 @@ class SortDrawer extends React.Component<SortDrawerProps, SortDrawerState> {
           <Spacer />
           <SearchBar search={this.props.search} />
           <Section>
-            <CardHeader title="Sorting" />
-            <SelectMenu sort={this.props.sort} sortKey={this.props.sortKey} />
+            <Fieldset>
+              <Legend style={{ width: '50px' }}>
+                <Typography style={{ display: 'inline' }}>Sorting</Typography>
+              </Legend>
+              <SelectMenu sort={this.props.sort} sortKey={this.props.sortKey} />
+            </Fieldset>
           </Section>
           <Section>
-            <CardHeader title="Filter" />
-            {(Object.keys(catMap) as (CourseType)[]).map((category, index) => (
-              <React.Fragment key={index}>
-                {index !== 0 && <Divider />}
-                <FilterMenu
-                  addFilter={this.props.addFilter}
-                  removeFilter={this.props.removeFilter}
-                  category={category}
-                  filterList={catMap[category] || []}
-                  activeFilters={this.props.activeFilters.filter(
-                    f => f.type === category
-                  )}
-                  toolTips={toolTip[category] || []}
-                />
-              </React.Fragment>
-            ))}
-            <QuarterMenu changeQuarter={this.props.changeQuarter} />
+            <Fieldset>
+              <Legend style={{ width: '35px' }}>
+                <Typography style={{ display: 'inline' }}>Filters</Typography>
+              </Legend>
+              {(Object.keys(catMap) as (CourseType)[]).map(
+                (category: CourseType, index) => (
+                  <React.Fragment key={index}>
+                    {index !== 0 && <Divider />}
+                    <FilterMenu
+                      addFilter={this.props.addFilter}
+                      removeFilter={this.props.removeFilter}
+                      category={category}
+                      filterList={catMap[category] || []}
+                      activeFilters={this.props.activeFilters.filter(
+                        f => f.type === category
+                      )}
+                      toolTips={toolTip[category] || []}
+                    />
+                  </React.Fragment>
+                )
+              )}
+              <QuarterMenu changeQuarter={this.props.changeQuarter} />
+            </Fieldset>
           </Section>
         </Drawer>
       </RootRef>

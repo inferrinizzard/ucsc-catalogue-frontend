@@ -9,7 +9,7 @@ import Main from './components/Main';
 import SortDrawer from './components/SortDrawer';
 import CourseDrawer from './components/CourseDrawer';
 import BottomLiner from './components/Pieces/BottomLiner';
-
+import q from './components/Data/quarters.json';
 import { Course, CourseEnrollment } from './models/course.model';
 import {
   fetchAction,
@@ -62,6 +62,8 @@ export interface AppState {
   linerOpen: boolean;
 }
 
+const quarter: number = q[1].code;
+
 class App extends React.Component<AppProps, AppState> {
   state = {
     linerWidth: 30,
@@ -72,7 +74,7 @@ class App extends React.Component<AppProps, AppState> {
   };
 
   public componentDidMount() {
-    this.props.load(2192);
+    this.props.load(quarter);
   }
   //#region prop functions
   sortCourses = (type: CourseType) => {

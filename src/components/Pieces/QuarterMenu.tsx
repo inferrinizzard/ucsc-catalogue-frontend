@@ -8,7 +8,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import RootRef from '@material-ui/core/RootRef';
 import { CourseType } from '../../store/course';
 import { Term } from '../../models/course.model';
-import quarters from '../Data/quarters.json';
+import quarterData from '../Data/quarters.json';
 
 export interface QuarterMenuProps {
   changeQuarter: (n: number) => void;
@@ -19,6 +19,8 @@ export interface QuarterMenuState {
   width: number;
   active: string;
 }
+
+const quarters: Term[] = quarterData.slice(1);
 
 class QuarterMenu extends React.Component<QuarterMenuProps, QuarterMenuState> {
   handleOpen = (event: React.MouseEvent<HTMLElement, MouseEvent>) => {

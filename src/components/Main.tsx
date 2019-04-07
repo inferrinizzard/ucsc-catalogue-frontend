@@ -28,9 +28,9 @@ export interface MainState {
 
 const MainDiv = styled.div`
   margin-top: ${(p: MainDivProps) => p.linerWidth}px;
-  margin-left: ${p => toPX(p.drawerWidth + 'em')}px;
+  margin-left: ${p => toPX(p.drawerWidth + 'em') + 10}px;
   width: calc(
-    ${p => (p.open ? 52 : 100)}% - ${p => toPX(p.drawerWidth + 'em')}px
+    ${p => (p.open ? 52 : 100)}% - ${p => toPX(p.drawerWidth + 'em') + 10}px
   );
   height: calc(100% - ${p => p.linerWidth}px);
 `;
