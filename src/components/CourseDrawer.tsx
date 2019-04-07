@@ -9,8 +9,9 @@ import GradesCard from './Cards/GradesCard';
 import ProfCard from './Cards/ProfCard';
 import MajorCard from './Cards/MajorCard';
 import LocCard from './Cards/LocCard';
+import SectionCard from './Cards/SectionCard';
 
-import { Course, CourseEnrollment } from '../models/course.model';
+import { Course, CourseEnrollment, Setting } from '../models/course.model';
 
 export interface CourseDrawerProps {
   addBasket: (c: Course) => void;
@@ -20,7 +21,7 @@ export interface CourseDrawerProps {
   closeDetail: () => void;
   course: Course | null;
   tracking: CourseEnrollment[];
-  start: Date;
+  prevStart: Date;
   quarter: number;
   loading: boolean;
 }
@@ -69,9 +70,21 @@ class CourseDrawer extends React.Component<
         />
         <EnrollCard
           tracking={this.props.tracking}
-          start={this.props.start}
+          prevStart={this.props.prevStart}
           quarter={this.props.quarter}
         />
+        {this.props.tracking[0] &&
+          this.props.course &&
+          this.props.tracking[0].sections.length > 0 && (
+            <SectionCard
+              section={this.props.tracking[0].sections}
+              setting={
+                this.props.course.settings
+                  ? this.props.course.settings.slice(1)
+                  : []
+              }
+            />
+          )}
         <GradesCard />
         <div>
           <Third>

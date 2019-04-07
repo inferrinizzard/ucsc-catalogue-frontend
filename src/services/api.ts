@@ -91,7 +91,7 @@ function convertTracking(
     date: [x.date].map(s => {
       let d = new Date(0);
       d.setUTCSeconds(s);
-      return d.toDateString();
+      return d;
     })[0],
     status: x.status,
     available: x.avail,

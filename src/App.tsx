@@ -33,7 +33,7 @@ interface PropsFromStore {
   activeCourse: Course | null;
   quarter: number;
   tracking: CourseEnrollment[];
-  start: Date;
+  prevStart: Date;
   loading: boolean;
 }
 
@@ -230,7 +230,7 @@ class App extends React.Component<AppProps, AppState> {
             closeDetail={this.closeDetail}
             course={this.props.activeCourse}
             tracking={this.props.tracking}
-            start={this.props.start}
+            prevStart={this.props.prevStart}
             quarter={this.props.quarter}
             loading={this.props.loading}
           />
@@ -247,7 +247,7 @@ const mapStateToProps = (state: ReduxState): PropsFromStore => ({
   activeCourse: state.course.activeCourse,
   quarter: state.course.quarter,
   tracking: state.course.tracking,
-  start: state.course.start,
+  prevStart: state.course.prevStart,
   loading: state.course.fetchTracking,
 });
 const mapDispatchToProps = (

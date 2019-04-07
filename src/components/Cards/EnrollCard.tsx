@@ -14,7 +14,7 @@ import TextBlock from '../Pieces/TextBlock';
 
 export interface EnrollCardProps {
   tracking: CourseEnrollment[];
-  start: Date;
+  prevStart: Date;
   quarter: number;
 }
 
@@ -24,6 +24,58 @@ const StyleCard = styled(Card)<any>`
 `;
 
 const EnrollCard: React.SFC<EnrollCardProps> = props => {
+  const tracking = props.tracking.reduce(
+    (data, cur) => {
+      let temp = new Date(0);
+      temp.setUTCMilliseconds(cur.date.getTime());
+      temp.setDate(temp.getDate() + 1);
+      const next = data[data.length - 1];
+      if (
+        data.length < 1 ||
+        next.date.getDate() === cur.date.getDate() ||
+        next.date.getDate() === temp.getDate()
+      )
+        return data.concat([cur]);
+      else {
+        let dates = [] as CourseEnrollment[];
+        let step = new Date(0);
+        step.setUTCMilliseconds(temp.getTime());
+        while (step.getDate() != next.date.getDate()) {
+          const d = new Date(0);
+          d.setUTCMilliseconds(step.getTime());
+          dates.unshift({ ...next, date: d });
+          step.setDate(step.getDate() + 1);
+        }
+        return data.concat([...dates, cur]);
+      }
+    },
+    [] as CourseEnrollment[]
+  );
+  const dates = tracking.reduceRight((x: string[], val) => {
+    return x.concat(val.date.toDateString().substr(4));
+  }, []);
+  const maxHeight =
+    tracking.length > 0
+      ? Math.max(
+          tracking[0].capacity,
+          tracking.reduce((max: number, val) => {
+            return max >
+              Math.max(val.enrolled + val.waitlistTotal, val.capacity)
+              ? max
+              : Math.max(val.enrolled + val.waitlistTotal, val.capacity);
+          }, tracking[0].capacity)
+        )
+      : 0;
+
+  let firstPass = new Date(0);
+  firstPass.setUTCMilliseconds(props.prevStart.getTime());
+  firstPass.setDate(
+    props.prevStart.getDate() + (props.prevStart.getMonth() === 8 ? 49 : 50)
+  );
+  let secondPass = new Date(0);
+  secondPass.setUTCMilliseconds(firstPass.getTime());
+  secondPass.setDate(secondPass.getDate() + 8);
+
   return (
     <StyleCard>
       <CardHeader title="Enrollment" />
@@ -36,10 +88,8 @@ const EnrollCard: React.SFC<EnrollCardProps> = props => {
           //second pass 8 days after
           data={[
             {
-              x: props.tracking.reduceRight((x: string[], val) => {
-                return x.concat(val.date.substr(4));
-              }, []),
-              y: props.tracking.reduceRight((x: number[], val) => {
+              x: dates,
+              y: tracking.reduceRight((x: number[], val) => {
                 return x.concat(val.enrolled);
               }, []),
               type: 'scatter',
@@ -47,26 +97,22 @@ const EnrollCard: React.SFC<EnrollCardProps> = props => {
               name: 'Enrolled',
             },
             {
-              x: props.tracking.reduceRight((x: string[], val) => {
-                return x.concat(val.date.substr(4));
-              }, []),
-              y: props.tracking.reduceRight((x: number[], val) => {
+              x: dates,
+              y: tracking.reduceRight((x: number[], val) => {
                 return x.concat(val.enrolled + val.waitlistTotal);
               }, []),
               type: 'scatter',
               fill: 'tonexty',
               name: 'Waitlisted',
               hoverinfo: 'x+text+name' as 'x+text', //requires 'x+text+name' type in @types/plotly.js/index.d.ts
-              text: props.tracking.reduceRight((x: string[], val) => {
+              text: tracking.reduceRight((x: string[], val) => {
                 return x.concat(val.waitlistTotal.toString());
               }, []),
               line: { color: 'rgb(44, 160, 44)' },
             },
             {
-              x: props.tracking.reduceRight((x: string[], val) => {
-                return x.concat(val.date.substr(4));
-              }, []),
-              y: props.tracking.reduceRight((x: number[], val) => {
+              x: dates,
+              y: tracking.reduceRight((x: number[], val) => {
                 return x.concat(val.capacity);
               }, []),
               type: 'scatter',
@@ -80,7 +126,7 @@ const EnrollCard: React.SFC<EnrollCardProps> = props => {
             //     new Date(props.start.getDate() + 51).toDateString().substr(4),
             //   ],
             //   y: [0, 0],
-            //   type: 'scatter',
+            //   type: 'line',
             //   hoverinfo: 'skip',
             //   // type: 'rect',
             // },
@@ -96,22 +142,27 @@ const EnrollCard: React.SFC<EnrollCardProps> = props => {
             },
             yaxis: {
               fixedrange: true,
-              range:
-                props.tracking.length > 0
-                  ? [
-                      0,
-                      Math.max(
-                        props.tracking[0].capacity,
-                        props.tracking.reduce((max: number, val) => {
-                          return max > val.enrolled + val.waitlistTotal
-                            ? max
-                            : val.enrolled + val.waitlistTotal;
-                        }, 0)
-                      ),
-                    ]
-                  : undefined,
+              range: tracking.length > 0 ? [0, maxHeight] : undefined,
             },
             margin: { l: 25, r: 25, b: 50, t: 10 },
+            shapes: [
+              {
+                type: 'line',
+                x0: firstPass.toDateString().substr(4),
+                y0: 0,
+                x1: firstPass.toDateString().substr(4),
+                y1: maxHeight,
+                line: { hoverlabel: 'First Pass' },
+              },
+              {
+                type: 'line',
+                x0: secondPass.toDateString().substr(4),
+                y0: 0,
+                x1: secondPass.toDateString().substr(4),
+                y1: maxHeight,
+                line: { hoverlabel: 'Second Pass' },
+              },
+            ],
           }}
           config={{
             displayModeBar: false,
@@ -124,15 +175,14 @@ const EnrollCard: React.SFC<EnrollCardProps> = props => {
         <TextBlock
           text={
             'Enrolled: ' +
-            (props.tracking.length > 0
-              ? props.tracking[0].enrolled +
+            (tracking.length > 0
+              ? tracking[0].enrolled +
                 '/' +
-                props.tracking[0].capacity +
-                (props.tracking[0].capacity != 0
+                tracking[0].capacity +
+                (tracking[0].capacity != 0
                   ? ' - ' +
                     (
-                      (props.tracking[0].enrolled /
-                        props.tracking[0].capacity) *
+                      (tracking[0].enrolled / tracking[0].capacity) *
                       100
                     ).toFixed(0) +
                     '%'
@@ -144,18 +194,17 @@ const EnrollCard: React.SFC<EnrollCardProps> = props => {
         <TextBlock
           text={
             'Waitlisted: ' +
-            (props.tracking.length > 0
-              ? props.tracking[0].waitlistTotal +
+            (tracking.length > 0
+              ? tracking[0].waitlistTotal +
                 '/' +
-                props.tracking[0].waitlistCapacity +
-                (props.tracking[0].waitlistCapacity != 0
+                tracking[0].capacity +
+                (tracking[0].capacity != 0
                   ? ' - ' +
                     (
-                      (props.tracking[0].waitlistTotal /
-                        props.tracking[0].waitlistCapacity) *
+                      (tracking[0].waitlistTotal / tracking[0].capacity) *
                       100
                     ).toFixed(0) +
-                    '%'
+                    '% Over'
                   : '')
               : '')
           }
