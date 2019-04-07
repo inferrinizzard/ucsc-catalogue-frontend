@@ -10,18 +10,11 @@ import styled from 'styled-components';
 
 import { professorRating } from '../../models/course.model';
 import { Typography } from '@material-ui/core';
-import { COPYFILE_FICLONE_FORCE } from 'constants';
 
 export interface ProfCardProps {
   rmp: professorRating;
   name: string;
 }
-
-const StyleCard = styled(Card)<any>`
-  margin: 0.5em;
-  margin-right: 0.25em;
-  overflow: visible !important;
-`;
 
 const ProfCard: React.SFC<ProfCardProps> = props => {
   function stars(num: number): JSX.Element {
@@ -40,7 +33,13 @@ const ProfCard: React.SFC<ProfCardProps> = props => {
     );
   }
   return (
-    <StyleCard>
+    <Card
+      style={{
+        margin: '0.5em',
+        marginRight: '0.25em',
+        overflow: 'visible !important',
+      }}
+    >
       <CardHeader title="Professor" subheader={props.name} />
       <Divider />
       {props.rmp.clarity ? (
@@ -63,7 +62,7 @@ const ProfCard: React.SFC<ProfCardProps> = props => {
           {'RateMyProfessors Data Unavailable'}
         </Typography>
       )}
-    </StyleCard>
+    </Card>
   );
 };
 
