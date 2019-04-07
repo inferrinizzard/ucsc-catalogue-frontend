@@ -207,6 +207,45 @@ class _API {
         .then(s => s.substr(s.indexOf(term.toString()) + 40, 8))
     );
   }
+
+  public async getProfId(name: string): Promise<number> {
+    if (name === '') return -1;
+    const idString: string = await ky
+      .get(this.endpoint + '/data/fetch/rmp.json')
+      .then(x => x.text());
+    return idString.includes(name)
+      ? parseInt(idString.substr(idString.indexOf(name) + name.length + 3, 6))
+      : 0;
+  }
+
+  public async rmp(profId: number): Promise<ApiResponseModel.professorRating> {
+    const rawString: string = await ky
+      .get(this.endpoint + '/data/fetch/rmp/stats/' + profId + '.json')
+      .then(x => x.text());
+    const d: number = parseFloat(
+      rawString.substring(
+        rawString.indexOf('easy') + 6,
+        rawString.indexOf('clarity') - 2
+      )
+    );
+    const c: number = parseFloat(
+      rawString.substring(
+        rawString.indexOf('clarity') + 9,
+        rawString.indexOf('overall') - 2
+      )
+    );
+    const o: number = parseFloat(
+      rawString.substring(
+        rawString.indexOf('overall') + 9,
+        rawString.indexOf('quality') - 2
+      )
+    );
+    return {
+      difficulty: d,
+      clarity: c,
+      overall: o,
+    } as ApiResponseModel.professorRating;
+  }
 }
 
 const API = new _API();

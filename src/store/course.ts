@@ -335,6 +335,17 @@ const trackCourseEpic: Epic<CourseActions> = (action$, state$) =>
       const tracking = action.course
         ? await API.tracking(action.course!.number, action.quarter)
         : [];
+      const rmp = action.course
+        ? await API.rmp(
+            await API.getProfId(
+              action.course.instructor
+                ? action.course.instructor['first'] +
+                    action.course.instructor['last']
+                : ''
+            )
+          )
+        : {};
+      console.log(rmp);
       return { tracking: tracking, course: course };
     }),
     map(data => activeSuccessAction(data['tracking'], data['course']))
