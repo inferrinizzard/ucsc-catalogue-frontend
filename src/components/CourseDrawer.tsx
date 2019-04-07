@@ -11,7 +11,12 @@ import MajorCard from './Cards/MajorCard';
 import LocCard from './Cards/LocCard';
 import SectionCard from './Cards/SectionCard';
 
-import { Course, CourseEnrollment, Setting } from '../models/course.model';
+import {
+  Course,
+  CourseEnrollment,
+  professorRating,
+  Setting,
+} from '../models/course.model';
 
 export interface CourseDrawerProps {
   addBasket: (c: Course) => void;
@@ -24,6 +29,7 @@ export interface CourseDrawerProps {
   prevStart: Date;
   quarter: number;
   loading: boolean;
+  rmp: professorRating;
 }
 export interface CourseDrawerState {}
 
@@ -88,7 +94,16 @@ class CourseDrawer extends React.Component<
         <GradesCard />
         <div>
           <Third>
-            <ProfCard />
+            <ProfCard
+              rmp={this.props.rmp}
+              name={
+                this.props.course && this.props.course.instructor
+                  ? this.props.course.instructor.first +
+                    ' ' +
+                    this.props.course.instructor.last
+                  : ''
+              }
+            />
           </Third>
           <Third>
             <MajorCard />

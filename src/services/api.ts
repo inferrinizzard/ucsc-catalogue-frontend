@@ -1,4 +1,4 @@
-import ky from 'ky';
+import ky, { HTTPError } from 'ky';
 
 import * as model from '../models/course.model';
 import * as ApiResponseModel from '../models/api.model';
@@ -206,6 +206,52 @@ class _API {
         .then(x => x.text())
         .then(s => s.substr(s.indexOf(term.toString()) + 40, 8))
     );
+  }
+
+  public async getProfId(name: string): Promise<number> {
+    if (name === '') return -1;
+    const idString: string = await ky
+      .get(this.endpoint + '/data/fetch/rmp.json')
+      .then(x => x.text());
+    return idString.includes(name)
+      ? parseInt(idString.substr(idString.indexOf(name) + name.length + 3, 6))
+      : 0;
+  }
+
+  public async rmp(profId: number): Promise<model.professorRating> {
+    if (profId <= 0) return {} as model.professorRating;
+    const rawString: string = await ky
+      .get(this.endpoint + '/data/fetch/rmp/stats/' + profId + '.json')
+      .catch(x => {
+        return !x.ok ? '' : x;
+      })
+      .then(x => {
+        return x === '' ? '' : x.text();
+      });
+    if (rawString === '') return {} as model.professorRating;
+    const d: number = parseFloat(
+      rawString.substring(
+        rawString.indexOf('easy') + 6,
+        rawString.indexOf('clarity') - 2
+      )
+    );
+    const c: number = parseFloat(
+      rawString.substring(
+        rawString.indexOf('clarity') + 9,
+        rawString.indexOf('overall') - 2
+      )
+    );
+    const o: number = parseFloat(
+      rawString.substring(
+        rawString.indexOf('overall') + 9,
+        rawString.indexOf('quality') - 2
+      )
+    );
+    return {
+      difficulty: d,
+      clarity: c,
+      overall: o,
+    } as model.professorRating;
   }
 }
 

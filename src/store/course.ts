@@ -1,5 +1,9 @@
 import { Action } from 'redux';
-import { Course, CourseEnrollment } from '../models/course.model';
+import {
+  Course,
+  CourseEnrollment,
+  professorRating,
+} from '../models/course.model';
 import API from '../services/api';
 import { Epic, combineEpics } from 'redux-observable';
 import { map } from 'rxjs/internal/operators/map';
@@ -17,6 +21,7 @@ export interface CourseState {
   tracking: CourseEnrollment[];
   prevStart: Date;
   search: string;
+  rmp: professorRating;
 }
 //#region define types
 export type CourseType = keyof Course;
@@ -54,6 +59,7 @@ const initialState: CourseState = {
   tracking: [],
   prevStart: new Date(0),
   search: '',
+  rmp: {} as professorRating,
 };
 //#region actions
 enum ActionTypes {
@@ -144,14 +150,17 @@ interface ActiveSuccessAction extends Action {
   type: ActionTypes.ACTIVE_SUCCESS;
   data: CourseEnrollment[];
   course: Course;
+  rmp: professorRating;
 }
 export const activeSuccessAction = (
   data: CourseEnrollment[],
-  course: Course
+  course: Course,
+  rmp: professorRating
 ): ActiveSuccessAction => ({
   type: ActionTypes.ACTIVE_SUCCESS,
   data,
   course,
+  rmp,
 });
 
 export type CourseActions =
@@ -241,6 +250,7 @@ export default function courseReducer(
         fetchTracking: false,
         tracking: action.data,
         activeCourse: action.course,
+        rmp: action.rmp,
       };
     default:
       return state;
@@ -342,16 +352,29 @@ const trackCourseEpic: Epic<CourseActions> = (action$, state$) =>
   action$.ofType(ActionTypes.SET_ACTIVE).pipe(
     map(action => action as SetActiveAction),
     switchMap(async action => {
-      const course = { ...action.course } as Course;
+      const course: Course = { ...action.course } as Course;
       course['fullName'] = action.course
         ? await API.fetchName(action.course!.number, action.quarter)
         : '';
-      const tracking = action.course
+      const tracking: CourseEnrollment[] = action.course
         ? await API.tracking(action.course!.number, action.quarter)
-        : [];
-      return { tracking: tracking, course: course };
+        : ([] as CourseEnrollment[]);
+      const rmp: professorRating = action.course
+        ? await API.rmp(
+            await API.getProfId(
+              action.course.instructor
+                ? action.course.instructor['first'] +
+                    action.course.instructor['last']
+                : ''
+            )
+          )
+        : ({} as professorRating);
+      console.log(rmp);
+      return { tracking: tracking, course: course, rmp: rmp };
     }),
-    map(data => activeSuccessAction(data['tracking'], data['course']))
+    map(data =>
+      activeSuccessAction(data['tracking'], data['course'], data['rmp'])
+    )
   );
 
 export const CourseEpics = combineEpics(fetchCoursesEpic, trackCourseEpic);

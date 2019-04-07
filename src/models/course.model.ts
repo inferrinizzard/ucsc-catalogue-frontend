@@ -74,4 +74,10 @@ export interface CourseEnrollment {
   sections: SectionEnrollment[];
 }
 
+export interface professorRating {
+  difficulty: number;
+  clarity: number;
+  overall: number;
+}
+
 export type Filter = { type: keyof Course; filter: string };
