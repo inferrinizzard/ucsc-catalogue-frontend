@@ -19,7 +19,7 @@ const SearchBar: React.SFC<SearchBarProps> = props => {
           style: { paddingRight: '6px' },
         }}
         inputProps={{ style: { maxWidth: '172px' } }}
-        style={{ padding: '0 .15em .15em' }}
+        style={{ padding: '0 .15em .15em', marginTop: '3px' }}
       />
     </React.Fragment>
   );

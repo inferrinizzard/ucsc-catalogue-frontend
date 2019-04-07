@@ -12,7 +12,7 @@ import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 
 import TextBlock from '../Pieces/TextBlock';
-import { Course, CourseEnrollment } from '../../misc/models/course.model';
+import { Course, CourseEnrollment } from '../../models/course.model';
 
 const StyleCard = styled(Card)<any>`
   margin: 0.5em;
