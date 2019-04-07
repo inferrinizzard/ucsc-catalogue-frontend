@@ -60,6 +60,7 @@ class SortDrawer extends React.Component<SortDrawerProps, SortDrawerState> {
             style: {
               marginTop: '32px',
               padding: '0.25em',
+              width: '210px',
             },
           }}
         >

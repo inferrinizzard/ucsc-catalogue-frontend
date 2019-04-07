@@ -60,7 +60,7 @@ class BasketCard extends React.Component<BasketCardProps, BasketCardState> {
             <Typography variant={'h6'}>
               {this.state.enrolled < this.state.capacity
                 ? 'Enrolled: ' + this.state.enrolled + '/' + this.state.capacity
-                : 'Waitlisted:' + this.state.waitlist}
+                : 'Waitlisted: ' + this.state.waitlist}
             </Typography>
           </CardContent>
         </CardActionArea>

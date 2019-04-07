@@ -7,8 +7,6 @@ import { List } from 'react-virtualized/dist/es/List';
 
 import { Course } from '../models/course.model';
 import ClassCard from './Pieces/ClassCard';
-import { setActiveAction } from '../store/course';
-import { number } from 'prop-types';
 
 export interface MainProps {
   courses: Course[];
