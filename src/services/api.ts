@@ -1,4 +1,4 @@
-import ky from 'ky';
+import ky, { HTTPError } from 'ky';
 
 import * as model from '../models/course.model';
 import * as ApiResponseModel from '../models/api.model';
@@ -222,7 +222,13 @@ class _API {
     if (profId <= 0) return {} as model.professorRating;
     const rawString: string = await ky
       .get(this.endpoint + '/data/fetch/rmp/stats/' + profId + '.json')
-      .then(x => x.text());
+      .catch(x => {
+        return !x.ok ? '' : x;
+      })
+      .then(x => {
+        return x === '' ? '' : x.text();
+      });
+    if (rawString === '') return {} as model.professorRating;
     const d: number = parseFloat(
       rawString.substring(
         rawString.indexOf('easy') + 6,

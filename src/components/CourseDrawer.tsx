@@ -74,7 +74,16 @@ class CourseDrawer extends React.Component<
         <GradesCard />
         <div>
           <Third>
-            <ProfCard rmp={this.props.rmp} />
+            <ProfCard
+              rmp={this.props.rmp}
+              name={
+                this.props.course && this.props.course.instructor
+                  ? this.props.course.instructor.first +
+                    ' ' +
+                    this.props.course.instructor.last
+                  : ''
+              }
+            />
           </Third>
           <Third>
             <MajorCard />
