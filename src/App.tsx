@@ -10,7 +10,11 @@ import SortDrawer from './components/SortDrawer';
 import CourseDrawer from './components/CourseDrawer';
 import BottomLiner from './components/Pieces/BottomLiner';
 
-import { Course, CourseEnrollment } from './models/course.model';
+import {
+  Course,
+  CourseEnrollment,
+  professorRating,
+} from './models/course.model';
 import {
   fetchAction,
   sortAction,
@@ -41,6 +45,7 @@ interface PropsFromStore {
   tracking: CourseEnrollment[];
   start: Date;
   loading: boolean;
+  rmp: professorRating;
 }
 
 interface PropsToDispatch {
@@ -168,6 +173,7 @@ class App extends React.Component<AppProps, AppState> {
             start={this.props.start}
             quarter={this.props.quarter}
             loading={this.props.loading}
+            rmp={this.props.rmp}
           />
         </div>
         <BottomLiner
@@ -191,6 +197,7 @@ const mapStateToProps = (state: ReduxState): PropsFromStore => ({
   tracking: state.course.tracking,
   start: state.course.start,
   loading: state.course.fetchTracking,
+  rmp: state.course.rmp,
 });
 const mapDispatchToProps = (
   dispatch: Dispatch<ReduxAction>

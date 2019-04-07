@@ -83,13 +83,3 @@ export interface trackingApiResponse {
   ok: boolean;
   results: trackingApiData[];
 }
-
-export interface professorRating {
-  difficulty: number;
-  clarity: number;
-  overall: number;
-}
-
-export interface professorRatingResponse {
-  [profId: number]: professorRating;
-}

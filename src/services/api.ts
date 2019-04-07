@@ -218,7 +218,8 @@ class _API {
       : 0;
   }
 
-  public async rmp(profId: number): Promise<ApiResponseModel.professorRating> {
+  public async rmp(profId: number): Promise<model.professorRating> {
+    if (profId <= 0) return {} as model.professorRating;
     const rawString: string = await ky
       .get(this.endpoint + '/data/fetch/rmp/stats/' + profId + '.json')
       .then(x => x.text());
@@ -244,7 +245,7 @@ class _API {
       difficulty: d,
       clarity: c,
       overall: o,
-    } as ApiResponseModel.professorRating;
+    } as model.professorRating;
   }
 }
 

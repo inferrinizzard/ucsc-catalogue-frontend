@@ -1,11 +1,15 @@
 import * as React from 'react';
 import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
-import CardMedia from '@material-ui/core/CardMedia';
 import CardContent from '@material-ui/core/CardContent';
 import styled from 'styled-components';
 
-export interface ProfCardProps {}
+import { professorRating } from '../../models/course.model';
+import { Typography } from '@material-ui/core';
+
+export interface ProfCardProps {
+  rmp: professorRating;
+}
 export interface ProfCardState {}
 
 const StyleCard = styled(Card)<any>`
@@ -19,13 +23,14 @@ class ProfCard extends React.Component<ProfCardProps, ProfCardState> {
     return (
       <StyleCard>
         <CardHeader title="Professor" />
-        {/* <CardMedia /> */}
-        <div style={{ textAlign: 'center', fontFamily: 'Roboto' }}>
-          Work in progress, to be implemented soon!
-        </div>
-        {/* <CardContent>
-          <div>name</div>
-        </CardContent> */}
+        <CardContent>
+          <Typography>{'Difficulty'}</Typography>
+          <div>{this.props.rmp.difficulty}</div>
+          <Typography>{'Clarity'}</Typography>
+          <div>{this.props.rmp.clarity}</div>
+          <Typography>{'Overall'}</Typography>
+          <div>{this.props.rmp.overall}</div>
+        </CardContent>
       </StyleCard>
     );
   }

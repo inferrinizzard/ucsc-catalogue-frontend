@@ -10,7 +10,11 @@ import ProfCard from './Cards/ProfCard';
 import MajorCard from './Cards/MajorCard';
 import LocCard from './Cards/LocCard';
 
-import { Course, CourseEnrollment } from '../models/course.model';
+import {
+  Course,
+  CourseEnrollment,
+  professorRating,
+} from '../models/course.model';
 
 export interface CourseDrawerProps {
   open: boolean;
@@ -20,6 +24,7 @@ export interface CourseDrawerProps {
   start: Date;
   quarter: number;
   loading: boolean;
+  rmp: professorRating;
 }
 export interface CourseDrawerState {}
 
@@ -69,7 +74,7 @@ class CourseDrawer extends React.Component<
         <GradesCard />
         <div>
           <Third>
-            <ProfCard />
+            <ProfCard rmp={this.props.rmp} />
           </Third>
           <Third>
             <MajorCard />
