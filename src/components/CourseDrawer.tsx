@@ -13,6 +13,9 @@ import LocCard from './Cards/LocCard';
 import { Course, CourseEnrollment } from '../models/course.model';
 
 export interface CourseDrawerProps {
+  addBasket: (c: Course) => void;
+  removeBasket: (c: Course) => void;
+  basketCourses: Course[];
   open: boolean;
   closeDetail: () => void;
   course: Course | null;
@@ -58,8 +61,11 @@ class CourseDrawer extends React.Component<
       >
         <Spacer />
         <DescCard
+          basketCourses={this.props.basketCourses}
           courseData={this.props.course}
           tracking={this.props.tracking[0]}
+          addBasket={this.props.addBasket}
+          removeBasket={this.props.removeBasket}
         />
         <EnrollCard
           tracking={this.props.tracking}

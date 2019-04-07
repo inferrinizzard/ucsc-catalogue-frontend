@@ -12,9 +12,9 @@ import SelectMenu from './Pieces/SelectMenu';
 import FilterMenu from './Pieces/FilterMenu';
 import QuarterMenu from './Pieces/QuarterMenu';
 import NotchedOutline from './Pieces/NotchedOutline';
-import { Filter, CourseType } from '../store/course';
 import subjectData from './Data/subject.json';
 import descData from './Data/desc.json';
+import { Filter, Course, CourseType } from '../store/course';
 
 export interface SortDrawerProps {
   sort: (type: CourseType) => void;
@@ -29,12 +29,9 @@ export interface SortDrawerProps {
 }
 export interface SortDrawerState {
   widthRef: React.RefObject<HTMLElement>;
+  basket: Course[];
 }
 
-const linerWidth = 30;
-const Spacer = styled.div`
-  margin-top: ${linerWidth}px;
-`;
 const Section = styled(Card)<any>`
   margin: 0.25em 0.15em;
   padding: 0;
@@ -47,6 +44,7 @@ const toolTip: { [K in CourseType]?: string[] } = descData;
 class SortDrawer extends React.Component<SortDrawerProps, SortDrawerState> {
   state = {
     widthRef: React.createRef<HTMLElement>(),
+    basket: [],
   };
   ComponentDidMount() {
     this.props.setDrawerWidth(this.state.widthRef.current!.offsetWidth);
@@ -57,13 +55,14 @@ class SortDrawer extends React.Component<SortDrawerProps, SortDrawerState> {
         <Drawer
           open={this.props.open}
           variant="permanent"
+          elevation={1}
           PaperProps={{
             style: {
-              padding: '0 0.25em',
+              marginTop: '32px',
+              padding: '0.25em',
             },
           }}
         >
-          <Spacer />
           <SearchBar search={this.props.search} />
           <Section>
             <NotchedOutline
