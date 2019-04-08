@@ -8,20 +8,13 @@ import styled from 'styled-components';
 
 import TextBlock from '../Pieces/TextBlock';
 
-const StyleCard = styled(Card)<any>`
-  margin: 0.5em;
-  overflow: visible !important;
-`;
-
 export interface GradesCardProps {}
 export interface GradesCardState {}
 
 class GradesCard extends React.Component<GradesCardProps, GradesCardState> {
   render() {
     return (
-      <StyleCard>
-        <CardHeader title="Grades" />
-        {/* <CardMedia /> */}
+      <React.Fragment>
         <div style={{ textAlign: 'center', fontFamily: 'Roboto' }}>
           Work in Progress, to be implemented soon!
         </div>
@@ -29,7 +22,7 @@ class GradesCard extends React.Component<GradesCardProps, GradesCardState> {
           <TextBlock text="Grade: " type={'h5'} />
           <TextBlock text="Wuh: " type={'h5'} />
         </CardContent> */}
-      </StyleCard>
+      </React.Fragment>
     );
   }
 }

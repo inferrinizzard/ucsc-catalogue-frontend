@@ -16,18 +16,10 @@ export interface SectionCardProps {
 }
 export interface SectionCardState {}
 
-const StyleCard = styled(Card)<any>`
-  margin: 0.5em;
-  margin-right: 0.25em;
-  overflow: visible !important;
-`;
-
 class SectionCard extends React.Component<SectionCardProps, SectionCardState> {
   render() {
     return (
-      <StyleCard>
-        <CardHeader title={'Sections'} />
-        <Divider />
+      <React.Fragment>
         <CardContent>
           <GridList>
             {this.props.section.map((cur, index) => {
@@ -78,7 +70,7 @@ class SectionCard extends React.Component<SectionCardProps, SectionCardState> {
             })}
           </GridList>
         </CardContent>
-      </StyleCard>
+      </React.Fragment>
     );
   }
 }

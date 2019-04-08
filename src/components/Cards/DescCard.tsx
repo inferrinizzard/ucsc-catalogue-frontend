@@ -17,11 +17,6 @@ import BookmarkBorder from '@material-ui/icons/BookmarkBorder';
 import TextBlock from '../Pieces/TextBlock';
 import { Course, CourseEnrollment } from '../../models/course.model';
 
-const StyleCard = styled(Card)<any>`
-  margin: 0.5em;
-  overflow: visible !important;
-`;
-
 export interface DescCardProps {
   basketCourses: Course[];
   courseData: Course | null;
@@ -39,7 +34,7 @@ const DescCard: React.SFC<DescCardProps> = props => {
       .reduce((numbers: number[], cur: Course) => [...numbers, cur.number], [])
       .includes(course!.number);
   return (
-    <StyleCard>
+    <React.Fragment>
       {course && (
         <CardHeader
           title={course.subject + ' ' + course.code}
@@ -162,7 +157,7 @@ const DescCard: React.SFC<DescCardProps> = props => {
           </div>
         </CardContent>
       )}
-    </StyleCard>
+    </React.Fragment>
   );
 };
 

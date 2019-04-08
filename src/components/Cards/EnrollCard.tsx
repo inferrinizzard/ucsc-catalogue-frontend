@@ -18,11 +18,6 @@ export interface EnrollCardProps {
   quarter: number;
 }
 
-const StyleCard = styled(Card)<any>`
-  margin: 0.5em;
-  overflow: visible !important;
-`;
-
 const EnrollCard: React.SFC<EnrollCardProps> = props => {
   const tracking = props.tracking.reduce(
     (data, cur) => {
@@ -77,8 +72,7 @@ const EnrollCard: React.SFC<EnrollCardProps> = props => {
   secondPass.setDate(secondPass.getDate() + 8);
 
   return (
-    <StyleCard>
-      <CardHeader title="Enrollment" />
+    <React.Fragment>
       <div style={{ marginBottom: '5px' }}>
         <Plot
           //dates:
@@ -247,7 +241,7 @@ const EnrollCard: React.SFC<EnrollCardProps> = props => {
           type={'h5'}
         />
       </CardContent>
-    </StyleCard>
+    </React.Fragment>
   );
 };
 

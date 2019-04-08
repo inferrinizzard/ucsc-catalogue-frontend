@@ -11,24 +11,17 @@ export interface LocCardProps {
 }
 export interface LocCardState {}
 
-const StyleCard = styled(Card)<any>`
-  margin: 0.5em;
-  margin-left: 0.25em;
-  overflow: visible !important;
-`;
-
 class LocCard extends React.Component<LocCardProps, LocCardState> {
   render() {
     return (
-      <StyleCard>
-        <CardHeader title="Location" />
+      <React.Fragment>
         {/* <CardMedia /> */}
         {/* <div>image goes here</div> */}
         <CardContent>
           <Typography>{'Location: ' + this.props.location}</Typography>
           {/* <div>Google Maps this</div> */}
         </CardContent>
-      </StyleCard>
+      </React.Fragment>
     );
   }
 }

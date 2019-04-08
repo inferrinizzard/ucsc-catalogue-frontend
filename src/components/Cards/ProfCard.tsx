@@ -33,14 +33,8 @@ const ProfCard: React.SFC<ProfCardProps> = props => {
     );
   }
   return (
-    <Card
-      style={{
-        margin: '0.5em',
-        marginRight: '0.25em',
-        overflow: 'visible !important',
-      }}
-    >
-      <CardHeader title="Professor" subheader={props.name} />
+    <React.Fragment>
+      <CardHeader title={props.name} />
       <Divider />
       {props.rmp.clarity ? (
         <CardContent>
@@ -62,7 +56,7 @@ const ProfCard: React.SFC<ProfCardProps> = props => {
           {'RateMyProfessors Data Unavailable'}
         </Typography>
       )}
-    </Card>
+    </React.Fragment>
   );
 };
 
