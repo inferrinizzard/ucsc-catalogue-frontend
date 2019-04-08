@@ -369,7 +369,6 @@ const trackCourseEpic: Epic<CourseActions> = (action$, state$) =>
             )
           )
         : ({} as professorRating);
-      console.log(rmp);
       return { tracking: tracking, course: course, rmp: rmp };
     }),
     map(data =>
