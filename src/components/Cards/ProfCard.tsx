@@ -19,11 +19,12 @@ export interface ProfCardProps {
 const ProfCard: React.SFC<ProfCardProps> = props => {
   function stars(num: number): JSX.Element {
     let result: JSX.Element[] = [] as JSX.Element[];
-    for (let i = 0; i < Math.floor(num); i++) result.push(<StarRounded />);
+    for (let i = 0; i < Math.floor(num); i++)
+      result.push(<StarRounded key={'a' + i} />);
     const half: boolean = num - Math.floor(num) >= 0.5;
-    if (half) result.push(<StarHalfRounded />);
+    if (half) result.push(<StarHalfRounded key={'b'} />);
     for (let i = Math.floor(num) + (half ? 1 : 0); i < 5; i++)
-      result.push(<StarBorderRounded />);
+      result.push(<StarBorderRounded key={'c' + i} />);
     return (
       <React.Fragment>
         {result.map((cur, index) => {
