@@ -68,6 +68,9 @@ const Main: React.SFC<MainProps & MainDivProps> = props => {
                 overscanRowCount={4}
                 scrollToAlignment={'start'}
                 scrollToIndex={props.scrollIndex}
+                style={{
+                  outline: 'none',
+                }}
                 rowRenderer={({
                   index,
                   key,
