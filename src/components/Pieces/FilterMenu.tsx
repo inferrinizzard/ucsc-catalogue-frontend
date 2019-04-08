@@ -81,11 +81,7 @@ class FilterMenu extends React.Component<FilterMenuProps, FilterMenuState> {
           {this.props.filterList
             // filter out active elements
             .filter(f => {
-              if (this.props.activeFilters.map(x => x.name).includes(f)) {
-                return false; // if it is already active, omit it
-              } else {
-                return true;
-              }
+              return !this.props.activeFilters.map(x => x.name).includes(f);
             })
             .map((f, index) => (
               <Tooltip
@@ -106,7 +102,7 @@ class FilterMenu extends React.Component<FilterMenuProps, FilterMenuState> {
               </Tooltip>
             ))}
         </Menu>
-        <div style={{ maxWidth: '220px' }}>
+        <div style={{ maxWidth: '210px' }}>
           {this.props.activeFilters.map((af, index) => (
             <Chip
               key={af.name}

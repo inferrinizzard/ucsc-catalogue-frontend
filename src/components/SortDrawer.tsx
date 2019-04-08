@@ -86,7 +86,6 @@ class SortDrawer extends React.Component<SortDrawerProps, SortDrawerState> {
                   {(Object.keys(catMap) as (CourseType)[]).map(
                     (category: CourseType, index) => (
                       <React.Fragment key={index}>
-                        {index !== 0 && <Divider />}
                         <FilterMenu
                           addFilter={this.props.addFilter}
                           removeFilter={this.props.removeFilter}
@@ -97,6 +96,7 @@ class SortDrawer extends React.Component<SortDrawerProps, SortDrawerState> {
                           )}
                           toolTips={toolTip[category] || []}
                         />
+                        <Divider />
                       </React.Fragment>
                     )
                   )}

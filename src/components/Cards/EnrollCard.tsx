@@ -144,6 +144,38 @@ const EnrollCard: React.SFC<EnrollCardProps> = props => {
               fixedrange: true,
               range: tracking.length > 0 ? [0, maxHeight] : undefined,
             },
+            annotations: [
+              {
+                x: ((firstPass: Date) => {
+                  let d = new Date(0);
+                  d.setUTCMilliseconds(firstPass.getTime());
+                  d.setDate(firstPass.getDate() + 1);
+                  return d;
+                })
+                  .call(firstPass, firstPass)
+                  .toDateString()
+                  .substr(4),
+                y: maxHeight * 0.9,
+                text: 'First Pass',
+                textangle: 90,
+                showarrow: false,
+              },
+              {
+                x: ((secondPass: Date) => {
+                  let d = new Date(0);
+                  d.setUTCMilliseconds(secondPass.getTime());
+                  d.setDate(secondPass.getDate() + 1);
+                  return d;
+                })
+                  .call(secondPass, secondPass)
+                  .toDateString()
+                  .substr(4),
+                y: maxHeight * 0.9,
+                text: 'Second Pass',
+                textangle: 90,
+                showarrow: false,
+              },
+            ],
             margin: { l: 25, r: 25, b: 50, t: 10 },
             shapes: [
               {
@@ -152,7 +184,9 @@ const EnrollCard: React.SFC<EnrollCardProps> = props => {
                 y0: 0,
                 x1: firstPass.toDateString().substr(4),
                 y1: maxHeight,
-                line: { hoverlabel: 'First Pass' },
+                line: {
+                  hoverlabel: 'First Pass',
+                },
               },
               {
                 type: 'line',
@@ -160,7 +194,9 @@ const EnrollCard: React.SFC<EnrollCardProps> = props => {
                 y0: 0,
                 x1: secondPass.toDateString().substr(4),
                 y1: maxHeight,
-                line: { hoverlabel: 'Second Pass' },
+                line: {
+                  hoverlabel: 'Second Pass',
+                },
               },
             ],
           }}
