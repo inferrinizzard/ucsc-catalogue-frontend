@@ -34,11 +34,6 @@ export interface CourseDrawerProps {
 }
 export interface CourseDrawerState {}
 
-const linerWidth = 30;
-const Spacer = styled.div`
-  margin-top: ${linerWidth}px;
-`;
-
 const Third = styled.span`
   width: 33.3%;
   display: inline-block;
@@ -73,7 +68,7 @@ class CourseDrawer extends React.Component<
           },
         }}
       >
-        <Spacer />
+        <div style={{ marginTop: '30px' }} />
         <StyleCard>
           <NotchedOutline
             width={52}

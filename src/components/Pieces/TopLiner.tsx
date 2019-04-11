@@ -17,6 +17,7 @@ const Liner = styled.div`
   z-index: 1201;
   position: fixed;
   top: 0;
+  height: 30px;
 `;
 
 const TopLiner: React.SFC<TopLinerProps> = props => {
