@@ -20,18 +20,18 @@ class SectionCard extends React.Component<SectionCardProps, SectionCardState> {
   render() {
     return (
       <React.Fragment>
-        <CardContent>
+        <CardContent style={{ padding: '8px' }}>
           <GridList>
             {this.props.section.map((cur, index) => {
               return (
                 <GridListTile
                   key={index}
-                  style={{ width: 100 / 4 + '%', height: 'auto' }}
+                  style={{ width: 100 / 5 + '%', height: 'auto' }}
                 >
                   <Card>
-                    <CardHeader title={cur.name} />
+                    <CardHeader title={cur.name} style={{ padding: '8px' }} />
                     <Divider />
-                    <CardContent style={{ padding: '14px' }}>
+                    <CardContent style={{ padding: '8px' }}>
                       <Typography>
                         {'Enrolled: ' + cur.enrolled + '/' + cur.capacity}
                       </Typography>

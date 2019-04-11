@@ -24,9 +24,11 @@ const TopLiner: React.SFC<TopLinerProps> = props => {
     <Liner>
       <span>
         <Typography
+          variant={'h6'}
           style={{
             height: props.height + 'px',
             display: 'inline',
+            paddingLeft: '8px',
           }}
         >
           CruzAssist
@@ -41,7 +43,9 @@ const TopLiner: React.SFC<TopLinerProps> = props => {
         </Button>
       </span>
       <Collapse in={props.open}>
-        <Typography>Made by Sean Song and Shun Kashiwa</Typography>
+        <Typography>
+          Made by Sean Song with special help from Shun Kashiwa
+        </Typography>
         <Typography>Data provided by slugsurvival</Typography>
       </Collapse>
     </Liner>

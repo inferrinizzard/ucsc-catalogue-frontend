@@ -35,7 +35,7 @@ const ProfCard: React.SFC<ProfCardProps> = props => {
   }
   return (
     <React.Fragment>
-      <CardHeader title={props.name} />
+      <CardHeader title={props.name} style={{ padding: '8px 16px' }} />
       <Divider />
       {props.rmp.clarity ? (
         <CardContent>

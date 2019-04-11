@@ -101,8 +101,8 @@ class App extends React.Component<AppProps, AppState> {
   };
 
   setActive = (course: Course | null, row: number) => {
-    this.props.setActive(course, this.props.quarter.toString());
     this.setState({ scrollIndex: row });
+    this.props.setActive(course, this.props.quarter.toString());
   };
 
   addBasket = (course: Course) => {
@@ -163,7 +163,9 @@ class App extends React.Component<AppProps, AppState> {
   scrollTo = (row: number) => {
     this.setState({
       scrollIndex:
-        this.state.scrollIndex > 4 ? Math.floor(row / 3) * 7 + 5 : row,
+        this.state.scrollIndex > 4 && this.props.activeCourse == null
+          ? Math.floor(row / 3) * 7 + 5
+          : row,
     });
   };
 
