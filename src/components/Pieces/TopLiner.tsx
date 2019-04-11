@@ -29,6 +29,7 @@ const TopLiner: React.SFC<TopLinerProps> = props => {
             height: props.height + 'px',
             display: 'inline',
             paddingLeft: '8px',
+            fontWeight: 400,
           }}
         >
           CruzAssist

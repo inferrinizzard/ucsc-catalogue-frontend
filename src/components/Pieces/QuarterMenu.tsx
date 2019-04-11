@@ -20,7 +20,7 @@ export interface QuarterMenuState {
   active: string;
 }
 
-const quarters: Term[] = quarterData.slice(1);
+const quarters: Term[] = quarterData;
 
 class QuarterMenu extends React.Component<QuarterMenuProps, QuarterMenuState> {
   handleOpen = (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
@@ -50,7 +50,7 @@ class QuarterMenu extends React.Component<QuarterMenuProps, QuarterMenuState> {
     anchor: null,
     widthRef: React.createRef<HTMLElement>(),
     width: 0,
-    active: quarters[0].name,
+    active: quarters[1].name,
   };
 
   componentDidMount() {

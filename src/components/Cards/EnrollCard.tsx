@@ -24,6 +24,13 @@ const TextBlock = styled(Typography)<any>`
 `;
 
 const EnrollCard: React.SFC<EnrollCardProps> = props => {
+  if (props.tracking.length <= 0) {
+    return (
+      <React.Fragment>
+        <CardHeader title="Tracking Data Unavailable for this term" />
+      </React.Fragment>
+    );
+  }
   const tracking = props.tracking.reduce(
     (data, cur) => {
       let temp = new Date(0);
