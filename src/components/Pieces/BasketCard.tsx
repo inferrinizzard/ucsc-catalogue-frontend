@@ -44,9 +44,7 @@ class BasketCard extends React.Component<BasketCardProps, BasketCardState> {
                 ? '#92c2ff'
                 : 'transparent',
           }}
-          onClick={event =>
-            this.props.openDetail(this.props.courseData)
-          }
+          onClick={event => this.props.openDetail(this.props.courseData)}
         >
           <CardContent>
             <Typography gutterBottom variant="h5" component="h2">

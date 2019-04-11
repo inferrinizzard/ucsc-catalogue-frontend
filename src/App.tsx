@@ -43,7 +43,7 @@ interface PropsFromStore {
   prevStart: Date;
   loading: boolean;
   rmp: professorRating;
-  bookmarks:Course[];
+  bookmarks: Course[];
 }
 
 interface PropsToDispatch {
@@ -55,7 +55,7 @@ interface PropsToDispatch {
   setActive: (c: Course | null, q: string) => void;
   addBookmark: (c: Course) => void;
   removeBookmark: (c: Course) => void;
-  loadBookmark: () => void
+  loadBookmark: () => void;
 }
 
 type AppProps = PropsFromStore & PropsToDispatch;
@@ -107,7 +107,7 @@ class App extends React.Component<AppProps, AppState> {
   };
 
   setActive = (course: Course | null, row?: number) => {
-    if(row){
+    if (row) {
       this.setState({ scrollIndex: row });
     }
     this.props.setActive(course, this.props.quarter.toString());
@@ -230,7 +230,7 @@ const mapStateToProps = (state: ReduxState): PropsFromStore => ({
   prevStart: state.course.prevStart,
   loading: state.course.fetchTracking,
   rmp: state.course.rmp,
-  bookmarks: state.course.bookmarks
+  bookmarks: state.course.bookmarks,
 });
 const mapDispatchToProps = (
   dispatch: Dispatch<ReduxAction>
@@ -243,7 +243,7 @@ const mapDispatchToProps = (
   removeFilter: type => dispatch(removeFilterAction(type)),
   addBookmark: course => dispatch(addBookmarkAction(course)),
   removeBookmark: course => dispatch(removeBookmarkAction(course)),
-  loadBookmark: () => dispatch(loadBookmarkAction())
+  loadBookmark: () => dispatch(loadBookmarkAction()),
 });
 
 export default connect(
