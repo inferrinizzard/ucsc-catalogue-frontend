@@ -24,7 +24,7 @@ module.exports = {
       { test: /\.tsx?$/, loader: 'ts-loader' },
 
       // use source-map-loader
-      { enforce: 'pre', test: /\.js$/, loader: 'source-map-loader' },
+      { enforce: 'pre', test: /\.tsx?$/, loader: 'source-map-loader' },
 
       {
         test: /\.css$/,

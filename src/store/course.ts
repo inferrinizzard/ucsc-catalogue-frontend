@@ -258,7 +258,7 @@ function Search(courses: Course[], search: string): Course[] {
     ? courses.filter(
         f =>
           f.subjectCode.includes(search) ||
-          f.name.toUpperCase().includes(search) ||
+          (f.name || '').toUpperCase().includes(search) ||
           (f.subject + ' ' + f.code).includes(search)
       )
     : courses;
