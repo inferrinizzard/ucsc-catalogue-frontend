@@ -174,11 +174,9 @@ interface AddBookmarkAction extends Action {
   type: ActionTypes.ADD_BOOKMARK;
   data: Course;
 }
-export const addBookmarkAction = (
-  data: Course,
-): AddBookmarkAction => ({
+export const addBookmarkAction = (data: Course): AddBookmarkAction => ({
   type: ActionTypes.ADD_BOOKMARK,
-  data
+  data,
 });
 
 interface RemoveBookmarkAction extends Action {
@@ -194,16 +192,18 @@ interface LoadBookmarkAction extends Action {
   type: ActionTypes.LOAD_BOOKMARK;
 }
 export const loadBookmarkAction = (): LoadBookmarkAction => ({
-  type: ActionTypes.LOAD_BOOKMARK
+  type: ActionTypes.LOAD_BOOKMARK,
 });
 
 interface LoadBookmarkCompleteAction extends Action {
   type: ActionTypes.LOAD_BOOKMARK_COMPLETE;
   data: Course[];
 }
-export const loadBookmarkCompleteAction = (data: Course[]): LoadBookmarkCompleteAction => ({
+export const loadBookmarkCompleteAction = (
+  data: Course[]
+): LoadBookmarkCompleteAction => ({
   type: ActionTypes.LOAD_BOOKMARK_COMPLETE,
-  data
+  data,
 });
 
 export type CourseActions =
@@ -439,21 +439,31 @@ const trackCourseEpic: Epic<CourseActions> = (action$, state$) =>
       activeSuccessAction(data['tracking'], data['course'], data['rmp'])
     )
   );
-const bookmarkEpic: Epic<CourseActions> = (action$, state$) => action$.ofType(ActionTypes.ADD_BOOKMARK, ActionTypes.REMOVE_BOOKMARK).pipe(
-  tap(() => {
-    window.localStorage.setItem('BOOKMARKS', JSON.stringify(state$.value.course.bookmarks))
-  }),
-  ignoreElements() // stop stream. do not return an action
-);
-const loadBookmarkEpic: Epic<CourseActions> = (action$, state$) => action$.ofType(ActionTypes.LOAD_BOOKMARK).pipe(
-  map(()=> window.localStorage.getItem('BOOKMARKS')),
-  map(json => {
-    if(json) {
-      return JSON.parse(json);
-    }
-    return [];
-  }),
-  map(courses => loadBookmarkCompleteAction(courses))
-)
+const bookmarkEpic: Epic<CourseActions> = (action$, state$) =>
+  action$.ofType(ActionTypes.ADD_BOOKMARK, ActionTypes.REMOVE_BOOKMARK).pipe(
+    tap(() => {
+      window.localStorage.setItem(
+        'BOOKMARKS',
+        JSON.stringify(state$.value.course.bookmarks)
+      );
+    }),
+    ignoreElements() // stop stream. do not return an action
+  );
+const loadBookmarkEpic: Epic<CourseActions> = (action$, state$) =>
+  action$.ofType(ActionTypes.LOAD_BOOKMARK).pipe(
+    map(() => window.localStorage.getItem('BOOKMARKS')),
+    map(json => {
+      if (json) {
+        return JSON.parse(json);
+      }
+      return [];
+    }),
+    map(courses => loadBookmarkCompleteAction(courses))
+  );
 
-export const CourseEpics = combineEpics(fetchCoursesEpic, trackCourseEpic, bookmarkEpic, loadBookmarkEpic);
+export const CourseEpics = combineEpics(
+  fetchCoursesEpic,
+  trackCourseEpic,
+  bookmarkEpic,
+  loadBookmarkEpic
+);
