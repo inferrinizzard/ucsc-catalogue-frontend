@@ -28,6 +28,9 @@ import {
   FilterList,
   FilterDomain,
   CourseType,
+  addBookmarkAction,
+  removeBookmarkAction,
+  loadBookmarkAction,
 } from './store/course';
 
 interface PropsFromStore {
@@ -40,6 +43,7 @@ interface PropsFromStore {
   prevStart: Date;
   loading: boolean;
   rmp: professorRating;
+  bookmarks:Course[];
 }
 
 interface PropsToDispatch {
@@ -49,6 +53,9 @@ interface PropsToDispatch {
   sort: (n: CourseType) => void;
   search: (name: string) => void;
   setActive: (c: Course | null, q: string) => void;
+  addBookmark: (c: Course) => void;
+  removeBookmark: (c: Course) => void;
+  loadBookmark: () => void
 }
 
 type AppProps = PropsFromStore & PropsToDispatch;
@@ -57,7 +64,6 @@ export interface AppState {
   topLinerHeight: number;
   basketHeight: number;
   basketOpen: boolean;
-  basketCourses: { c: Course; r: number }[];
   drawerWidth: number;
   cardHeight: number;
   cardWidth: number;
@@ -72,7 +78,6 @@ class App extends React.Component<AppProps, AppState> {
     topLinerHeight: 30,
     basketHeight: 30,
     basketOpen: true,
-    basketCourses: [] as { c: Course; r: number }[],
     drawerWidth: 13.75,
     cardHeight: 6,
     cardWidth: 12.5,
@@ -82,6 +87,7 @@ class App extends React.Component<AppProps, AppState> {
 
   public componentDidMount() {
     this.props.load(quarter);
+    // this.props.loadBookmark();
   }
   //#region prop functions
   sortCourses = (type: CourseType) => {
@@ -100,43 +106,14 @@ class App extends React.Component<AppProps, AppState> {
     this.props.load(q);
   };
 
-  setActive = (course: Course | null, row: number) => {
-    this.setState({ scrollIndex: row });
+  setActive = (course: Course | null, row?: number) => {
+    if(row){
+      this.setState({ scrollIndex: row });
+    }
     this.props.setActive(course, this.props.quarter.toString());
   };
 
-  addBasket = (course: Course) => {
-    this.setState({
-      basketCourses: this.state.basketCourses
-        .reduce(
-          (courses, cur) => {
-            return courses.concat([cur.c.number]);
-          },
-          [] as number[]
-        )
-        .includes(course.number)
-        ? this.state.basketCourses
-        : [
-            ...this.state.basketCourses,
-            { c: course, r: this.state.scrollIndex },
-          ],
-    });
-  };
-
-  removeBasket = (course: Course) => {
-    this.setState({
-      basketCourses: this.state.basketCourses.reduce(
-        (courses, cur, index) => {
-          return cur.c != course
-            ? courses.concat(this.state.basketCourses[index])
-            : courses;
-        },
-        [] as { c: Course; r: number }[]
-      ),
-    });
-  };
-
-  openDetail = (course: Course, row: number) => {
+  openDetail = (course: Course, row?: number) => {
     this.setActive(course, row);
   };
 
@@ -216,7 +193,7 @@ class App extends React.Component<AppProps, AppState> {
           />
           <Basket
             basketOpen={this.state.basketOpen}
-            courses={this.state.basketCourses}
+            courses={this.props.bookmarks}
             cardHeight={this.state.cardHeight}
             active={this.props.activeCourse}
             activeOpen={Boolean(this.props.activeCourse)}
@@ -225,14 +202,9 @@ class App extends React.Component<AppProps, AppState> {
             scrollTo={this.scrollTo}
           />
           <CourseDrawer
-            addBasket={this.addBasket}
-            removeBasket={this.removeBasket}
-            basketCourses={this.state.basketCourses.reduce(
-              (courses, cur) => {
-                return courses.concat([cur.c]);
-              },
-              [] as Course[]
-            )}
+            addBasket={this.props.addBookmark}
+            removeBasket={this.props.removeBookmark}
+            basketCourses={this.props.bookmarks}
             open={Boolean(this.props.activeCourse)}
             closeDetail={this.closeDetail}
             course={this.props.activeCourse}
@@ -258,6 +230,7 @@ const mapStateToProps = (state: ReduxState): PropsFromStore => ({
   prevStart: state.course.prevStart,
   loading: state.course.fetchTracking,
   rmp: state.course.rmp,
+  bookmarks: state.course.bookmarks
 });
 const mapDispatchToProps = (
   dispatch: Dispatch<ReduxAction>
@@ -268,6 +241,9 @@ const mapDispatchToProps = (
   setActive: (course, quarter) => dispatch(setActiveAction(course, quarter)),
   addFilter: type => dispatch(addFilterAction(type)),
   removeFilter: type => dispatch(removeFilterAction(type)),
+  addBookmark: course => dispatch(addBookmarkAction(course)),
+  removeBookmark: course => dispatch(removeBookmarkAction(course)),
+  loadBookmark: () => dispatch(loadBookmarkAction())
 });
 
 export default connect(

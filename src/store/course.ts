@@ -8,6 +8,7 @@ import API from '../services/api';
 import { Epic, combineEpics } from 'redux-observable';
 import { map } from 'rxjs/internal/operators/map';
 import { switchMap } from 'rxjs/internal/operators/switchMap';
+import { filter, tap, ignoreElements } from 'rxjs/operators';
 
 export interface CourseState {
   loading: boolean;
@@ -22,6 +23,7 @@ export interface CourseState {
   prevStart: Date;
   search: string;
   rmp: professorRating;
+  bookmarks: Course[];
 }
 //#region define types
 export type CourseType = keyof Course;
@@ -60,6 +62,7 @@ const initialState: CourseState = {
   prevStart: new Date(0),
   search: '',
   rmp: {} as professorRating,
+  bookmarks: [],
 };
 //#region actions
 enum ActionTypes {
@@ -71,6 +74,10 @@ enum ActionTypes {
   REMOVE_FILTER = 'remove-filter',
   SET_ACTIVE = 'set-active',
   ACTIVE_SUCCESS = 'active-success',
+  ADD_BOOKMARK = 'add-bookmark',
+  REMOVE_BOOKMARK = 'remove-bookmark',
+  LOAD_BOOKMARK = 'load-bookmark',
+  LOAD_BOOKMARK_COMPLETE = 'load-bookmark-complete',
 }
 
 interface FetchAction extends Action {
@@ -163,6 +170,42 @@ export const activeSuccessAction = (
   rmp,
 });
 
+interface AddBookmarkAction extends Action {
+  type: ActionTypes.ADD_BOOKMARK;
+  data: Course;
+}
+export const addBookmarkAction = (
+  data: Course,
+): AddBookmarkAction => ({
+  type: ActionTypes.ADD_BOOKMARK,
+  data
+});
+
+interface RemoveBookmarkAction extends Action {
+  type: ActionTypes.REMOVE_BOOKMARK;
+  data: Course;
+}
+export const removeBookmarkAction = (data: Course): RemoveBookmarkAction => ({
+  type: ActionTypes.REMOVE_BOOKMARK,
+  data,
+});
+
+interface LoadBookmarkAction extends Action {
+  type: ActionTypes.LOAD_BOOKMARK;
+}
+export const loadBookmarkAction = (): LoadBookmarkAction => ({
+  type: ActionTypes.LOAD_BOOKMARK
+});
+
+interface LoadBookmarkCompleteAction extends Action {
+  type: ActionTypes.LOAD_BOOKMARK_COMPLETE;
+  data: Course[];
+}
+export const loadBookmarkCompleteAction = (data: Course[]): LoadBookmarkCompleteAction => ({
+  type: ActionTypes.LOAD_BOOKMARK_COMPLETE,
+  data
+});
+
 export type CourseActions =
   | FetchAction
   | FetchSuccessAction
@@ -171,7 +214,11 @@ export type CourseActions =
   | AddFilterAction
   | RemoveFilterAction
   | SetActiveAction
-  | ActiveSuccessAction;
+  | ActiveSuccessAction
+  | AddBookmarkAction
+  | RemoveBookmarkAction
+  | LoadBookmarkAction
+  | LoadBookmarkCompleteAction;
 
 //#endregion
 export default function courseReducer(
@@ -252,6 +299,23 @@ export default function courseReducer(
         activeCourse: action.course,
         rmp: action.rmp,
       };
+    case ActionTypes.ADD_BOOKMARK:
+      return { ...state, bookmarks: [...state.bookmarks, action.data] };
+    case ActionTypes.REMOVE_BOOKMARK:
+      return {
+        ...state,
+        bookmarks: state.bookmarks.reduce(
+          (accm, cur) => {
+            if (cur.code != action.data.code) {
+              return [...accm, cur];
+            }
+            return accm;
+          },
+          [] as Course[]
+        ),
+      };
+    case ActionTypes.LOAD_BOOKMARK_COMPLETE:
+      return { ...state, bookmarks: action.data };
     default:
       return state;
   }
@@ -375,5 +439,21 @@ const trackCourseEpic: Epic<CourseActions> = (action$, state$) =>
       activeSuccessAction(data['tracking'], data['course'], data['rmp'])
     )
   );
+const bookmarkEpic: Epic<CourseActions> = (action$, state$) => action$.ofType(ActionTypes.ADD_BOOKMARK, ActionTypes.REMOVE_BOOKMARK).pipe(
+  tap(() => {
+    window.localStorage.setItem('BOOKMARKS', JSON.stringify(state$.value.course.bookmarks))
+  }),
+  ignoreElements() // stop stream. do not return an action
+);
+const loadBookmarkEpic: Epic<CourseActions> = (action$, state$) => action$.ofType(ActionTypes.LOAD_BOOKMARK).pipe(
+  map(()=> window.localStorage.getItem('BOOKMARKS')),
+  map(json => {
+    if(json) {
+      return JSON.parse(json);
+    }
+    return [];
+  }),
+  map(courses => loadBookmarkCompleteAction(courses))
+)
 
-export const CourseEpics = combineEpics(fetchCoursesEpic, trackCourseEpic);
+export const CourseEpics = combineEpics(fetchCoursesEpic, trackCourseEpic, bookmarkEpic, loadBookmarkEpic);

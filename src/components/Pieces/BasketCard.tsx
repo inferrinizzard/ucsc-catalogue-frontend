@@ -8,10 +8,9 @@ import Typography from '@material-ui/core/Typography';
 import { Course, CourseEnrollment } from '../../models/course.model';
 
 export interface BasketCardProps {
-  openDetail: (course: Course, k: number) => void;
+  openDetail: (course: Course) => void;
   courseData: Course;
   active: Course | null;
-  row: number;
   tracking: CourseEnrollment;
   scrollTo: (row: number) => void;
 }
@@ -46,7 +45,7 @@ class BasketCard extends React.Component<BasketCardProps, BasketCardState> {
                 : 'transparent',
           }}
           onClick={event =>
-            this.props.openDetail(this.props.courseData, this.props.row)
+            this.props.openDetail(this.props.courseData)
           }
         >
           <CardContent>
