@@ -17,7 +17,6 @@ import {
   Course,
   CourseEnrollment,
   professorRating,
-  Setting,
 } from '../models/course.model';
 
 export interface CourseDrawerProps {

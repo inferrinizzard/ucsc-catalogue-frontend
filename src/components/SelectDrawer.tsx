@@ -8,7 +8,7 @@ import RootRef from '@material-ui/core/RootRef';
 import Typography from '@material-ui/core/Typography';
 
 import SearchBar from './Pieces/SearchBar';
-import SelectMenu from './Pieces/SelectMenu';
+import SelectMenu from './Pieces/SortMenu';
 import FilterMenu from './Pieces/FilterMenu';
 import QuarterMenu from './Pieces/QuarterMenu';
 import NotchedOutline from './Pieces/NotchedOutline';

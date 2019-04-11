@@ -7,7 +7,7 @@ import { ReduxState, ReduxAction } from './store';
 
 import Main from './components/Main';
 import Basket from './components/Pieces/Basket';
-import SortDrawer from './components/SortDrawer';
+import SortDrawer from './components/SelectDrawer';
 import CourseDrawer from './components/CourseDrawer';
 import q from './components/Data/quarters.json';
 import TopLiner from './components/Pieces/TopLiner';

@@ -62,6 +62,7 @@ class SelectMenu extends React.Component<SelectMenuProps, SelectMenuState> {
               aria-haspopup="true"
               aria-controls="lock-menu"
               onClick={event => this.handleOpen(event)}
+              style={{ padding: '8px' }}
             >
               <ListItemText
                 primary={
@@ -69,6 +70,17 @@ class SelectMenu extends React.Component<SelectMenuProps, SelectMenuState> {
                     ? keyNameMap[this.props.sortKey]
                     : 'Course Name'
                 }
+                primaryTypographyProps={{
+                  style: {
+                    font: 'Roboto',
+                    width: '100%',
+                    lineHeight: 1.75,
+                    fontWeight: 400,
+                    fontSize: '0.875rem',
+                    color: 'rgba(0, 0, 0, 0.87)',
+                    textAlign: 'center',
+                  },
+                }}
               />
             </ListItem>
           </List>

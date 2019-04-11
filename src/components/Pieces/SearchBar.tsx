@@ -12,7 +12,7 @@ const SearchBar: React.SFC<SearchBarProps> = props => {
       <TextField
         variant="outlined"
         label="Search"
-        placeholder="Search classes by name"
+        placeholder="Search class by name"
         onChange={event => props.search(event.target.value.toUpperCase())}
         InputProps={{
           endAdornment: <SearchRounded />,
