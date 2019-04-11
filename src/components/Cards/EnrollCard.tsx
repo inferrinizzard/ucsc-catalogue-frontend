@@ -3,6 +3,7 @@ import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
 import CardContent from '@material-ui/core/CardContent';
 import Divider from '@material-ui/core/Divider';
+import Typography from '@material-ui/core/Typography';
 import styled from 'styled-components';
 
 import Plotly from 'plotly.js-basic-dist';
@@ -10,13 +11,17 @@ import createPlotlyComponent from 'react-plotly.js/factory';
 const Plot = createPlotlyComponent(Plotly);
 
 import { CourseEnrollment } from '../../models/course.model';
-import TextBlock from '../Pieces/TextBlock';
 
 export interface EnrollCardProps {
   tracking: CourseEnrollment[];
   prevStart: Date;
   quarter: number;
 }
+
+const TextBlock = styled(Typography)<any>`
+  display: inline-block !important;
+  width: 50%;
+`;
 
 const EnrollCard: React.SFC<EnrollCardProps> = props => {
   const tracking = props.tracking.reduce(
@@ -202,9 +207,8 @@ const EnrollCard: React.SFC<EnrollCardProps> = props => {
       </div>
       <Divider />
       <CardContent>
-        <TextBlock
-          text={
-            'Enrolled: ' +
+        <TextBlock variant={'h5'}>
+          {'Enrolled: ' +
             (tracking.length > 0
               ? tracking[0].enrolled +
                 '/' +
@@ -217,13 +221,10 @@ const EnrollCard: React.SFC<EnrollCardProps> = props => {
                     ).toFixed(0) +
                     '%'
                   : '')
-              : '')
-          }
-          type={'h5'}
-        />
-        <TextBlock
-          text={
-            'Waitlisted: ' +
+              : '')}
+        </TextBlock>
+        <TextBlock variant={'h5'}>
+          {'Waitlisted: ' +
             (tracking.length > 0
               ? tracking[0].waitlistTotal +
                 '/' +
@@ -236,10 +237,8 @@ const EnrollCard: React.SFC<EnrollCardProps> = props => {
                     ).toFixed(0) +
                     '% Over'
                   : '')
-              : '')
-          }
-          type={'h5'}
-        />
+              : '')}
+        </TextBlock>
       </CardContent>
     </React.Fragment>
   );
