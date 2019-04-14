@@ -341,9 +341,10 @@ function Search(courses: Course[], search: string): Course[] {
   return search.length > 0
     ? courses.filter(
         f =>
-          f.subjectCode.includes(search) ||
-          f.name.toUpperCase().includes(search) ||
-          (f.subject + ' ' + f.code).includes(search)
+          f.name &&
+          (f.subjectCode.includes(search) ||
+            f.name.toUpperCase().includes(search) ||
+            (f.subject + ' ' + f.code).includes(search))
       )
     : courses;
 }
