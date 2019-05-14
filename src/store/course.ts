@@ -57,7 +57,7 @@ const initialState: CourseState = {
   courses: [],
   backup: [],
   activeCourse: null,
-  quarter: 2190,
+  quarter: 2198,
   tracking: [],
   prevStart: new Date(0),
   search: '',
