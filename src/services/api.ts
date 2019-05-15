@@ -149,7 +149,9 @@ class _API {
   ): Promise<model.CourseEnrollment[]> {
     const available: boolean = ((await ky
       .get(`${this.endpoint}/tracking/available`)
-      .json()) as any).results.includes(termId);
+      .json()) as any).results
+      .reduce((acc: string[], cur: object) => cur.toString(),[])
+      .includes(termId);
     const res = (await ky
       .get(
         `${
