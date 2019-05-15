@@ -27,7 +27,13 @@ const EnrollCard: React.SFC<EnrollCardProps> = props => {
   if (props.tracking.length <= 0) {
     return (
       <React.Fragment>
-        <CardHeader title="Tracking Data Unavailable for this term" />
+        <CardHeader
+          title={
+            'Tracking Data' +
+            (!props.quarter.toString().endsWith('4') ? ' not yet ' : ' Un') +
+            'available for this term'
+          }
+        />
       </React.Fragment>
     );
   }

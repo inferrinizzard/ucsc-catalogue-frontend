@@ -61,10 +61,12 @@ class CourseDrawer extends React.Component<
   CourseDrawerState
 > {
   render() {
+    let p = this.props;
+    let c = p.course;
     return (
       <Drawer
         anchor="right"
-        open={Boolean(this.props.course)}
+        open={Boolean(c)}
         variant="persistent"
         elevation={1}
         PaperProps={{
@@ -80,11 +82,11 @@ class CourseDrawer extends React.Component<
             title={'Details'}
             inner={
               <DescCard
-                basketCourses={this.props.basketCourses}
-                courseData={this.props.course}
-                tracking={this.props.tracking[0]}
-                addBasket={this.props.addBasket}
-                removeBasket={this.props.removeBasket}
+                basketCourses={p.basketCourses}
+                courseData={c}
+                tracking={p.tracking.length > 0 ? p.tracking[0] : null}
+                addBasket={p.addBasket}
+                removeBasket={p.removeBasket}
               />
             }
           />
@@ -95,28 +97,25 @@ class CourseDrawer extends React.Component<
             title={'Enrollment'}
             inner={
               <EnrollCard
-                tracking={this.props.tracking}
-                prevStart={this.props.prevStart}
-                quarter={this.props.quarter}
+                tracking={p.tracking}
+                prevStart={p.prevStart}
+                quarter={p.quarter}
               />
             }
           />
         </StyleCard>
-        {this.props.tracking[0] &&
-          this.props.course &&
-          this.props.tracking[0].sections.length > 0 && (
+        {p.tracking.length > 0 &&
+          p.tracking[0] &&
+          c &&
+          p.tracking[0].sections.length > 0 && (
             <StyleCard>
               <NotchedOutline
                 width={66}
                 title={'Sections'}
                 inner={
                   <SectionCard
-                    section={this.props.tracking[0].sections}
-                    setting={
-                      this.props.course.settings
-                        ? this.props.course.settings.slice(1)
-                        : []
-                    }
+                    section={p.tracking[0].sections}
+                    setting={c.settings ? c.settings.slice(1) : []}
                   />
                 }
               />
@@ -133,15 +132,13 @@ class CourseDrawer extends React.Component<
                 title={'Professor'}
                 inner={
                   <ProfCard
-                    rmp={this.props.rmp}
+                    rmp={p.rmp}
                     name={
-                      this.props.course &&
-                      this.props.course.instructor &&
-                      this.props.course.instructor.first &&
-                      this.props.course.instructor.last
-                        ? this.props.course.instructor.first +
-                          ' ' +
-                          this.props.course.instructor.last
+                      c &&
+                      c.instructor &&
+                      c.instructor.first &&
+                      c.instructor.last
+                        ? c.instructor.first + ' ' + c.instructor.last
                         : 'STAFF'
                     }
                   />
@@ -166,9 +163,8 @@ class CourseDrawer extends React.Component<
                 inner={
                   <LocCard
                     location={
-                      this.props.course &&
-                      this.props.course!.settings!.length > 0
-                        ? this.props.course!.settings![0].location
+                      c && c!.settings!.length > 0
+                        ? c!.settings![0].location
                         : 'TBA'
                     }
                   />
@@ -177,7 +173,7 @@ class CourseDrawer extends React.Component<
             </StyleCard>
           </Third>
         </div>
-        {/* <FloatButton onClick={this.props.closeDetail}>BACK</FloatButton> */}
+        {/* <FloatButton onClick={p.closeDetail}>BACK</FloatButton> */}
       </Drawer>
     );
   }

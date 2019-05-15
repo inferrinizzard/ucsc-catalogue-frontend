@@ -17,7 +17,7 @@ import { Course, CourseEnrollment } from '../../models/course.model';
 export interface DescCardProps {
   basketCourses: Course[];
   courseData: Course | null;
-  tracking: CourseEnrollment;
+  tracking: CourseEnrollment | null;
   addBasket: (c: Course) => void;
   removeBasket: (c: Course) => void;
 }
@@ -92,13 +92,16 @@ const DescCard: React.SFC<DescCardProps> = props => {
           </TextBlock>
           <div />
           <TextBlock variant="body2">
-            {'Number Enrolled: ' + tracking.enrolled + '/' + tracking.capacity}
+            {'Number Enrolled: ' +
+              (tracking
+                ? tracking.enrolled + '/' + tracking.capacity
+                : 'Unavailable')}
           </TextBlock>
           <TextBlock variant="body2">
             {'Number Waitlist: ' +
-              tracking.waitlistTotal +
-              '/' +
-              tracking.waitlistCapacity}
+              (tracking
+                ? tracking.waitlistTotal + '/' + tracking.waitlistCapacity
+                : 'Unavailable')}
           </TextBlock>
           <div />
           <TextBlock variant="body2">

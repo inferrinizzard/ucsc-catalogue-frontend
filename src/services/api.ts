@@ -147,6 +147,9 @@ class _API {
     courseNum: number | string,
     termId: number | string
   ): Promise<model.CourseEnrollment[]> {
+    const available: boolean = ((await ky
+      .get(`${this.endpoint}/tracking/available`)
+      .json()) as any).results.includes(termId);
     const res = (await ky
       .get(
         `${
@@ -154,10 +157,10 @@ class _API {
         }/tracking/fetch?termId=${termId}&courseNum=${courseNum}`
       )
       .json()) as any;
-    if (!res.ok) {
+    if (available && !res.ok) {
       throw new Error('Error fetching tracking data');
     }
-    return convertTracking(res.results);
+    return convertTracking(available ? res.results : []);
   }
   public async fetchName(
     course: number | string,
