@@ -9,6 +9,7 @@ import { Epic, combineEpics } from 'redux-observable';
 import { map } from 'rxjs/internal/operators/map';
 import { switchMap } from 'rxjs/internal/operators/switchMap';
 import { filter, tap, ignoreElements } from 'rxjs/operators';
+import q from '../components/Data/quarters.json';
 
 export interface CourseState {
   loading: boolean;
@@ -57,7 +58,7 @@ const initialState: CourseState = {
   courses: [],
   backup: [],
   activeCourse: null,
-  quarter: 2198,
+  quarter: q[q[0].code.toString().endsWith('4') ? 1 : 0].code,
   tracking: [],
   prevStart: new Date(0),
   search: '',

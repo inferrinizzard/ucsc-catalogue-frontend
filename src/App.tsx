@@ -71,7 +71,7 @@ export interface AppState {
   scrollIndex: number;
 }
 
-const quarter: number = q[0].code;
+const quarter: number = q[q[0].code.toString().endsWith('4') ? 1 : 0].code;
 
 class App extends React.Component<AppProps, AppState> {
   state = {
