@@ -150,8 +150,8 @@ class _API {
     const available: boolean = ((await ky
       .get(`${this.endpoint}/tracking/available`)
       .json()) as any).results
-      .reduce((acc: string[], cur: object) => cur.toString(),[])
-      .includes(termId);
+      .toString()
+      .includes(termId.toString());
     const res = (await ky
       .get(
         `${
