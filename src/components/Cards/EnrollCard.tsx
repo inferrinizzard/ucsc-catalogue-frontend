@@ -48,7 +48,7 @@ const EnrollCard: React.SFC<EnrollCardProps> = props => {
         next.date.getDate() === cur.date.getDate() ||
         next.date.getDate() === temp.getDate()
       )
-        return data.concat([cur]);
+        return [...data, cur];
       else {
         let dates = [] as CourseEnrollment[];
         let step = new Date(0);
@@ -59,14 +59,15 @@ const EnrollCard: React.SFC<EnrollCardProps> = props => {
           dates.unshift({ ...next, date: d });
           step.setDate(step.getDate() + 1);
         }
-        return data.concat([...dates, cur]);
+        return [...data, ...dates, cur];
       }
     },
     [] as CourseEnrollment[]
   );
-  const dates = tracking.reduceRight((x: string[], val) => {
-    return x.concat(val.date.toDateString().substr(4));
-  }, []);
+  const dates = tracking.reduceRight(
+    (acc: string[], val) => [...acc, val.date.toDateString().substr(4)],
+    []
+  );
   const maxHeight =
     tracking.length > 0
       ? Math.max(
@@ -101,32 +102,36 @@ const EnrollCard: React.SFC<EnrollCardProps> = props => {
           data={[
             {
               x: dates,
-              y: tracking.reduceRight((x: number[], val) => {
-                return x.concat(val.enrolled);
-              }, []),
+              y: tracking.reduceRight(
+                (x: number[], val) => [...x, val.enrolled],
+                []
+              ),
               type: 'scatter',
               fill: 'tozeroy',
               name: 'Enrolled',
             },
             {
               x: dates,
-              y: tracking.reduceRight((x: number[], val) => {
-                return x.concat(val.enrolled + val.waitlistTotal);
-              }, []),
+              y: tracking.reduceRight(
+                (x: number[], val) => [...x, val.enrolled + val.waitlistTotal],
+                []
+              ),
               type: 'scatter',
               fill: 'tonexty',
               name: 'Waitlisted',
               hoverinfo: 'x+text+name' as 'x+text', //requires 'x+text+name' type in @types/plotly.js/index.d.ts
-              text: tracking.reduceRight((x: string[], val) => {
-                return x.concat(val.waitlistTotal.toString());
-              }, []),
+              text: tracking.reduceRight(
+                (x: string[], val) => [...x, val.waitlistTotal.toString()],
+                []
+              ),
               line: { color: 'rgb(44, 160, 44)' },
             },
             {
               x: dates,
-              y: tracking.reduceRight((x: number[], val) => {
-                return x.concat(val.capacity);
-              }, []),
+              y: tracking.reduceRight(
+                (x: number[], val) => [...x, val.capacity],
+                []
+              ),
               type: 'scatter',
               name: 'Capacity',
               hoverlabel: { bordercolor: '#FFF' },

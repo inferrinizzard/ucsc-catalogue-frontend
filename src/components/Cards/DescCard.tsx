@@ -63,9 +63,10 @@ const DescCard: React.SFC<DescCardProps> = props => {
           <TextBlock variant="body2">
             {'Date and Time: ' +
               (course.settings!.length > 0
-                ? course.settings![0].day.reduce((d, s, i) => {
-                    return (i === 0 ? '' : d) + s.substring(0, 2);
-                  }, '') +
+                ? course.settings![0].day.reduce(
+                    (d, s, i) => (i === 0 ? '' : d) + s.substring(0, 2),
+                    ''
+                  ) +
                   ' ' +
                   course.settings![0].time.start +
                   '-' +
@@ -75,12 +76,7 @@ const DescCard: React.SFC<DescCardProps> = props => {
           <TextBlock variant="body2">{'Class type: ' + course.type}</TextBlock>
           <div />
           <TextBlock variant="body2">
-            {'GE: ' +
-              (course.ge.length > 0
-                ? course.ge.reduce((x, c) => {
-                    return x + c + ' ';
-                  })
-                : 'N/a')
+            {'GE: ' + (course.ge.length > 0 ? course.ge.join(' ') : 'N/a')
             // 	+
             // ', ' +
             // 'Credits: ' +

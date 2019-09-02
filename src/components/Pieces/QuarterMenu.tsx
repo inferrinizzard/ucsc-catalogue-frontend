@@ -23,29 +23,6 @@ export interface QuarterMenuState {
 const quarters: Term[] = quarterData;
 
 class QuarterMenu extends React.Component<QuarterMenuProps, QuarterMenuState> {
-  handleOpen = (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
-    this.setState({ anchor: event.currentTarget });
-  };
-  handleClose = (
-    event:
-      | React.MouseEvent<HTMLElement, MouseEvent>
-      | React.SyntheticEvent<{}, Event>
-  ) => {
-    this.setState({ anchor: null });
-  };
-  changeQuarterAndClose(
-    event:
-      | React.MouseEvent<HTMLElement, MouseEvent>
-      | React.SyntheticEvent<{}, Event>,
-    t: Term
-  ) {
-    this.props.changeQuarter(t.code);
-    this.setState({
-      active: t.name,
-    });
-    this.handleClose(event);
-  }
-
   state = {
     anchor: null,
     widthRef: React.createRef<HTMLElement>(),
@@ -70,7 +47,7 @@ class QuarterMenu extends React.Component<QuarterMenuProps, QuarterMenuState> {
               aria-owns={open ? 'fade-menu' : undefined}
               aria-haspopup="true"
               aria-controls="lock-menu"
-              onClick={event => this.handleOpen(event)}
+              onClick={e => this.setState({ anchor: e.currentTarget })}
               style={{ padding: '8px' }}
             >
               <ListItemText
@@ -96,7 +73,7 @@ class QuarterMenu extends React.Component<QuarterMenuProps, QuarterMenuState> {
           open={Boolean(this.state.anchor)}
           anchorEl={this.state.anchor}
           TransitionComponent={Fade}
-          onBackdropClick={event => this.handleClose(event)}
+          onBackdropClick={e => this.setState({ anchor: null })}
           PaperProps={{
             style: {
               maxHeight: this.ITEM_HEIGHT * 4.5,
@@ -104,13 +81,19 @@ class QuarterMenu extends React.Component<QuarterMenuProps, QuarterMenuState> {
             },
           }}
         >
-          {quarters.map((t, index) => (
+          {quarters.map(q => (
             <MenuItem
-              key={index}
-              selected={t.name === this.state.active}
-              onClick={event => this.changeQuarterAndClose(event, t)}
+              key={q.name}
+              selected={q.name === this.state.active}
+              onClick={e => {
+                this.props.changeQuarter(q.code);
+                this.setState({
+                  active: q.name,
+                  anchor: null,
+                });
+              }}
             >
-              {t.name}
+              {q.name}
             </MenuItem>
           ))}
         </Menu>

@@ -8,7 +8,7 @@ import API from '../services/api';
 import { Epic, combineEpics } from 'redux-observable';
 import { map } from 'rxjs/internal/operators/map';
 import { switchMap } from 'rxjs/internal/operators/switchMap';
-import { filter, tap, ignoreElements } from 'rxjs/operators';
+import { tap, ignoreElements } from 'rxjs/operators';
 import q from '../components/Data/quarters.json';
 
 export interface CourseState {
@@ -305,15 +305,7 @@ export default function courseReducer(
     case ActionTypes.REMOVE_BOOKMARK:
       return {
         ...state,
-        bookmarks: state.bookmarks.reduce(
-          (accm, cur) => {
-            if (cur.code != action.data.code) {
-              return [...accm, cur];
-            }
-            return accm;
-          },
-          [] as Course[]
-        ),
+        bookmarks: state.bookmarks.filter(f => f.code != action.data.code),
       };
     case ActionTypes.LOAD_BOOKMARK_COMPLETE:
       return { ...state, bookmarks: action.data };
@@ -322,13 +314,10 @@ export default function courseReducer(
   }
 }
 //#region sort and filter functions
-function Sort(courses: Course[], sort: CourseType): Course[] {
-  return ([] as Course[])
-    .concat(courses)
-    .sort((a: Course, b: Course) => InnerSort(a, b, sort));
-}
+const Sort = (courses: Course[], sort: CourseType): Course[] =>
+  [...courses].sort((a: Course, b: Course) => InnerSort(a, b, sort));
 
-function InnerSort(a: Course, b: Course, sort: CourseType): number {
+const InnerSort = (a: Course, b: Course, sort: CourseType): number => {
   const left = a[sort];
   const right = b[sort];
   if (left && right) {
@@ -336,9 +325,9 @@ function InnerSort(a: Course, b: Course, sort: CourseType): number {
     if (left < right) return -1;
   }
   return 0;
-}
+};
 
-function Search(courses: Course[], search: string): Course[] {
+const Search = (courses: Course[], search: string): Course[] => {
   return search.length > 0
     ? courses.filter(
         f =>
@@ -348,13 +337,13 @@ function Search(courses: Course[], search: string): Course[] {
             (f.subject + ' ' + f.code).includes(search))
       )
     : courses;
-}
+};
 
-function SetFilters(
+const SetFilters = (
   filters: FilterList<FilterDomain, CourseType>,
   val: Filter,
   action: string
-): FilterList<FilterDomain, CourseType> {
+): FilterList<FilterDomain, CourseType> => {
   let temp: FilterList<FilterDomain, CourseType> = { ...filters };
   if (action === 'add') {
     temp[val.type].push(val.name);
@@ -362,15 +351,15 @@ function SetFilters(
     temp[val.type].splice(temp[val.type].indexOf(val.name), 1);
   }
   return temp;
-}
+};
 
-function Filter(
+const Filter = (
   courses: Course[],
   filterListObj: FilterList<FilterDomain, CourseType>
-): Course[] {
+): Course[] => {
   // see if a course passes a single filter
   const SingleFilter = (course: Course, filter: Filter): boolean => {
-    if (Array.isArray(course[filter.type])) {
+    if (course[filter.type] instanceof Array) {
       return (course[filter.type] as Array<any>).includes(filter.name);
     }
     return course[filter.type] === filter.name;
@@ -396,7 +385,7 @@ function Filter(
   });
   // those who survive will be returned
   return processing;
-}
+};
 //#endregion
 const fetchCoursesEpic: Epic<CourseActions> = (action$, state$) =>
   action$.ofType(ActionTypes.FETCH_API).pipe(

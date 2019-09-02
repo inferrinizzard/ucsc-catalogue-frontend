@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { Dispatch } from 'redux';
-import styled from 'styled-components';
 
 import { connect } from 'react-redux';
 import { ReduxState, ReduxAction } from './store';
@@ -89,93 +88,48 @@ class App extends React.Component<AppProps, AppState> {
     this.props.load(quarter);
     // this.props.loadBookmark();
   }
+
   //#region prop functions
-  sortCourses = (type: CourseType) => {
-    this.props.sort(type);
-  };
-
-  addFilter = (type: Filter) => {
-    this.props.addFilter(type);
-  };
-
-  removeFilter = (type: Filter) => {
-    this.props.removeFilter(type);
-  };
-
-  changeQuarter = (q: number) => {
-    this.props.load(q);
-  };
-
   setActive = (course: Course | null, row?: number) => {
-    if (row) {
-      this.setState({ scrollIndex: row });
-    }
+    if (row) this.setState({ scrollIndex: row });
     this.props.setActive(course, this.props.quarter.toString());
   };
 
-  openDetail = (course: Course, row?: number) => {
-    this.setActive(course, row);
-  };
-
-  closeDetail = () => {
-    this.setActive(null, 0);
-  };
-
-  openAbout = () => {
-    this.setState({
-      aboutOpen: true,
-    });
-  };
-
-  closeAbout = () => {
-    this.setState({
-      aboutOpen: false,
-    });
-  };
-
-  setDrawerWidth = (val: number) => {
-    this.setState({ drawerWidth: val });
-  };
-
-  scrollTo = (row: number) => {
+  scrollTo = (row: number) =>
     this.setState({
       scrollIndex:
         this.state.scrollIndex > 4 && this.props.activeCourse == null
           ? Math.floor(row / 3) * 7 + 5
           : row,
     });
-  };
 
-  condenseFilter = (
-    filters: FilterList<FilterDomain, CourseType>
-  ): Filter[] => {
-    let list: Filter[] = [];
-    for (let type in filters)
-      filters[type].forEach(f =>
-        list.push({ type: type as CourseType, name: f })
-      );
-    return list;
-  };
+  condenseFilter = (filters: FilterList<FilterDomain, CourseType>): Filter[] =>
+    Object.keys(filters).reduce(
+      (list, type) => [
+        ...list,
+        ...filters[type].map(f => ({ type: type, name: f } as Filter)),
+      ],
+      [] as Filter[]
+    );
   //#endregion
   render() {
     return (
-      <div id={'app'}>
+      <div id="app">
         <TopLiner
           open={this.state.aboutOpen}
-          openAbout={this.openAbout}
-          closeAbout={this.closeAbout}
+          setAbout={status => this.setState({ aboutOpen: status })}
           height={this.state.topLinerHeight}
         />
-        <div id={'main'}>
+        <div id="main">
           <SortDrawer
-            sort={this.sortCourses}
+            sort={type => this.props.sort(type)}
             sortKey={this.props.sortKey}
-            open={!Boolean(this.props.activeCourse)}
-            setDrawerWidth={this.setDrawerWidth}
-            addFilter={this.addFilter}
-            removeFilter={this.removeFilter}
+            open={!this.props.activeCourse}
+            setDrawerWidth={width => this.setState({ drawerWidth: width })}
+            addFilter={type => this.props.addFilter(type)}
+            removeFilter={type => this.props.removeFilter(type)}
             activeFilters={this.condenseFilter(this.props.filters)}
-            changeQuarter={this.changeQuarter}
+            changeQuarter={q => this.props.load(q)}
             search={this.props.search}
           />
           <Main
@@ -184,7 +138,7 @@ class App extends React.Component<AppProps, AppState> {
             topLinerHeight={this.state.topLinerHeight}
             basketHeight={this.state.basketHeight}
             drawerWidth={this.state.drawerWidth}
-            openDetail={this.openDetail}
+            openDetail={this.setActive}
             cardHeight={this.state.cardHeight}
             cardWidth={this.state.cardWidth}
             active={this.props.activeCourse}
@@ -197,7 +151,7 @@ class App extends React.Component<AppProps, AppState> {
             cardHeight={this.state.cardHeight}
             active={this.props.activeCourse}
             activeOpen={Boolean(this.props.activeCourse)}
-            openDetail={this.openDetail}
+            openDetail={this.setActive}
             tracking={this.props.tracking}
             scrollTo={this.scrollTo}
           />
@@ -206,7 +160,7 @@ class App extends React.Component<AppProps, AppState> {
             removeBasket={this.props.removeBookmark}
             basketCourses={this.props.bookmarks}
             open={Boolean(this.props.activeCourse)}
-            closeDetail={this.closeDetail}
+            closeDetail={() => this.setActive(null, 0)}
             course={this.props.activeCourse}
             tracking={this.props.tracking}
             prevStart={this.props.prevStart}

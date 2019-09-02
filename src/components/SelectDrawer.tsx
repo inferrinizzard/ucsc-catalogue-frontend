@@ -84,8 +84,8 @@ class SortDrawer extends React.Component<SortDrawerProps, SortDrawerState> {
               inner={
                 <React.Fragment>
                   {(Object.keys(catMap) as (CourseType)[]).map(
-                    (category: CourseType, index) => (
-                      <React.Fragment key={index}>
+                    (category: CourseType, k) => (
+                      <React.Fragment key={k}>
                         <FilterMenu
                           addFilter={this.props.addFilter}
                           removeFilter={this.props.removeFilter}

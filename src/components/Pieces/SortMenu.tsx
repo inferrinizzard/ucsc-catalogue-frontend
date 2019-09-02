@@ -25,19 +25,6 @@ const keyNameMap: { [K in CourseType]?: string } = {
 };
 
 class SelectMenu extends React.Component<SelectMenuProps, SelectMenuState> {
-  handleOpen = (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
-    this.setState({ ...this.state, anchor: event.currentTarget });
-  };
-  handleClose = (
-    event:
-      | React.MouseEvent<HTMLElement, MouseEvent>
-      | React.SyntheticEvent<{}, Event>,
-    key: CourseType
-  ) => {
-    if (key !== this.props.sortKey) this.props.sort(key);
-    this.setState({ ...this.state, anchor: null });
-  };
-
   state = {
     anchor: null,
     widthRef: React.createRef<HTMLElement>(),
@@ -45,10 +32,7 @@ class SelectMenu extends React.Component<SelectMenuProps, SelectMenuState> {
   };
 
   componentDidMount() {
-    this.setState({
-      ...this.state,
-      width: this.state.widthRef.current!.offsetWidth,
-    });
+    this.setState({ width: this.state.widthRef.current!.offsetWidth });
   }
 
   render() {
@@ -61,7 +45,7 @@ class SelectMenu extends React.Component<SelectMenuProps, SelectMenuState> {
               aria-owns={open ? 'fade-menu' : undefined}
               aria-haspopup="true"
               aria-controls="lock-menu"
-              onClick={event => this.handleOpen(event)}
+              onClick={e => this.setState({ anchor: e.currentTarget })}
               style={{ padding: '8px' }}
             >
               <ListItemText
@@ -90,7 +74,10 @@ class SelectMenu extends React.Component<SelectMenuProps, SelectMenuState> {
           open={Boolean(this.state.anchor)}
           anchorEl={this.state.anchor}
           TransitionComponent={Fade}
-          onBackdropClick={event => this.handleClose(event, this.props.sortKey)}
+          onBackdropClick={e => {
+            this.props.sort(this.props.sortKey);
+            this.setState({ anchor: null });
+          }}
           PaperProps={{
             style: {
               width: this.state.width !== 0 ? this.state.width : 'auto',
@@ -101,7 +88,10 @@ class SelectMenu extends React.Component<SelectMenuProps, SelectMenuState> {
             <MenuItem
               key={key}
               selected={key === this.props.sortKey}
-              onClick={event => this.handleClose(event, key)}
+              onClick={e => {
+                if (key !== this.props.sortKey) this.props.sort(key);
+                this.setState({ anchor: null });
+              }}
             >
               {keyNameMap[key]}
             </MenuItem>

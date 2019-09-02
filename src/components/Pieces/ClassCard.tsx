@@ -13,38 +13,33 @@ export interface ClassCardProps {
   row: number;
 }
 
-const ClassCard: React.SFC<ClassCardProps> = props => {
-  return (
-    <Card
+const ClassCard: React.SFC<ClassCardProps> = props => (
+  <Card
+    style={{
+      margin: '0.15em 0.25em',
+      width: '200px',
+      display: 'inline-block',
+    }}
+  >
+    <CardActionArea
       style={{
-        margin: '0.15em 0.25em',
-        width: '200px',
-        display: 'inline-block',
+        backgroundColor:
+          props.active && props.active.number === props.courseData.number
+            ? '#92c2ff'
+            : 'transparent',
       }}
+      onClick={e => props.openDetail(props.courseData, props.row)}
     >
-      <CardActionArea
-        style={{
-          backgroundColor:
-            props.active && props.active.number === props.courseData.number
-              ? '#92c2ff'
-              : 'transparent',
-        }}
-        onClick={event => props.openDetail(props.courseData, props.row)}
-      >
-        <CardContent>
-          <Typography gutterBottom variant="h5" component="h2">
-            {props.courseData.subject + ' ' + props.courseData.code}
-          </Typography>
-          <Typography
-            component="p"
-            style={{ overflow: 'hidden', maxHeight: '20.444px' }}
-          >
-            {props.courseData.name}
-          </Typography>
-        </CardContent>
-      </CardActionArea>
-    </Card>
-  );
-};
+      <CardContent>
+        <Typography gutterBottom variant="h5" component="h2">
+          {props.courseData.subject + ' ' + props.courseData.code}
+        </Typography>
+        <Typography style={{ overflow: 'hidden', maxHeight: '20.444px' }}>
+          {props.courseData.name}
+        </Typography>
+      </CardContent>
+    </CardActionArea>
+  </Card>
+);
 
 export default ClassCard;

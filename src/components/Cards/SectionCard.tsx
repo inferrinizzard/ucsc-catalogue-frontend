@@ -22,25 +22,24 @@ class SectionCard extends React.Component<SectionCardProps, SectionCardState> {
       <React.Fragment>
         <CardContent style={{ padding: '8px' }}>
           <GridList>
-            {this.props.section.map((cur, index) => {
-              return (
-                <GridListTile
-                  key={index}
-                  style={{ width: 100 / 5 + '%', height: 'auto' }}
-                >
-                  <Card>
-                    <CardHeader title={cur.name} style={{ padding: '8px' }} />
-                    <Divider />
-                    <CardContent style={{ padding: '8px' }}>
-                      <Typography>
-                        {'Enrolled: ' + cur.enrolled + '/' + cur.capacity}
-                      </Typography>
-                      <Typography>{'Waitlisted: ' + cur.waitlist}</Typography>
-                      {/* {this.props.setting.length > 0 && (
+            {this.props.section.map((cur, k) => (
+              <GridListTile
+                key={k}
+                style={{ width: 100 / 5 + '%', height: 'auto' }}
+              >
+                <Card>
+                  <CardHeader title={cur.name} style={{ padding: '8px' }} />
+                  <Divider />
+                  <CardContent style={{ padding: '8px' }}>
+                    <Typography>
+                      {'Enrolled: ' + cur.enrolled + '/' + cur.capacity}
+                    </Typography>
+                    <Typography>{'Waitlisted: ' + cur.waitlist}</Typography>
+                    {/* {this.props.setting.length > 0 && (
                         <Typography>
                           {'Time: ' +
-                            (this.props.setting && this.props.setting[index]
-                              ? this.props.setting[index].day.reduce(
+                            (this.props.setting && this.props.setting[k]
+                              ? this.props.setting[k].day.reduce(
                                   (d, s, i) => {
                                     return (
                                       (i === 0 ? '' : d) + s.substring(0, 2)
@@ -49,25 +48,24 @@ class SectionCard extends React.Component<SectionCardProps, SectionCardState> {
                                   ''
                                 ) +
                                 ' ' +
-                                this.props.setting![index].time.start +
+                                this.props.setting![k].time.start +
                                 '-' +
-                                this.props.setting![index].time.end
+                                this.props.setting![k].time.end
                               : 'TBA')}
                         </Typography>
                       )}
                       {this.props.setting.length > 0 && (
                         <Typography>
                           {'Location: ' +
-                            (this.props.setting && this.props.setting[index]
-                              ? this.props.setting[index].location
+                            (this.props.setting && this.props.setting[k]
+                              ? this.props.setting[k].location
                               : 'TBA')}
                         </Typography>
                       )} */}
-                    </CardContent>
-                  </Card>
-                </GridListTile>
-              );
-            })}
+                  </CardContent>
+                </Card>
+              </GridListTile>
+            ))}
           </GridList>
         </CardContent>
       </React.Fragment>

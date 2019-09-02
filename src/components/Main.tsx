@@ -16,12 +16,12 @@ export interface MainProps {
   active: Course | null;
   scrollIndex: number;
   scrollTo: (row: number) => void;
+  basketHeight: number;
 }
 
 export interface MainDivProps {
   open: boolean;
   topLinerHeight: number;
-  basketHeight: number;
   drawerWidth: number;
 }
 
@@ -40,7 +40,13 @@ const Main: React.SFC<MainProps & MainDivProps> = props => {
     props.scrollTo(row);
   };
   return (
-    <MainDiv {...props}>
+    <MainDiv
+      {...{
+        topLinerHeight: props.topLinerHeight,
+        drawerWidth: props.drawerWidth,
+        open: props.open,
+      }}
+    >
       {/* <div
         style={{
           marginTop: props.topLinerHeight + 'px',
@@ -86,18 +92,18 @@ const Main: React.SFC<MainProps & MainDivProps> = props => {
                     fromIndex + columns,
                     props.courses.length
                   );
-                  for (let i = fromIndex; i < toIndex; i++) {
-                    let course = props.courses[i];
+
+                  // slice, maybe?
+                  for (let i = fromIndex; i < toIndex; i++)
                     items.push(
                       <ClassCard
                         key={i}
                         row={index}
-                        courseData={course}
+                        courseData={props.courses[i]}
                         active={props.active}
                         openDetail={setActive}
                       />
                     );
-                  }
                   return (
                     <div key={key} style={style}>
                       {items}
