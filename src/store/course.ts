@@ -8,7 +8,7 @@ import API from '../services/api';
 import { Epic, combineEpics } from 'redux-observable';
 import { map } from 'rxjs/internal/operators/map';
 import { switchMap } from 'rxjs/internal/operators/switchMap';
-import { tap, ignoreElements } from 'rxjs/operators';
+import { tap, ignoreElements, filter } from 'rxjs/operators';
 import q from '../components/Data/quarters.json';
 
 export interface CourseState {
@@ -17,6 +17,7 @@ export interface CourseState {
   filters: FilterList<FilterDomain, CourseType>;
   sort: CourseType;
   courses: Course[];
+  filtered: Course[];
   backup: Course[];
   activeCourse: Course | null;
   quarter: number;
@@ -56,6 +57,7 @@ const initialState: CourseState = {
   },
   sort: 'subjectCode',
   courses: [],
+  filtered: [],
   backup: [],
   activeCourse: null,
   quarter: q[q[0].code.toString().endsWith('4') ? 1 : 0].code,
@@ -230,66 +232,60 @@ export default function courseReducer(
     case ActionTypes.FETCH_API:
       return { ...state, loading: true, quarter: action.quarter };
     case ActionTypes.FETCH_API_SUCCESS:
+      let sortedCourses: Course[] = Sort(action.data, state.sort);
       return {
         ...state,
         loading: false,
         prevStart: action.prevStart,
-        courses: Sort(
-          Search(Filter(action.data, state.filters), state.search),
-          state.sort
-        ),
-        backup: action.data,
+        filtered: sortedCourses,
+        courses: sortedCourses,
+        backup: sortedCourses,
         activeCourse: null,
       };
     case ActionTypes.SORT:
+      let newFiltered: Course[] = Sort(state.filtered, action.sort);
       return {
         ...state,
         sort: action.sort,
-        courses: Sort(state.courses, action.sort),
+        filtered: newFiltered,
+        courses: Search(newFiltered, state.search),
       };
     case ActionTypes.SEARCH:
       return {
         ...state,
         search: action.name,
-        courses: Sort(
-          Filter(Search(state.backup, action.name), state.filters),
-          state.sort
-        ),
+        courses: Search(state.filtered, action.name),
       };
     case ActionTypes.ADD_FILTER:
-      return state.filters[action.filter.type].every(
-        f => f != action.filter.name
-      )
-        ? {
-            ...state,
-            courses: Sort(
-              Search(
-                Filter(
-                  state.backup,
-                  SetFilters(state.filters, action.filter, 'add')
-                ),
-                state.search
-              ),
-              state.sort
-            ),
-          }
-        : state;
+      if (
+        state.filters[action.filter.type].every(f => f != action.filter.name)
+      ) {
+        let filteredCourses: Course[] = Filter(
+          state.backup,
+          SetFilters(state.filters, action.filter, 'add'),
+          state.sort
+        );
+        return {
+          ...state,
+          filtered: filteredCourses,
+          courses: Search(filteredCourses, state.search),
+        };
+      }
+      return state;
     case ActionTypes.REMOVE_FILTER:
-      return state.filters[action.filter.type].includes(action.filter.name)
-        ? {
-            ...state,
-            courses: Sort(
-              Search(
-                Filter(
-                  state.backup,
-                  SetFilters(state.filters, action.filter, 'remove')
-                ),
-                state.search
-              ),
-              state.sort
-            ),
-          }
-        : state;
+      if (state.filters[action.filter.type].includes(action.filter.name)) {
+        let filteredCourses: Course[] = Filter(
+          state.backup,
+          SetFilters(state.filters, action.filter, 'remove'),
+          state.sort
+        );
+        return {
+          ...state,
+          filtered: filteredCourses,
+          courses: Search(filteredCourses, state.search),
+        };
+      }
+      return state;
     case ActionTypes.SET_ACTIVE:
       return { ...state, fetchTracking: true };
     case ActionTypes.ACTIVE_SUCCESS:
@@ -327,17 +323,16 @@ const InnerSort = (a: Course, b: Course, sort: CourseType): number => {
   return 0;
 };
 
-const Search = (courses: Course[], search: string): Course[] => {
-  return search.length > 0
+const Search = (courses: Course[], search: string): Course[] =>
+  search
     ? courses.filter(
         f =>
           f.name &&
-          (f.subjectCode.includes(search) ||
-            f.name.toUpperCase().includes(search) ||
-            (f.subject + ' ' + f.code).includes(search))
+          [f.subjectCode, f.name.toUpperCase(), f.subject + ' ' + f.code].some(
+            crit => crit.includes(search)
+          )
       )
     : courses;
-};
 
 const SetFilters = (
   filters: FilterList<FilterDomain, CourseType>,
@@ -355,20 +350,18 @@ const SetFilters = (
 
 const Filter = (
   courses: Course[],
-  filterListObj: FilterList<FilterDomain, CourseType>
+  filterListObj: FilterList<FilterDomain, CourseType>,
+  sort?: CourseType
 ): Course[] => {
   // see if a course passes a single filter
-  const SingleFilter = (course: Course, filter: Filter): boolean => {
-    if (course[filter.type] instanceof Array) {
-      return (course[filter.type] as Array<any>).includes(filter.name);
-    }
-    return course[filter.type] === filter.name;
-  };
+  const SingleFilter = (course: Course, filter: Filter): boolean =>
+    course[filter.type] instanceof Array
+      ? (course[filter.type] as Array<any>).includes(filter.name)
+      : course[filter.type] === filter.name;
 
   // see if the course satisfies 1 or more filters (OR conditioning)
-  const CourseFilterOR = (course: Course, filters: Filter[]): boolean => {
-    return filters.some(filter => SingleFilter(course, filter));
-  };
+  const CourseFilterOR = (course: Course, filters: Filter[]): boolean =>
+    filters.some(filter => SingleFilter(course, filter));
 
   let processing = [...courses]; // copy into processing
 
@@ -378,28 +371,26 @@ const Filter = (
       type: key,
       name: x,
     }));
-    if (filters.length == 0) return;
+    if (!filters.length) return;
 
     // for each iteration, update processing
     processing = processing.filter(course => CourseFilterOR(course, filters));
   });
   // those who survive will be returned
-  return processing;
+  return sort ? Sort(processing, sort) : processing;
 };
 //#endregion
 const fetchCoursesEpic: Epic<CourseActions> = (action$, state$) =>
   action$.ofType(ActionTypes.FETCH_API).pipe(
     map(action => action as FetchAction),
-    switchMap(async action => {
-      return {
-        courses: await API.courses(action.quarter),
-        prevStart: await API.fetchDate(
-          action.quarter.toString().endsWith('8')
-            ? action.quarter - 6
-            : action.quarter - 2
-        ),
-      };
-    }),
+    switchMap(async action => ({
+      courses: await API.courses(action.quarter),
+      prevStart: await API.fetchDate(
+        action.quarter.toString().endsWith('8')
+          ? action.quarter - 6
+          : action.quarter - 2
+      ),
+    })),
     map(courses => fetchSuccessAction(courses['courses'], courses['prevStart']))
   );
 
@@ -409,21 +400,20 @@ const trackCourseEpic: Epic<CourseActions> = (action$, state$) =>
     switchMap(async action => {
       const course: Course = { ...action.course } as Course;
       course['fullName'] = action.course
-        ? await API.fetchName(action.course!.number, action.quarter)
+        ? await API.fetchName(action.course.number, action.quarter)
         : '';
       const tracking: CourseEnrollment[] = action.course
-        ? await API.tracking(action.course!.number, action.quarter)
+        ? await API.tracking(action.course.number, action.quarter)
         : ([] as CourseEnrollment[]);
-      const rmp: professorRating = action.course
-        ? await API.rmp(
-            await API.getProfId(
-              action.course.instructor
-                ? action.course.instructor['first'] +
-                    action.course.instructor['last']
-                : ''
+      const rmp: professorRating =
+        action.course && action.course.instructor
+          ? await API.rmp(
+              await API.getProfId(
+                action.course.instructor['first'] +
+                  action.course.instructor['last']
+              )
             )
-          )
-        : ({} as professorRating);
+          : ({} as professorRating);
       return { tracking: tracking, course: course, rmp: rmp };
     }),
     map(data =>
