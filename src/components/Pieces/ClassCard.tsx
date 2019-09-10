@@ -31,9 +31,13 @@ const ClassCard: React.SFC<ClassCardProps> = props => (
       onClick={e => props.openDetail(props.courseData, props.row)}
     >
       <CardContent>
-        <Typography gutterBottom variant="h5" component="h2">
-          {props.courseData.subject + ' ' + props.courseData.code}
-        </Typography>
+        <div
+        // style={{ backgroundColor: 'aliceblue' }}
+        >
+          <Typography gutterBottom variant="h5" component="h2">
+            {props.courseData.subject + ' ' + props.courseData.code}
+          </Typography>
+        </div>
         <Typography style={{ overflow: 'hidden', maxHeight: '20.444px' }}>
           {props.courseData.name}
         </Typography>

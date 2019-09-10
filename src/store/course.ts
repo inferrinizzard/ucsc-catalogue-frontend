@@ -8,7 +8,7 @@ import API from '../services/api';
 import { Epic, combineEpics } from 'redux-observable';
 import { map } from 'rxjs/internal/operators/map';
 import { switchMap } from 'rxjs/internal/operators/switchMap';
-import { tap, ignoreElements, filter } from 'rxjs/operators';
+import { tap, ignoreElements } from 'rxjs/operators';
 import q from '../components/Data/quarters.json';
 
 export interface CourseState {
