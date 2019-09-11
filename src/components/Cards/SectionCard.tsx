@@ -6,7 +6,6 @@ import Divider from '@material-ui/core/Divider';
 import GridList from '@material-ui/core/GridList';
 import GridListTile from '@material-ui/core/GridListTile';
 import Typography from '@material-ui/core/Typography';
-import styled from 'styled-components';
 
 import { SectionEnrollment, Setting } from '../../models/course.model';
 

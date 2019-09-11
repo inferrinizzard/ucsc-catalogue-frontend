@@ -34,20 +34,8 @@ export interface CourseDrawerProps {
 }
 export interface CourseDrawerState {}
 
-const linerWidth = 30;
 const Spacer = styled.div`
-  margin-top: ${linerWidth}px;
-`;
-
-const Third = styled.span`
-  width: 33.3%;
-  display: inline-block;
-`;
-
-const StyleCard = styled(Card)<any>`
-  margin: 0.5em;
-  overflow: visible !important;
-  box-shadow: none !important;
+  margin-top: 30px;
 `;
 
 const FloatButton = styled(Fab)<any>`
@@ -76,7 +64,7 @@ class CourseDrawer extends React.Component<
         }}
       >
         <Spacer />
-        <StyleCard>
+        <Card className="styleCard">
           <NotchedOutline
             width={52}
             title={'Details'}
@@ -84,14 +72,14 @@ class CourseDrawer extends React.Component<
               <DescCard
                 basketCourses={p.basketCourses}
                 courseData={c}
-                tracking={p.tracking.length > 0 ? p.tracking[0] : null}
+                tracking={p.tracking.length ? p.tracking[0] : null}
                 addBasket={p.addBasket}
                 removeBasket={p.removeBasket}
               />
             }
           />
-        </StyleCard>
-        <StyleCard>
+        </Card>
+        <Card className="styleCard">
           <NotchedOutline
             width={74}
             title={'Enrollment'}
@@ -103,12 +91,12 @@ class CourseDrawer extends React.Component<
               />
             }
           />
-        </StyleCard>
-        {p.tracking.length > 0 &&
+        </Card>
+        {c &&
+          p.tracking.length &&
           p.tracking[0] &&
-          c &&
-          p.tracking[0].sections.length > 0 && (
-            <StyleCard>
+          p.tracking[0].sections.length && (
+            <Card className="styleCard">
               <NotchedOutline
                 width={66}
                 title={'Sections'}
@@ -119,14 +107,14 @@ class CourseDrawer extends React.Component<
                   />
                 }
               />
-            </StyleCard>
+            </Card>
           )}
-        <StyleCard>
+        <Card className="styleCard">
           <NotchedOutline width={50} title={'Grades'} inner={<GradesCard />} />
-        </StyleCard>
+        </Card>
         <div>
-          <Third>
-            <StyleCard>
+          <span className="third">
+            <Card className="styleCard">
               <NotchedOutline
                 width={72}
                 title={'Professor'}
@@ -144,19 +132,19 @@ class CourseDrawer extends React.Component<
                   />
                 }
               />
-            </StyleCard>
-          </Third>
-          <Third>
-            <StyleCard>
+            </Card>
+          </span>
+          <span className="third">
+            <Card className="styleCard">
               <NotchedOutline
                 width={50}
                 title={'Major'}
                 inner={<MajorCard />}
               />
-            </StyleCard>
-          </Third>
-          <Third>
-            <StyleCard>
+            </Card>
+          </span>
+          <span className="third">
+            <Card className="styleCard">
               <NotchedOutline
                 width={66}
                 title={'Location'}
@@ -170,8 +158,8 @@ class CourseDrawer extends React.Component<
                   />
                 }
               />
-            </StyleCard>
-          </Third>
+            </Card>
+          </span>
         </div>
         {/* <FloatButton onClick={p.closeDetail}>BACK</FloatButton> */}
       </Drawer>

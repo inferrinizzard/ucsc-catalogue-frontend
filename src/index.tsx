@@ -6,6 +6,7 @@ import store from './store/index';
 (window as any)['store'] = store;
 
 import App from './App';
+import './index.css';
 
 const root = document.querySelector('#root');
 ReactDOM.render(

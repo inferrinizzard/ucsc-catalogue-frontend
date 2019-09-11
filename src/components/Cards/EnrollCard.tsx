@@ -4,7 +4,6 @@ import CardHeader from '@material-ui/core/CardHeader';
 import CardContent from '@material-ui/core/CardContent';
 import Divider from '@material-ui/core/Divider';
 import Typography from '@material-ui/core/Typography';
-import styled from 'styled-components';
 
 import Plotly from 'plotly.js-basic-dist';
 import createPlotlyComponent from 'react-plotly.js/factory';
@@ -18,13 +17,8 @@ export interface EnrollCardProps {
   quarter: number;
 }
 
-const TextBlock = styled(Typography)<any>`
-  display: inline-block !important;
-  width: 50%;
-`;
-
 const EnrollCard: React.SFC<EnrollCardProps> = props => {
-  if (props.tracking.length <= 0) {
+  if (!props.tracking.length) {
     return (
       <React.Fragment>
         <CardHeader
@@ -39,26 +33,22 @@ const EnrollCard: React.SFC<EnrollCardProps> = props => {
   }
   const tracking = props.tracking.reduce(
     (data, cur) => {
-      let temp = new Date(0);
-      temp.setUTCMilliseconds(cur.date.getTime());
-      temp.setDate(temp.getDate() + 1);
+      let temp = datePlus(cur.date, 1);
       const next = data[data.length - 1];
       if (
-        data.length < 1 ||
+        !data.length ||
         next.date.getDate() === cur.date.getDate() ||
         next.date.getDate() === temp.getDate()
       )
         return [...data, cur];
       else {
         let dates = [] as CourseEnrollment[];
-        let step = new Date(0);
-        step.setUTCMilliseconds(temp.getTime());
-        while (step.getDate() != next.date.getDate()) {
-          const d = new Date(0);
-          d.setUTCMilliseconds(step.getTime());
-          dates.unshift({ ...next, date: d });
-          step.setDate(step.getDate() + 1);
-        }
+        for (
+          let step = copyDate(temp);
+          step.getDate() != next.date.getDate();
+          step.setDate(step.getDate() + 1)
+        )
+          dates.unshift({ ...next, date: copyDate(step) });
         return [...data, ...dates, cur];
       }
     },
@@ -68,27 +58,22 @@ const EnrollCard: React.SFC<EnrollCardProps> = props => {
     (acc: string[], val) => [...acc, val.date.toDateString().substr(4)],
     []
   );
-  const maxHeight =
-    tracking.length > 0
-      ? Math.max(
-          tracking[0].capacity,
-          tracking.reduce((max: number, val) => {
-            return max >
-              Math.max(val.enrolled + val.waitlistTotal, val.capacity)
-              ? max
-              : Math.max(val.enrolled + val.waitlistTotal, val.capacity);
-          }, tracking[0].capacity)
-        )
-      : 0;
+  const maxHeight = tracking.length
+    ? tracking.reduce(
+        (max: number, val) =>
+          Math.max(
+            max,
+            Math.max(val.enrolled + val.waitlistTotal, val.capacity)
+          ),
+        tracking[0].capacity
+      )
+    : 0;
 
-  let firstPass = new Date(0);
-  firstPass.setUTCMilliseconds(props.prevStart.getTime());
-  firstPass.setDate(
+  let firstPass = datePlus(
+    props.prevStart,
     props.prevStart.getDate() + (props.prevStart.getMonth() === 8 ? 49 : 50)
   );
-  let secondPass = new Date(0);
-  secondPass.setUTCMilliseconds(firstPass.getTime());
-  secondPass.setDate(secondPass.getDate() + 8);
+  let secondPass = datePlus(firstPass, 8);
 
   return (
     <React.Fragment>
@@ -137,16 +122,6 @@ const EnrollCard: React.SFC<EnrollCardProps> = props => {
               hoverlabel: { bordercolor: '#FFF' },
               line: { color: 'rgb(255, 127, 14)' },
             },
-            // {
-            //   x: [
-            //     props.start.toDateString().substr(4),
-            //     new Date(props.start.getDate() + 51).toDateString().substr(4),
-            //   ],
-            //   y: [0, 0],
-            //   type: 'line',
-            //   hoverinfo: 'skip',
-            //   // type: 'rect',
-            // },
           ]}
           style={{ width: 'calc(100% - 20px)', height: '100%' }}
           layout={{
@@ -159,79 +134,51 @@ const EnrollCard: React.SFC<EnrollCardProps> = props => {
             },
             yaxis: {
               fixedrange: true,
-              range: tracking.length > 0 ? [0, maxHeight] : undefined,
+              range: tracking.length ? [0, maxHeight] : undefined,
             },
-            annotations: [
-              ...(tracking[0].date.getTime() > firstPass.getTime()
-                ? [
-                    {
-                      x: ((firstPass: Date) => {
-                        let d = new Date(0);
-                        d.setUTCMilliseconds(firstPass.getTime());
-                        d.setDate(firstPass.getDate() + 1);
-                        return d;
-                      })
-                        .call(firstPass, firstPass)
-                        .toDateString()
-                        .substr(4),
-                      y: maxHeight * 0.9,
-                      text: 'First Pass',
-                      textangle: 90,
-                      showarrow: false,
-                    },
-                  ]
-                : []),
-              ...(tracking[0].date.getTime() > secondPass.getTime()
-                ? [
-                    {
-                      x: ((secondPass: Date) => {
-                        let d = new Date(0);
-                        d.setUTCMilliseconds(secondPass.getTime());
-                        d.setDate(secondPass.getDate() + 1);
-                        return d;
-                      })
-                        .call(secondPass, secondPass)
-                        .toDateString()
-                        .substr(4),
-                      y: maxHeight * 0.9,
-                      text: 'Second Pass',
-                      textangle: 90,
-                      showarrow: false,
-                    },
-                  ]
-                : []),
-            ],
             margin: { l: 25, r: 25, b: 50, t: 10 },
-            shapes: [
-              ...(tracking[0].date.getTime() > firstPass.getTime()
-                ? [
-                    {
-                      type: 'line',
-                      x0: firstPass.toDateString().substr(4),
-                      y0: 0,
-                      x1: firstPass.toDateString().substr(4),
-                      y1: maxHeight,
-                      line: {
-                        hoverlabel: 'First Pass',
-                      },
-                    },
-                  ]
-                : []),
-              ...(tracking[0].date.getTime() > secondPass.getTime()
-                ? [
-                    {
-                      type: 'line',
-                      x0: secondPass.toDateString().substr(4),
-                      y0: 0,
-                      x1: secondPass.toDateString().substr(4),
-                      y1: maxHeight,
-                      line: {
-                        hoverlabel: 'Second Pass',
-                      },
-                    },
-                  ]
-                : []),
-            ],
+            ...[
+              { date: firstPass, label: 'First' },
+              { date: secondPass, label: 'Second' },
+            ].reduce(
+              (acc, pass) =>
+                tracking[0].date.getTime() > pass.date.getTime()
+                  ? {
+                      shapes: [
+                        ...acc.shapes,
+                        {
+                          type: 'line',
+                          x0: print4(pass.date),
+                          y0: 0,
+                          x1: print4(pass.date),
+                          y1: maxHeight,
+                          line: {
+                            hoverlabel: pass.label + ' Pass',
+                          },
+                        },
+                      ],
+                      annotations: [
+                        ...acc.annotations,
+                        {
+                          x: ((p: Date) => {
+                            let d = datePlus(p, 1);
+                            if (tracking[0].date.getTime() <= d.getTime())
+                              d.setDate(p.getDate() - 1);
+                            return print4(d);
+                          })(pass.date),
+                          y: maxHeight * 0.9,
+                          text: pass.label + ' Pass',
+                          textangle: 90,
+                          showarrow: false,
+                        },
+                      ],
+                    }
+                  : acc,
+              { shapes: [], annotations: [] } as {
+                shapes: {}[];
+                annotations: {}[];
+              }
+            ),
           }}
           config={{
             displayModeBar: false,
@@ -241,41 +188,55 @@ const EnrollCard: React.SFC<EnrollCardProps> = props => {
       </div>
       <Divider />
       <CardContent>
-        <TextBlock variant={'h5'}>
-          {'Enrolled: ' +
-            (tracking.length > 0
-              ? tracking[0].enrolled +
-                '/' +
-                tracking[0].capacity +
-                (tracking[0].capacity != 0
-                  ? ' - ' +
-                    (
-                      (tracking[0].enrolled / tracking[0].capacity) *
-                      100
-                    ).toFixed(0) +
-                    '%'
-                  : '')
-              : '')}
-        </TextBlock>
-        <TextBlock variant={'h5'}>
-          {'Waitlisted: ' +
-            (tracking.length > 0
-              ? tracking[0].waitlistTotal +
-                '/' +
-                tracking[0].capacity +
-                (tracking[0].capacity != 0
-                  ? ' - ' +
-                    (
-                      (tracking[0].waitlistTotal / tracking[0].capacity) *
-                      100
-                    ).toFixed(0) +
-                    '% Over'
-                  : '')
-              : '')}
-        </TextBlock>
+        {([
+          { key: 'enrolled', label: 'Enrolled' },
+          { key: 'waitlistTotal', label: 'Waitlisted' },
+        ] as { key: keyof CourseEnrollment; label: string }[]).map(
+          (stat, i) => (
+            <Typography
+              key={i}
+              variant={'h5'}
+              style={{
+                display: 'inline-block !important',
+                width: '50%',
+              }}
+            >
+              {stat.label +
+                ': ' +
+                (tracking.length
+                  ? tracking[0].enrolled +
+                    '/' +
+                    tracking[0][stat.key] +
+                    (tracking[0][stat.key]
+                      ? ' - ' +
+                        (
+                          (tracking[0].enrolled /
+                            (tracking[0][stat.key] as number)) *
+                          100
+                        ).toFixed(0) +
+                        '%'
+                      : '')
+                  : '')}
+            </Typography>
+          )
+        )}
       </CardContent>
     </React.Fragment>
   );
 };
+
+const copyDate = (base: Date): Date => {
+  let d = new Date(0);
+  d.setUTCMilliseconds(base.getTime());
+  return d;
+};
+
+const datePlus = (base: Date, days: number): Date => {
+  let d = copyDate(base);
+  d.setDate(base.getDate() + days);
+  return d;
+};
+
+const print4 = (d: Date) => d.toDateString().substr(4);
 
 export default EnrollCard;

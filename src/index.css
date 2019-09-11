@@ -1,0 +1,10 @@
+.styleCard {
+  margin: 0.5em;
+  overflow: visible !important;
+  box-shadow: none !important;
+}
+
+span.third {
+  width: 33.3%;
+  display: inline-block;
+}
