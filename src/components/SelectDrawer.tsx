@@ -2,6 +2,7 @@ import * as React from 'react';
 import styled from 'styled-components';
 import Divider from '@material-ui/core/Divider';
 import Drawer from '@material-ui/core/Drawer';
+import Button from '@material-ui/core/Button';
 import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
 import Typography from '@material-ui/core/Typography';
@@ -22,6 +23,7 @@ export interface SortDrawerProps {
   setDrawerWidth: (val: number) => void;
   addFilter: (f: Filter) => void;
   removeFilter: (f: Filter) => void;
+  clearFilters: () => void;
   changeQuarter: (n: number) => void;
   activeFilters: Filter[];
   search: (name: string) => void;
@@ -73,24 +75,26 @@ class SortDrawer extends React.Component<SortDrawerProps, SortDrawerState> {
             title={'Filters'}
             inner={
               <React.Fragment>
-                {(Object.keys(catMap) as (CourseType)[]).map(
-                  (category: CourseType, k) => (
-                    <React.Fragment key={k}>
-                      <FilterMenu
-                        addFilter={this.props.addFilter}
-                        removeFilter={this.props.removeFilter}
-                        category={category}
-                        filterList={catMap[category] || []}
-                        activeFilters={this.props.activeFilters.filter(
-                          f => f.type === category
-                        )}
-                        toolTips={toolTip[category] || []}
-                      />
-                      <Divider />
-                    </React.Fragment>
-                  )
-                )}
+                {(Object.keys(catMap) as CourseType[]).map((category, k) => (
+                  <React.Fragment key={k}>
+                    <FilterMenu
+                      addFilter={this.props.addFilter}
+                      removeFilter={this.props.removeFilter}
+                      category={category}
+                      filterList={catMap[category] || []}
+                      activeFilters={this.props.activeFilters.filter(
+                        f => f.type === category
+                      )}
+                      toolTips={toolTip[category] || []}
+                    />
+                    <Divider />
+                  </React.Fragment>
+                ))}
                 <QuarterMenu changeQuarter={this.props.changeQuarter} />
+                <Divider />
+                <Button fullWidth onClick={e => this.props.clearFilters()}>
+                  {'Clear All'}
+                </Button>
               </React.Fragment>
             }
           />

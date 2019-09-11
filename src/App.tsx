@@ -6,7 +6,7 @@ import { ReduxState, ReduxAction } from './store';
 
 import Main from './components/Main';
 import Basket from './components/Pieces/Basket';
-import SortDrawer from './components/SelectDrawer';
+import SelectDrawer from './components/SelectDrawer';
 import CourseDrawer from './components/CourseDrawer';
 import q from './components/Data/quarters.json';
 import TopLiner from './components/Pieces/TopLiner';
@@ -84,10 +84,10 @@ class App extends React.Component<AppProps, AppState> {
     scrollIndex: 0,
   };
 
-  public componentDidMount() {
+  componentDidMount = () => {
     this.props.load(quarter);
     // this.props.loadBookmark();
-  }
+  };
 
   //#region prop functions
   setActive = (course: Course | null, row?: number) => {
@@ -98,7 +98,7 @@ class App extends React.Component<AppProps, AppState> {
   scrollTo = (row: number) =>
     this.setState({
       scrollIndex:
-        this.state.scrollIndex > 4 && this.props.activeCourse == null
+        this.state.scrollIndex > 4 && !this.props.activeCourse
           ? Math.floor(row / 3) * 7 + 5
           : row,
     });
@@ -121,13 +121,18 @@ class App extends React.Component<AppProps, AppState> {
           height={this.state.topLinerHeight}
         />
         <div id="main">
-          <SortDrawer
+          <SelectDrawer
             sort={type => this.props.sort(type)}
             sortKey={this.props.sortKey}
             open={!this.props.activeCourse}
             setDrawerWidth={width => this.setState({ drawerWidth: width })}
             addFilter={type => this.props.addFilter(type)}
             removeFilter={type => this.props.removeFilter(type)}
+            clearFilters={() =>
+              this.condenseFilter(this.props.filters).forEach(f =>
+                this.props.removeFilter(f)
+              )
+            }
             activeFilters={this.condenseFilter(this.props.filters)}
             changeQuarter={q => this.props.load(q)}
             search={this.props.search}
