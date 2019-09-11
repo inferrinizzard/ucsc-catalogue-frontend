@@ -335,6 +335,9 @@ const Search = (courses: Course[], search: string): Course[] => {
           (f.subjectCode.includes(search) ||
             f.name.toUpperCase().includes(search) ||
             (f.subject + ' ' + f.code).includes(search))
+        // [f.subjectCode, f.name.toUpperCase(), f.subject + ' ' + f.code].some(
+        //   crit => crit.includes(search)
+        // )
       )
     : courses;
 };

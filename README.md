@@ -1,5 +1,6 @@
 # ucsc-catalog
 slugstayalive
+cruzassist.netlify.com
 
 ## Installation
 
