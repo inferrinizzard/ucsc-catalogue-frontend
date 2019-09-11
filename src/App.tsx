@@ -122,19 +122,22 @@ class App extends React.Component<AppProps, AppState> {
         />
         <div id="main">
           <SelectDrawer
-            sort={type => this.props.sort(type)}
+            courses={this.props.courses}
+            sort={(type: CourseType) => this.props.sort(type)}
             sortKey={this.props.sortKey}
             open={!this.props.activeCourse}
-            setDrawerWidth={width => this.setState({ drawerWidth: width })}
-            addFilter={type => this.props.addFilter(type)}
-            removeFilter={type => this.props.removeFilter(type)}
+            setDrawerWidth={(width: number) =>
+              this.setState({ drawerWidth: width })
+            }
+            addFilter={(type: Filter) => this.props.addFilter(type)}
+            removeFilter={(type: Filter) => this.props.removeFilter(type)}
             clearFilters={() =>
               this.condenseFilter(this.props.filters).forEach(f =>
                 this.props.removeFilter(f)
               )
             }
             activeFilters={this.condenseFilter(this.props.filters)}
-            changeQuarter={q => this.props.load(q)}
+            changeQuarter={(q: number) => this.props.load(q)}
             search={this.props.search}
           />
           <Main

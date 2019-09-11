@@ -1,4 +1,6 @@
 import * as React from 'react';
+import memoize from 'memoize-one';
+
 import styled from 'styled-components';
 import Divider from '@material-ui/core/Divider';
 import Drawer from '@material-ui/core/Drawer';
@@ -16,7 +18,8 @@ import subjectData from './Data/subject.json';
 import descData from './Data/desc.json';
 import { Filter, Course, CourseType } from '../store/course';
 
-export interface SortDrawerProps {
+export interface SelectDrawerProps {
+  courses: Course[];
   sort: (type: CourseType) => void;
   sortKey: CourseType;
   open: boolean;
@@ -28,7 +31,7 @@ export interface SortDrawerProps {
   activeFilters: Filter[];
   search: (name: string) => void;
 }
-export interface SortDrawerState {
+export interface SelectDrawerState {
   basket: Course[];
 }
 
@@ -41,11 +44,29 @@ const Section = styled(Card)<any>`
 const catMap: { [K in CourseType]?: string[] } = subjectData;
 const toolTip: { [K in CourseType]?: string[] } = descData;
 
-class SortDrawer extends React.Component<SortDrawerProps, SortDrawerState> {
+class SelectDrawer extends React.Component<
+  SelectDrawerProps,
+  SelectDrawerState
+> {
   state = {
     basket: [],
   };
+
+  getAvailableFilters = memoize((courses: Course[]) =>
+    (Object.keys(catMap) as CourseType[]).reduce(
+      (filtered, cur) =>
+        catMap[cur]
+          ? {
+              ...filtered,
+              [cur]: catMap[cur]!.filter(f => courses.some(c => c[cur] === f)),
+            }
+          : filtered,
+      {} as { [K in CourseType]?: string[] }
+    )
+  );
+
   render() {
+    let availableFilters = this.getAvailableFilters(this.props.courses);
     return (
       <Drawer
         open={this.props.open}
@@ -75,21 +96,23 @@ class SortDrawer extends React.Component<SortDrawerProps, SortDrawerState> {
             title={'Filters'}
             inner={
               <React.Fragment>
-                {(Object.keys(catMap) as CourseType[]).map((category, k) => (
-                  <React.Fragment key={k}>
-                    <FilterMenu
-                      addFilter={this.props.addFilter}
-                      removeFilter={this.props.removeFilter}
-                      category={category}
-                      filterList={catMap[category] || []}
-                      activeFilters={this.props.activeFilters.filter(
-                        f => f.type === category
-                      )}
-                      toolTips={toolTip[category] || []}
-                    />
-                    <Divider />
-                  </React.Fragment>
-                ))}
+                {(Object.keys(availableFilters) as CourseType[]).map(
+                  (category, k) => (
+                    <React.Fragment key={k}>
+                      <FilterMenu
+                        addFilter={this.props.addFilter}
+                        removeFilter={this.props.removeFilter}
+                        category={category}
+                        filterList={availableFilters[category] || []}
+                        activeFilters={this.props.activeFilters.filter(
+                          f => f.type === category
+                        )}
+                        toolTips={toolTip[category] || []}
+                      />
+                      <Divider />
+                    </React.Fragment>
+                  )
+                )}
                 <QuarterMenu changeQuarter={this.props.changeQuarter} />
                 <Divider />
                 <Button fullWidth onClick={e => this.props.clearFilters()}>
@@ -104,4 +127,4 @@ class SortDrawer extends React.Component<SortDrawerProps, SortDrawerState> {
   }
 }
 
-export default SortDrawer;
+export default SelectDrawer;
