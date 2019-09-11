@@ -137,15 +137,35 @@ class _API {
 
   // https://andromeda.miragespace.net/slugsurvival/tracking/latestOne?termId=:termCode&courseNum=:courseNum
 
+  private trackingAvailableTerms?: (number | string)[];
+  private async trackingAvailable(termId: string): Promise<boolean> {
+    if (!this.trackingAvailableTerms) {
+      const res = (this.trackingAvailableTerms = (await ky
+        .get(`${this.endpoint}/tracking/available`)
+        .json()) as any);
+      if (!res.ok) {
+        throw new Error('Error fetching tracking available terms');
+      }
+      this.trackingAvailableTerms = res.results;
+    }
+    return this.trackingAvailableTerms!.map(x => `${x}`).includes(termId);
+  }
+
   public async tracking(
     courseNum: number | string,
-    termId: number | string
+    termId: string
   ): Promise<model.CourseEnrollment[]> {
-    const available: boolean = ((await ky
-      .get(`${this.endpoint}/tracking/available`)
-      .json()) as any).results
-      .toString()
-      .includes(termId.toString());
+    const available: boolean = await this.trackingAvailable(termId);
+    // ((await ky
+    //   .get(`${this.endpoint}/tracking/available`)
+    //   .json()) as any).results
+    //   .toString()
+    //   .includes(termId.toString());
+    // if (!(await this.trackingAvailable(termId))) {
+    if (!available) {
+      console.log('not available');
+      return [];
+    }
     const res = (await ky
       .get(
         `${
