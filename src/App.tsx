@@ -1,16 +1,21 @@
 import * as React from 'react';
 import { Dispatch } from 'redux';
-import styled from 'styled-components';
 
 import { connect } from 'react-redux';
 import { ReduxState, ReduxAction } from './store';
 
 import Main from './components/Main';
-import SortDrawer from './components/SortDrawer';
+import Basket from './components/Pieces/Basket';
+import SortDrawer from './components/SelectDrawer';
 import CourseDrawer from './components/CourseDrawer';
-import BottomLiner from './components/Pieces/BottomLiner';
+import q from './components/Data/quarters.json';
+import TopLiner from './components/Pieces/TopLiner';
 
-import { Course, CourseEnrollment } from './models/course.model';
+import {
+  Course,
+  CourseEnrollment,
+  professorRating,
+} from './models/course.model';
 import {
   fetchAction,
   sortAction,
@@ -22,15 +27,10 @@ import {
   FilterList,
   FilterDomain,
   CourseType,
+  addBookmarkAction,
+  removeBookmarkAction,
+  loadBookmarkAction,
 } from './store/course';
-
-const Liner = styled.div`
-  width: 100%;
-  background: #5d92dd;
-  z-index: 1201;
-  position: fixed;
-  top: 0;
-`;
 
 interface PropsFromStore {
   courses: Course[];
@@ -39,8 +39,10 @@ interface PropsFromStore {
   activeCourse: Course | null;
   quarter: number;
   tracking: CourseEnrollment[];
-  start: Date;
+  prevStart: Date;
   loading: boolean;
+  rmp: professorRating;
+  bookmarks: Course[];
 }
 
 interface PropsToDispatch {
@@ -50,133 +52,123 @@ interface PropsToDispatch {
   sort: (n: CourseType) => void;
   search: (name: string) => void;
   setActive: (c: Course | null, q: string) => void;
+  addBookmark: (c: Course) => void;
+  removeBookmark: (c: Course) => void;
+  loadBookmark: () => void;
 }
 
 type AppProps = PropsFromStore & PropsToDispatch;
 
 export interface AppState {
-  linerWidth: number;
+  topLinerHeight: number;
+  basketHeight: number;
+  basketOpen: boolean;
   drawerWidth: number;
   cardHeight: number;
   cardWidth: number;
-  linerOpen: boolean;
+  aboutOpen: boolean;
+  scrollIndex: number;
 }
+
+const quarter: number = q[q[0].code.toString().endsWith('4') ? 1 : 0].code;
 
 class App extends React.Component<AppProps, AppState> {
   state = {
-    linerWidth: 30,
-    drawerWidth: 225,
+    topLinerHeight: 30,
+    basketHeight: 30,
+    basketOpen: true,
+    drawerWidth: 13.75,
     cardHeight: 6,
     cardWidth: 12.5,
-    linerOpen: false,
+    aboutOpen: false,
+    scrollIndex: 0,
   };
 
   public componentDidMount() {
-    this.props.load(2192);
+    this.props.load(quarter);
+    // this.props.loadBookmark();
   }
+
   //#region prop functions
-  sortCourses = (type: CourseType) => {
-    this.props.sort(type);
-  };
-
-  addFilter = (type: Filter) => {
-    this.props.addFilter(type);
-  };
-
-  removeFilter = (type: Filter) => {
-    this.props.removeFilter(type);
-  };
-
-  changeQuarter = (q: number) => {
-    this.props.load(q);
-  };
-
-  setActive = (course: Course | null) => {
+  setActive = (course: Course | null, row?: number) => {
+    if (row) this.setState({ scrollIndex: row });
     this.props.setActive(course, this.props.quarter.toString());
   };
 
-  openDetail = (course: Course) => {
-    this.setActive(course);
-  };
-
-  closeDetail = () => {
-    this.setActive(null);
-  };
-
-  openLiner = () => {
+  scrollTo = (row: number) =>
     this.setState({
-      linerOpen: true,
+      scrollIndex:
+        this.state.scrollIndex > 4 && this.props.activeCourse == null
+          ? Math.floor(row / 3) * 7 + 5
+          : row,
     });
-  };
 
-  closeLiner = () => {
-    this.setState({
-      linerOpen: false,
-    });
-  };
-
-  setDrawerWidth = (val: number) => {
-    this.setState({ drawerWidth: val });
-  };
-
-  condenseFilter = (
-    filters: FilterList<FilterDomain, CourseType>
-  ): Filter[] => {
-    let list: Filter[] = [];
-    for (let type in filters)
-      filters[type].forEach(f =>
-        list.push({ type: type as CourseType, name: f })
-      );
-    return list;
-  };
+  condenseFilter = (filters: FilterList<FilterDomain, CourseType>): Filter[] =>
+    Object.keys(filters).reduce(
+      (list, type) => [
+        ...list,
+        ...filters[type].map(f => ({ type: type, name: f } as Filter)),
+      ],
+      [] as Filter[]
+    );
   //#endregion
   render() {
     return (
-      <div id={'app'}>
-        <Liner
-          style={{ height: '25px', textAlign: 'center', fontFamily: 'Roboto' }}
-        >
-          CruzAssist
-        </Liner>
-        <div id={'main'}>
+      <div id="app">
+        <TopLiner
+          open={this.state.aboutOpen}
+          setAbout={status => this.setState({ aboutOpen: status })}
+          height={this.state.topLinerHeight}
+        />
+        <div id="main">
           <SortDrawer
-            sort={this.sortCourses}
+            sort={type => this.props.sort(type)}
             sortKey={this.props.sortKey}
-            open={!Boolean(this.props.activeCourse)}
-            setDrawerWidth={this.setDrawerWidth}
-            addFilter={this.addFilter}
-            removeFilter={this.removeFilter}
+            open={!this.props.activeCourse}
+            setDrawerWidth={width => this.setState({ drawerWidth: width })}
+            addFilter={type => this.props.addFilter(type)}
+            removeFilter={type => this.props.removeFilter(type)}
             activeFilters={this.condenseFilter(this.props.filters)}
-            changeQuarter={this.changeQuarter}
+            changeQuarter={q => this.props.load(q)}
             search={this.props.search}
           />
           <Main
             courses={this.props.courses}
             open={Boolean(this.props.activeCourse)}
-            linerWidth={this.state.linerWidth}
+            topLinerHeight={this.state.topLinerHeight}
+            basketHeight={this.state.basketHeight}
             drawerWidth={this.state.drawerWidth}
-            openDetail={this.openDetail}
+            openDetail={this.setActive}
             cardHeight={this.state.cardHeight}
             cardWidth={this.state.cardWidth}
             active={this.props.activeCourse}
+            scrollTo={this.scrollTo}
+            scrollIndex={this.state.scrollIndex}
+          />
+          <Basket
+            basketOpen={this.state.basketOpen}
+            courses={this.props.bookmarks}
+            cardHeight={this.state.cardHeight}
+            active={this.props.activeCourse}
+            activeOpen={Boolean(this.props.activeCourse)}
+            openDetail={this.setActive}
+            tracking={this.props.tracking}
+            scrollTo={this.scrollTo}
           />
           <CourseDrawer
+            addBasket={this.props.addBookmark}
+            removeBasket={this.props.removeBookmark}
+            basketCourses={this.props.bookmarks}
             open={Boolean(this.props.activeCourse)}
-            closeDetail={this.closeDetail}
+            closeDetail={() => this.setActive(null, 0)}
             course={this.props.activeCourse}
             tracking={this.props.tracking}
-            start={this.props.start}
+            prevStart={this.props.prevStart}
             quarter={this.props.quarter}
             loading={this.props.loading}
+            rmp={this.props.rmp}
           />
         </div>
-        <BottomLiner
-          open={this.state.linerOpen}
-          openLiner={this.openLiner}
-          closeLiner={this.closeLiner}
-        >
-          About
-        </BottomLiner>
       </div>
     );
   }
@@ -189,8 +181,10 @@ const mapStateToProps = (state: ReduxState): PropsFromStore => ({
   activeCourse: state.course.activeCourse,
   quarter: state.course.quarter,
   tracking: state.course.tracking,
-  start: state.course.start,
+  prevStart: state.course.prevStart,
   loading: state.course.fetchTracking,
+  rmp: state.course.rmp,
+  bookmarks: state.course.bookmarks,
 });
 const mapDispatchToProps = (
   dispatch: Dispatch<ReduxAction>
@@ -201,6 +195,9 @@ const mapDispatchToProps = (
   setActive: (course, quarter) => dispatch(setActiveAction(course, quarter)),
   addFilter: type => dispatch(addFilterAction(type)),
   removeFilter: type => dispatch(removeFilterAction(type)),
+  addBookmark: course => dispatch(addBookmarkAction(course)),
+  removeBookmark: course => dispatch(removeBookmarkAction(course)),
+  loadBookmark: () => dispatch(loadBookmarkAction()),
 });
 
 export default connect(

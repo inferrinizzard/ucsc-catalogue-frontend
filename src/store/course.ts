@@ -1,9 +1,15 @@
 import { Action } from 'redux';
-import { Course, CourseEnrollment } from '../models/course.model';
+import {
+  Course,
+  CourseEnrollment,
+  professorRating,
+} from '../models/course.model';
 import API from '../services/api';
 import { Epic, combineEpics } from 'redux-observable';
 import { map } from 'rxjs/internal/operators/map';
 import { switchMap } from 'rxjs/internal/operators/switchMap';
+import { tap, ignoreElements } from 'rxjs/operators';
+import q from '../components/Data/quarters.json';
 
 export interface CourseState {
   loading: boolean;
@@ -15,11 +21,14 @@ export interface CourseState {
   activeCourse: Course | null;
   quarter: number;
   tracking: CourseEnrollment[];
-  start: Date;
+  prevStart: Date;
   search: string;
+  rmp: professorRating;
+  bookmarks: Course[];
 }
-
+//#region define types
 export type CourseType = keyof Course;
+export type Course = Course;
 export type Filter = { type: CourseType; name: string };
 export enum FilterDomain {
   subject = 'subject',
@@ -35,7 +44,7 @@ export declare type FilterList<
   CourseType
 > = DefineFilterKey<CourseType> &
   { readonly [value in FilterDomain]: string[] };
-
+//#endregion
 const initialState: CourseState = {
   loading: true,
   fetchTracking: false,
@@ -49,10 +58,12 @@ const initialState: CourseState = {
   courses: [],
   backup: [],
   activeCourse: null,
-  quarter: 2190,
+  quarter: q[q[0].code.toString().endsWith('4') ? 1 : 0].code,
   tracking: [],
-  start: new Date(0),
+  prevStart: new Date(0),
   search: '',
+  rmp: {} as professorRating,
+  bookmarks: [],
 };
 //#region actions
 enum ActionTypes {
@@ -64,6 +75,10 @@ enum ActionTypes {
   REMOVE_FILTER = 'remove-filter',
   SET_ACTIVE = 'set-active',
   ACTIVE_SUCCESS = 'active-success',
+  ADD_BOOKMARK = 'add-bookmark',
+  REMOVE_BOOKMARK = 'remove-bookmark',
+  LOAD_BOOKMARK = 'load-bookmark',
+  LOAD_BOOKMARK_COMPLETE = 'load-bookmark-complete',
 }
 
 interface FetchAction extends Action {
@@ -78,15 +93,15 @@ export const fetchAction = (quarter: number): FetchAction => ({
 interface FetchSuccessAction extends Action {
   type: ActionTypes.FETCH_API_SUCCESS;
   data: Course[];
-  start: Date;
+  prevStart: Date;
 }
 export const fetchSuccessAction = (
   data: Course[],
-  start: Date
+  prevStart: Date
 ): FetchSuccessAction => ({
   type: ActionTypes.FETCH_API_SUCCESS,
   data,
-  start,
+  prevStart,
 });
 
 interface SortAction extends Action {
@@ -143,14 +158,53 @@ interface ActiveSuccessAction extends Action {
   type: ActionTypes.ACTIVE_SUCCESS;
   data: CourseEnrollment[];
   course: Course;
+  rmp: professorRating;
 }
 export const activeSuccessAction = (
   data: CourseEnrollment[],
-  course: Course
+  course: Course,
+  rmp: professorRating
 ): ActiveSuccessAction => ({
   type: ActionTypes.ACTIVE_SUCCESS,
   data,
   course,
+  rmp,
+});
+
+interface AddBookmarkAction extends Action {
+  type: ActionTypes.ADD_BOOKMARK;
+  data: Course;
+}
+export const addBookmarkAction = (data: Course): AddBookmarkAction => ({
+  type: ActionTypes.ADD_BOOKMARK,
+  data,
+});
+
+interface RemoveBookmarkAction extends Action {
+  type: ActionTypes.REMOVE_BOOKMARK;
+  data: Course;
+}
+export const removeBookmarkAction = (data: Course): RemoveBookmarkAction => ({
+  type: ActionTypes.REMOVE_BOOKMARK,
+  data,
+});
+
+interface LoadBookmarkAction extends Action {
+  type: ActionTypes.LOAD_BOOKMARK;
+}
+export const loadBookmarkAction = (): LoadBookmarkAction => ({
+  type: ActionTypes.LOAD_BOOKMARK,
+});
+
+interface LoadBookmarkCompleteAction extends Action {
+  type: ActionTypes.LOAD_BOOKMARK_COMPLETE;
+  data: Course[];
+}
+export const loadBookmarkCompleteAction = (
+  data: Course[]
+): LoadBookmarkCompleteAction => ({
+  type: ActionTypes.LOAD_BOOKMARK_COMPLETE,
+  data,
 });
 
 export type CourseActions =
@@ -161,7 +215,11 @@ export type CourseActions =
   | AddFilterAction
   | RemoveFilterAction
   | SetActiveAction
-  | ActiveSuccessAction;
+  | ActiveSuccessAction
+  | AddBookmarkAction
+  | RemoveBookmarkAction
+  | LoadBookmarkAction
+  | LoadBookmarkCompleteAction;
 
 //#endregion
 export default function courseReducer(
@@ -175,7 +233,7 @@ export default function courseReducer(
       return {
         ...state,
         loading: false,
-        start: action.start,
+        prevStart: action.prevStart,
         courses: Sort(
           Search(Filter(action.data, state.filters), state.search),
           state.sort
@@ -193,7 +251,10 @@ export default function courseReducer(
       return {
         ...state,
         search: action.name,
-        courses: Sort(Search(state.backup, action.name), state.sort),
+        courses: Sort(
+          Filter(Search(state.backup, action.name), state.filters),
+          state.sort
+        ),
       };
     case ActionTypes.ADD_FILTER:
       return state.filters[action.filter.type].every(
@@ -202,9 +263,12 @@ export default function courseReducer(
         ? {
             ...state,
             courses: Sort(
-              Filter(
-                state.backup,
-                SetFilters(state.filters, action.filter, 'add')
+              Search(
+                Filter(
+                  state.backup,
+                  SetFilters(state.filters, action.filter, 'add')
+                ),
+                state.search
               ),
               state.sort
             ),
@@ -215,9 +279,12 @@ export default function courseReducer(
         ? {
             ...state,
             courses: Sort(
-              Filter(
-                state.backup,
-                SetFilters(state.filters, action.filter, 'remove')
+              Search(
+                Filter(
+                  state.backup,
+                  SetFilters(state.filters, action.filter, 'remove')
+                ),
+                state.search
               ),
               state.sort
             ),
@@ -231,19 +298,26 @@ export default function courseReducer(
         fetchTracking: false,
         tracking: action.data,
         activeCourse: action.course,
+        rmp: action.rmp,
       };
+    case ActionTypes.ADD_BOOKMARK:
+      return { ...state, bookmarks: [...state.bookmarks, action.data] };
+    case ActionTypes.REMOVE_BOOKMARK:
+      return {
+        ...state,
+        bookmarks: state.bookmarks.filter(f => f.code != action.data.code),
+      };
+    case ActionTypes.LOAD_BOOKMARK_COMPLETE:
+      return { ...state, bookmarks: action.data };
     default:
       return state;
   }
 }
 //#region sort and filter functions
-function Sort(courses: Course[], sort: CourseType): Course[] {
-  return ([] as Course[])
-    .concat(courses)
-    .sort((a: Course, b: Course) => InnerSort(a, b, sort));
-}
+const Sort = (courses: Course[], sort: CourseType): Course[] =>
+  [...courses].sort((a: Course, b: Course) => InnerSort(a, b, sort));
 
-function InnerSort(a: Course, b: Course, sort: CourseType): number {
+const InnerSort = (a: Course, b: Course, sort: CourseType): number => {
   const left = a[sort];
   const right = b[sort];
   if (left && right) {
@@ -251,24 +325,28 @@ function InnerSort(a: Course, b: Course, sort: CourseType): number {
     if (left < right) return -1;
   }
   return 0;
-}
+};
 
-function Search(courses: Course[], search: string): Course[] {
+const Search = (courses: Course[], search: string): Course[] => {
   return search.length > 0
     ? courses.filter(
         f =>
-          f.subjectCode.includes(search) ||
-          (f.name || '').toUpperCase().includes(search) ||
-          (f.subject + ' ' + f.code).includes(search)
+          f.name &&
+          (f.subjectCode.includes(search) ||
+            f.name.toUpperCase().includes(search) ||
+            (f.subject + ' ' + f.code).includes(search))
+        // [f.subjectCode, f.name.toUpperCase(), f.subject + ' ' + f.code].some(
+        //   crit => crit.includes(search)
+        // )
       )
     : courses;
-}
+};
 
-function SetFilters(
+const SetFilters = (
   filters: FilterList<FilterDomain, CourseType>,
   val: Filter,
   action: string
-): FilterList<FilterDomain, CourseType> {
+): FilterList<FilterDomain, CourseType> => {
   let temp: FilterList<FilterDomain, CourseType> = { ...filters };
   if (action === 'add') {
     temp[val.type].push(val.name);
@@ -276,15 +354,15 @@ function SetFilters(
     temp[val.type].splice(temp[val.type].indexOf(val.name), 1);
   }
   return temp;
-}
+};
 
-function Filter(
+const Filter = (
   courses: Course[],
   filterListObj: FilterList<FilterDomain, CourseType>
-): Course[] {
+): Course[] => {
   // see if a course passes a single filter
   const SingleFilter = (course: Course, filter: Filter): boolean => {
-    if (Array.isArray(course[filter.type])) {
+    if (course[filter.type] instanceof Array) {
       return (course[filter.type] as Array<any>).includes(filter.name);
     }
     return course[filter.type] === filter.name;
@@ -310,7 +388,7 @@ function Filter(
   });
   // those who survive will be returned
   return processing;
-}
+};
 //#endregion
 const fetchCoursesEpic: Epic<CourseActions> = (action$, state$) =>
   action$.ofType(ActionTypes.FETCH_API).pipe(
@@ -318,26 +396,68 @@ const fetchCoursesEpic: Epic<CourseActions> = (action$, state$) =>
     switchMap(async action => {
       return {
         courses: await API.courses(action.quarter),
-        start: await API.fetchDate(action.quarter),
+        prevStart: await API.fetchDate(
+          action.quarter.toString().endsWith('8')
+            ? action.quarter - 6
+            : action.quarter - 2
+        ),
       };
     }),
-    map(courses => fetchSuccessAction(courses['courses'], courses['start']))
+    map(courses => fetchSuccessAction(courses['courses'], courses['prevStart']))
   );
 
 const trackCourseEpic: Epic<CourseActions> = (action$, state$) =>
   action$.ofType(ActionTypes.SET_ACTIVE).pipe(
     map(action => action as SetActiveAction),
     switchMap(async action => {
-      const course = { ...action.course } as Course;
+      const course: Course = { ...action.course } as Course;
       course['fullName'] = action.course
         ? await API.fetchName(action.course!.number, action.quarter)
         : '';
-      const tracking = action.course
+      const tracking: CourseEnrollment[] = action.course
         ? await API.tracking(action.course!.number, action.quarter)
-        : [];
-      return { tracking: tracking, course: course };
+        : ([] as CourseEnrollment[]);
+      const rmp: professorRating = action.course
+        ? await API.rmp(
+            await API.getProfId(
+              action.course.instructor
+                ? action.course.instructor['first'] +
+                    action.course.instructor['last']
+                : ''
+            )
+          )
+        : ({} as professorRating);
+      return { tracking: tracking, course: course, rmp: rmp };
     }),
-    map(data => activeSuccessAction(data['tracking'], data['course']))
+    map(data =>
+      activeSuccessAction(data['tracking'], data['course'], data['rmp'])
+    )
+  );
+const bookmarkEpic: Epic<CourseActions> = (action$, state$) =>
+  action$.ofType(ActionTypes.ADD_BOOKMARK, ActionTypes.REMOVE_BOOKMARK).pipe(
+    tap(() => {
+      window.localStorage.setItem(
+        'BOOKMARKS',
+        JSON.stringify(state$.value.course.bookmarks)
+      );
+    }),
+    ignoreElements() // stop stream. do not return an action
+  );
+const loadBookmarkEpic: Epic<CourseActions> = (action$, state$) =>
+  action$.ofType(ActionTypes.LOAD_BOOKMARK).pipe(
+    map(() => window.localStorage.getItem('BOOKMARKS')),
+    map(json => {
+      if (json) {
+        return JSON.parse(json);
+      }
+      return [];
+    }),
+    map(courses => loadBookmarkCompleteAction(courses))
   );
 
-export const CourseEpics = combineEpics(fetchCoursesEpic, trackCourseEpic);
+export const CourseEpics = combineEpics(
+  fetchCoursesEpic,
+  trackCourseEpic,
+  bookmarkEpic,
+  loadBookmarkEpic
+);

@@ -64,7 +64,7 @@ export interface SectionEnrollment {
 export interface CourseEnrollment {
   termId: string;
   courseNum: number;
-  date: string;
+  date: Date;
   status: EnrollmentStatus;
   available: number;
   capacity: number;
@@ -72,6 +72,12 @@ export interface CourseEnrollment {
   waitlistCapacity: number;
   waitlistTotal: number;
   sections: SectionEnrollment[];
+}
+
+export interface professorRating {
+  difficulty: number;
+  clarity: number;
+  overall: number;
 }
 
 export type Filter = { type: keyof Course; filter: string };

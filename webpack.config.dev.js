@@ -1,6 +1,6 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const CopyWebpackPlugin = require('copy-webpack-plugin')
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = {
   mode: 'development',
@@ -8,14 +8,14 @@ module.exports = {
   output: {
     filename: 'bundle.js',
     path: path.join(__dirname + '/dist'),
-    publicPath: '/'
+    publicPath: '/',
   },
 
   // enable source-map output
   devtool: 'source-map',
 
   resolve: {
-    extensions: ['.ts', '.tsx', '.js', '.json', '.css']
+    extensions: ['.ts', '.tsx', '.js', '.json', '.css'],
   },
 
   module: {
@@ -28,21 +28,35 @@ module.exports = {
 
       {
         test: /\.css$/,
-        use: [{ loader: 'style-loader' }, { loader: 'css-loader' }]
-      }
-    ]
+        use: [{ loader: 'style-loader' }, { loader: 'css-loader' }],
+      },
+      {
+        test: /\.(png|jp(e*)g|svg)$/,
+        use: [
+          {
+            loader: 'url-loader',
+            options: {
+              limit: 8000, // Convert images < 8kb to base64 strings
+              name: 'images/[hash]-[name].[ext]',
+            },
+          },
+        ],
+      },
+    ],
   },
 
   plugins: [
     new HtmlWebpackPlugin({
-      template: path.join(__dirname, 'src/index.html')
+      template: path.join(__dirname, 'src/index.html'),
     }),
-    new CopyWebpackPlugin([{
-      from: 'public'
-    }])
+    new CopyWebpackPlugin([
+      {
+        from: 'public',
+      },
+    ]),
   ],
 
   devServer: {
-    historyApiFallback: true
-  }
+    historyApiFallback: true,
+  },
 };

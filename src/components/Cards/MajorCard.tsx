@@ -8,24 +8,17 @@ import styled from 'styled-components';
 export interface MajorCardProps {}
 export interface MajorCardState {}
 
-const StyleCard = styled(Card)<any>`
-  margin: 0.5em 0.25em;
-  overflow: visible !important;
-`;
-
 class MajorCard extends React.Component<MajorCardProps, MajorCardState> {
   render() {
     return (
-      <StyleCard>
-        <CardHeader title="Major" />
-        {/* <CardMedia /> */}
+      <React.Fragment>
         <div style={{ textAlign: 'center', fontFamily: 'Roboto' }}>
           Work in progress, to be implemented soon!
         </div>
         {/* <CardContent>
           <div>reqs</div>
         </CardContent> */}
-      </StyleCard>
+      </React.Fragment>
     );
   }
 }

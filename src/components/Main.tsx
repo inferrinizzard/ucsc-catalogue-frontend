@@ -10,96 +10,111 @@ import ClassCard from './Pieces/ClassCard';
 
 export interface MainProps {
   courses: Course[];
-  openDetail: (course: Course) => void;
+  openDetail: (course: Course, row: number) => void;
   cardWidth: number;
   cardHeight: number;
   active: Course | null;
+  scrollIndex: number;
+  scrollTo: (row: number) => void;
+  basketHeight: number;
 }
 
 export interface MainDivProps {
   open: boolean;
-  linerWidth: number;
+  topLinerHeight: number;
   drawerWidth: number;
 }
 
-export interface MainState {
-  activeNum: number;
-}
-
-const MainDiv = styled.div`
-  margin-top: ${(p: MainDivProps) => p.linerWidth}px;
-  margin-left: ${p => p.drawerWidth}px;
-  width: calc(${p => (p.open ? 52 : 100)}% - ${p => p.drawerWidth}px);
-  height: calc(100% - ${p => p.linerWidth}px);
+const MainDiv = styled.div<MainDivProps>`
+  margin-top: ${(p: MainDivProps) => p.topLinerHeight}px;
+  margin-left: ${(p: MainDivProps) => toPX(p.drawerWidth + 'em')}px;
+  width: calc(
+    ${(p: MainDivProps) => (p.open ? 52 : 100)}% -
+      ${(p: MainDivProps) => toPX(p.drawerWidth + 'em') + 10}px
+  );
+  height: 100%;
 `;
 
-class Main extends React.Component<MainProps & MainDivProps, MainState> {
-  state = { activeNum: 0 };
-  setActive = (c: Course, k: number) => {
-    this.props.openDetail(c);
-    // this.setState({ activeNum: c ? k : 0 });
-    //need to set logic for mod the rowcount before and after
-  };
-  render() {
-    return (
-      <MainDiv {...this.props}>
-        <AutoSizer>
-          {({ height, width }: { height: number; width: number }) => {
-            const columns = Math.floor(
-              width / toPX(this.props.cardWidth + 'em')
-            );
-            const rows = Math.ceil(this.props.courses.length / columns);
-            return (
-              <div>
-                <List
-                  width={width}
-                  height={height}
-                  rowCount={rows}
-                  rowHeight={toPX(this.props.cardHeight + 'em')}
-                  overscanRowCount={4}
-                  scrollToRow={this.state.activeNum}
-                  rowRenderer={({
-                    index,
-                    key,
-                    style,
-                  }: {
-                    index: number;
-                    key: string;
-                    style: any;
-                  }) => {
-                    const items = [];
-                    const fromIndex: number = index * columns;
-                    const toIndex: number = Math.min(
-                      fromIndex + columns,
-                      this.props.courses.length
-                    );
-                    for (let i = fromIndex; i < toIndex; i++) {
-                      let course = this.props.courses[i];
-                      items.push(
-                        <ClassCard
-                          key={i}
-                          k={index}
-                          courseData={course}
-                          active={this.props.active}
-                          // setActive={this.setActive}
-                          openDetail={this.setActive}
-                        />
-                      );
-                    }
-                    return (
-                      <div key={key} style={style}>
-                        {items}
-                      </div>
-                    );
-                  }}
-                />
-              </div>
-            );
-          }}
-        </AutoSizer>
-      </MainDiv>
-    );
-  }
-}
+const Main: React.SFC<MainProps & MainDivProps> = props => (
+  <MainDiv
+    {...{
+      topLinerHeight: props.topLinerHeight,
+      drawerWidth: props.drawerWidth,
+      open: props.open,
+    }}
+  >
+    {/* <div
+        style={{
+          marginTop: props.topLinerHeight + 'px',
+          marginLeft: props.drawerWidth + 'em',
+          width:
+            'calc(' +
+            (props.open ? '52%' : '100%') +
+            ' - ' +
+            (props.drawerWidth + 'em') +
+            ')',
+          height: '100%',
+        }}
+      ></div> */}
+    <AutoSizer>
+      {({ height, width }: { height: number; width: number }) => {
+        const columns = Math.floor(width / toPX(props.cardWidth + 'em'));
+        const rows = Math.ceil(props.courses.length / columns);
+        return (
+          <div>
+            <List
+              width={width}
+              height={height}
+              rowCount={rows}
+              rowHeight={toPX(props.cardHeight + 'em')}
+              overscanRowCount={4}
+              scrollToAlignment={'start'}
+              scrollToIndex={props.scrollIndex}
+              style={{
+                outline: 'none',
+              }}
+              rowRenderer={({
+                index,
+                key,
+                style,
+              }: {
+                index: number;
+                key: string;
+                style: any;
+              }) => {
+                const items = [];
+                const fromIndex: number = index * columns;
+                const toIndex: number = Math.min(
+                  fromIndex + columns,
+                  props.courses.length
+                );
+
+                // slice, maybe?
+                for (let i = fromIndex; i < toIndex; i++)
+                  items.push(
+                    <ClassCard
+                      key={i}
+                      row={index}
+                      courseData={props.courses[i]}
+                      active={props.active}
+                      openDetail={(course, row) => {
+                        props.openDetail(course, row);
+                        props.scrollTo(row);
+                      }}
+                    />
+                  );
+                return (
+                  <div key={key} style={style}>
+                    {items}
+                  </div>
+                );
+              }}
+            />
+          </div>
+        );
+      }}
+    </AutoSizer>
+  </MainDiv>
+);
 
 export default Main;

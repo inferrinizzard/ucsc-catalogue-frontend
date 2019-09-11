@@ -18,38 +18,22 @@ export interface FilterMenuProps {
   toolTips: string[];
 }
 export interface FilterMenuState {
-  anchorEl: HTMLElement | null;
+  anchor: HTMLElement | null;
   widthRef: React.RefObject<HTMLElement>;
   width: number;
 }
 
 class FilterMenu extends React.Component<FilterMenuProps, FilterMenuState> {
   state = {
-    anchorEl: null,
+    anchor: null,
     widthRef: React.createRef<HTMLElement>(),
     width: 0,
-  };
-
-  handleClick = (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
-    this.setState({ ...this.state, anchorEl: event.currentTarget });
-  };
-
-  handleClose = () => {
-    this.setState({ ...this.state, anchorEl: null });
-  };
-
-  addFilterAndClose = (filt: Filter) => {
-    this.props.addFilter(filt);
-    this.handleClose();
   };
 
   ITEM_HEIGHT = 48;
 
   componentDidMount() {
-    this.setState({
-      ...this.state,
-      width: this.state.widthRef.current!.offsetWidth,
-    });
+    this.setState({ width: this.state.widthRef.current!.offsetWidth });
   }
 
   render() {
@@ -60,17 +44,17 @@ class FilterMenu extends React.Component<FilterMenuProps, FilterMenuState> {
             fullWidth
             aria-owns={open ? 'fade-menu' : undefined}
             aria-haspopup="true"
-            onClick={event => this.handleClick(event)}
+            onClick={e => this.setState({ anchor: e.currentTarget })}
           >
             {this.props.category}
           </Button>
         </RootRef>
         <Menu
           id="fade-menu"
-          open={Boolean(this.state.anchorEl)}
-          anchorEl={this.state.anchorEl}
+          open={Boolean(this.state.anchor)}
+          anchorEl={this.state.anchor}
           TransitionComponent={Fade}
-          onBackdropClick={this.handleClose}
+          onBackdropClick={e => this.setState({ anchor: null })}
           PaperProps={{
             style: {
               maxHeight: this.ITEM_HEIGHT * 7.5,
@@ -80,38 +64,33 @@ class FilterMenu extends React.Component<FilterMenuProps, FilterMenuState> {
         >
           {this.props.filterList
             // filter out active elements
-            .filter(f => {
-              if (this.props.activeFilters.map(x => x.name).includes(f)) {
-                return false; // if it is already active, omit it
-              } else {
-                return true;
-              }
-            })
-            .map((f, index) => (
+            .filter(f => !this.props.activeFilters.map(x => x.name).includes(f))
+            .map((f, k) => (
               <Tooltip
-                key={index}
+                key={k}
                 title={this.props.toolTips[this.props.filterList.indexOf(f)]}
                 placement="right"
               >
                 <MenuItem
-                  onClick={event =>
-                    this.addFilterAndClose({
+                  onClick={e => {
+                    this.props.addFilter({
                       type: this.props.category,
                       name: f,
-                    })
-                  }
+                    });
+                    this.setState({ anchor: null });
+                  }}
                 >
                   {f}
                 </MenuItem>
               </Tooltip>
             ))}
         </Menu>
-        <div style={{ maxWidth: '220px' }}>
-          {this.props.activeFilters.map((af, index) => (
+        <div style={{ maxWidth: '210px' }}>
+          {this.props.activeFilters.map(af => (
             <Chip
               key={af.name}
               label={af.name}
-              onDelete={event => this.props.removeFilter(af)}
+              onDelete={e => this.props.removeFilter(af)}
             />
           ))}
         </div>

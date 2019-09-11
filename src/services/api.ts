@@ -1,4 +1,4 @@
-import ky from 'ky';
+import ky, { HTTPError } from 'ky';
 
 import * as model from '../models/course.model';
 import * as ApiResponseModel from '../models/api.model';
@@ -16,21 +16,21 @@ function convertAndMergeCourse(
     number: t.num,
     settings: !!t.loct
       ? t.loct
-        .filter(x => x.loc && x.t)
-        .map(x => ({
-          day: x.t.day,
-          time: x.t.time,
-          location: x.loc,
-        }))
+          .filter(x => x.loc && x.t)
+          .map(x => ({
+            day: x.t.day,
+            time: x.t.time,
+            location: x.loc,
+          }))
       : null,
     capacity: t.cap,
     instructor: t.ins
       ? {
-        display: t.ins.d,
-        first: t.ins.f,
-        last: t.ins.l,
-        middle: t.ins.m,
-      }
+          display: t.ins.d,
+          first: t.ins.f,
+          last: t.ins.l,
+          middle: t.ins.m,
+        }
       : null,
     subject,
     type: c.ty,
@@ -43,12 +43,12 @@ function convertAndMergeCourse(
       classSection: s.sec,
       settings: !!t.loct
         ? t.loct
-          .filter(x => x.loc && x.t)
-          .map(x => ({
-            day: x.t.day,
-            time: x.t.time,
-            location: x.loc,
-          }))
+            .filter(x => x.loc && x.t)
+            .map(x => ({
+              day: x.t.day,
+              time: x.t.time,
+              location: x.loc,
+            }))
         : null,
       instructor: s.ins,
       capacity: s.cap,
@@ -59,15 +59,15 @@ function convertAndMergeCourse(
       (
         '00' +
         (t.c.endsWith('0') ||
-          t.c.endsWith('1') ||
-          t.c.endsWith('2') ||
-          t.c.endsWith('3') ||
-          t.c.endsWith('4') ||
-          t.c.endsWith('5') ||
-          t.c.endsWith('6') ||
-          t.c.endsWith('7') ||
-          t.c.endsWith('8') ||
-          t.c.endsWith('9')
+        t.c.endsWith('1') ||
+        t.c.endsWith('2') ||
+        t.c.endsWith('3') ||
+        t.c.endsWith('4') ||
+        t.c.endsWith('5') ||
+        t.c.endsWith('6') ||
+        t.c.endsWith('7') ||
+        t.c.endsWith('8') ||
+        t.c.endsWith('9')
           ? t.c + '0'
           : t.c)
       ).slice(-4),
@@ -76,8 +76,8 @@ function convertAndMergeCourse(
       return n < 100
         ? 'Lower Div'
         : n >= 100 && n < 200
-          ? 'Upper Div'
-          : 'Graduate';
+        ? 'Upper Div'
+        : 'Graduate';
     })(),
   };
 }
@@ -91,7 +91,7 @@ function convertTracking(
     date: [x.date].map(s => {
       let d = new Date(0);
       d.setUTCSeconds(s);
-      return d.toDateString();
+      return d;
     })[0],
     status: x.status,
     available: x.avail,
@@ -146,14 +146,10 @@ class _API {
   private trackingAvailableTerms?: (number | string)[];
   private async trackingAvailable(termId: string): Promise<boolean> {
     if (!this.trackingAvailableTerms) {
-      const res = this.trackingAvailableTerms = (await ky
-        .get(
-          `${
-          this.endpoint
-          }/tracking/available`
-        )
-        .json()) as any;
-      if(!res.ok) {
+      const res = (this.trackingAvailableTerms = (await ky
+        .get(`${this.endpoint}/tracking/available`)
+        .json()) as any);
+      if (!res.ok) {
         throw new Error('Error fetching tracking available terms');
       }
       this.trackingAvailableTerms = res.results;
@@ -165,21 +161,28 @@ class _API {
     courseNum: number | string,
     termId: string
   ): Promise<model.CourseEnrollment[]> {
-    if(!await this.trackingAvailable(termId)) {
-      console.log('not available')
+    const available: boolean = await this.trackingAvailable(termId);
+    // ((await ky
+    //   .get(`${this.endpoint}/tracking/available`)
+    //   .json()) as any).results
+    //   .toString()
+    //   .includes(termId.toString());
+    // if (!(await this.trackingAvailable(termId))) {
+    if (!available) {
+      console.log('not available');
       return [];
     }
     const res = (await ky
       .get(
         `${
-        this.endpoint
+          this.endpoint
         }/tracking/fetch?termId=${termId}&courseNum=${courseNum}`
       )
       .json()) as any;
-    if (!res.ok) {
+    if (available && !res.ok) {
       throw new Error('Error fetching tracking data');
     }
-    return convertTracking(res.results);
+    return convertTracking(available ? res.results : []);
   }
   public async fetchName(
     course: number | string,
@@ -228,6 +231,52 @@ class _API {
         .then(x => x.text())
         .then(s => s.substr(s.indexOf(term.toString()) + 40, 8))
     );
+  }
+
+  public async getProfId(name: string): Promise<number> {
+    if (name === '') return -1;
+    const idString: string = await ky
+      .get(this.endpoint + '/data/fetch/rmp.json')
+      .then(x => x.text());
+    return idString.includes(name)
+      ? parseInt(idString.substr(idString.indexOf(name) + name.length + 3, 6))
+      : 0;
+  }
+
+  public async rmp(profId: number): Promise<model.professorRating> {
+    if (profId <= 0) return {} as model.professorRating;
+    const rawString: string = await ky
+      .get(this.endpoint + '/data/fetch/rmp/stats/' + profId + '.json')
+      .catch(x => {
+        return !x.ok ? '' : x;
+      })
+      .then(x => {
+        return x === '' ? '' : x.text();
+      });
+    if (rawString === '') return {} as model.professorRating;
+    const d: number = parseFloat(
+      rawString.substring(
+        rawString.indexOf('easy') + 6,
+        rawString.indexOf('clarity') - 2
+      )
+    );
+    const c: number = parseFloat(
+      rawString.substring(
+        rawString.indexOf('clarity') + 9,
+        rawString.indexOf('overall') - 2
+      )
+    );
+    const o: number = parseFloat(
+      rawString.substring(
+        rawString.indexOf('overall') + 9,
+        rawString.indexOf('quality') - 2
+      )
+    );
+    return {
+      difficulty: d,
+      clarity: c,
+      overall: o,
+    } as model.professorRating;
   }
 }
 
