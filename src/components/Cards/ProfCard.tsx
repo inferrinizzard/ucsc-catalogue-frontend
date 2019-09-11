@@ -1,4 +1,6 @@
 import * as React from 'react';
+import styled from 'styled-components';
+
 import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
 import CardContent from '@material-ui/core/CardContent';
@@ -6,7 +8,6 @@ import Divider from '@material-ui/core/Divider';
 import StarRounded from '@material-ui/icons/StarRounded';
 import StarBorderRounded from '@material-ui/icons/StarBorderRounded';
 import StarHalfRounded from '@material-ui/icons/StarHalfRounded';
-import styled from 'styled-components';
 
 import { professorRating } from '../../models/course.model';
 import { Typography } from '@material-ui/core';

@@ -1,9 +1,10 @@
 import * as React from 'react';
+import styled from 'styled-components';
+
 import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
 import CardMedia from '@material-ui/core/CardMedia';
 import CardContent from '@material-ui/core/CardContent';
-import styled from 'styled-components';
 
 export interface MajorCardProps {}
 export interface MajorCardState {}

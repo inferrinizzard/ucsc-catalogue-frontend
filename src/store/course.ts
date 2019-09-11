@@ -1,14 +1,15 @@
 import { Action } from 'redux';
+import { Epic, combineEpics } from 'redux-observable';
+import { map } from 'rxjs/internal/operators/map';
+import { switchMap } from 'rxjs/internal/operators/switchMap';
+import { tap, ignoreElements } from 'rxjs/operators';
+
 import {
   Course,
   CourseEnrollment,
   professorRating,
 } from '../models/course.model';
 import API from '../services/api';
-import { Epic, combineEpics } from 'redux-observable';
-import { map } from 'rxjs/internal/operators/map';
-import { switchMap } from 'rxjs/internal/operators/switchMap';
-import { tap, ignoreElements } from 'rxjs/operators';
 import q from '../components/Data/quarters.json';
 
 export interface CourseState {
