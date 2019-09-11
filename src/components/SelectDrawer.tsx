@@ -15,8 +15,7 @@ import FilterMenu from './Pieces/FilterMenu';
 import QuarterMenu from './Pieces/QuarterMenu';
 import NotchedOutline from './Pieces/NotchedOutline';
 
-import subjectData from './Data/subject.json';
-import descData from './Data/desc.json';
+import filterData from './Data/filters.json';
 import { Filter, Course, CourseType } from '../store/course';
 
 export interface SelectDrawerProps {
@@ -42,8 +41,9 @@ const Section = styled(Card)<any>`
   box-shadow: none !important;
 `;
 
-const catMap: { [K in CourseType]?: string[] } = subjectData;
-const toolTip: { [K in CourseType]?: string[] } = descData;
+const catMap: {
+  [K in CourseType]?: { name: string; desc: string }[]
+} = filterData;
 
 class SelectDrawer extends React.Component<
   SelectDrawerProps,
@@ -59,10 +59,12 @@ class SelectDrawer extends React.Component<
         catMap[cur]
           ? {
               ...filtered,
-              [cur]: catMap[cur]!.filter(f => courses.some(c => c[cur] === f)),
+              [cur]: catMap[cur]!.filter(f =>
+                courses.some(c => c[cur] === f.name)
+              ),
             }
           : filtered,
-      {} as { [K in CourseType]?: string[] }
+      {} as { [K in CourseType]?: { name: string; desc: string }[] }
     )
   );
 
@@ -104,11 +106,15 @@ class SelectDrawer extends React.Component<
                         addFilter={this.props.addFilter}
                         removeFilter={this.props.removeFilter}
                         category={category}
-                        filterList={availableFilters[category] || []}
+                        filterList={
+                          availableFilters[category]!.map(f => f.name) || []
+                        }
                         activeFilters={this.props.activeFilters.filter(
                           f => f.type === category
                         )}
-                        toolTips={toolTip[category] || []}
+                        toolTips={
+                          availableFilters[category]!.map(f => f.desc) || []
+                        }
                       />
                       <Divider />
                     </React.Fragment>
