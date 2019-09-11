@@ -29,6 +29,7 @@ export interface CourseDrawerProps {
   course: Course | null;
   tracking: CourseEnrollment[];
   prevStart: Date;
+  curStart: Date;
   quarter: number;
   loading: boolean;
   rmp: professorRating;
@@ -88,6 +89,7 @@ class CourseDrawer extends React.Component<
               <EnrollCard
                 tracking={p.tracking}
                 prevStart={p.prevStart}
+                curStart={p.curStart}
                 quarter={p.quarter}
               />
             }

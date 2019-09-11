@@ -24,6 +24,7 @@ export interface CourseState {
   quarter: number;
   tracking: CourseEnrollment[];
   prevStart: Date;
+  curStart: Date;
   search: string;
   rmp: professorRating;
   bookmarks: Course[];
@@ -64,6 +65,7 @@ const initialState: CourseState = {
   quarter: q[q[0].code.toString().endsWith('4') ? 1 : 0].code,
   tracking: [],
   prevStart: new Date(0),
+  curStart: new Date(0),
   search: '',
   rmp: {} as professorRating,
   bookmarks: [],
@@ -97,14 +99,17 @@ interface FetchSuccessAction extends Action {
   type: ActionTypes.FETCH_API_SUCCESS;
   data: Course[];
   prevStart: Date;
+  curStart: Date;
 }
 export const fetchSuccessAction = (
   data: Course[],
-  prevStart: Date
+  prevStart: Date,
+  curStart: Date
 ): FetchSuccessAction => ({
   type: ActionTypes.FETCH_API_SUCCESS,
   data,
   prevStart,
+  curStart,
 });
 
 interface SortAction extends Action {
@@ -238,6 +243,7 @@ export default function courseReducer(
         ...state,
         loading: false,
         prevStart: action.prevStart,
+        curStart: action.curStart,
         filtered: sortedCourses,
         courses: sortedCourses,
         backup: sortedCourses,
@@ -391,8 +397,15 @@ const fetchCoursesEpic: Epic<CourseActions> = (action$, state$) =>
           ? action.quarter - 6
           : action.quarter - 2
       ),
+      curStart: await API.fetchDate(action.quarter),
     })),
-    map(courses => fetchSuccessAction(courses['courses'], courses['prevStart']))
+    map(courses =>
+      fetchSuccessAction(
+        courses['courses'],
+        courses['prevStart'],
+        courses['curStart']
+      )
+    )
   );
 
 const trackCourseEpic: Epic<CourseActions> = (action$, state$) =>

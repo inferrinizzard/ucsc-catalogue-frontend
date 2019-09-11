@@ -155,17 +155,18 @@ class _API {
     courseNum: number | string,
     termId: string
   ): Promise<model.CourseEnrollment[]> {
-    const available: boolean = await this.trackingAvailable(termId);
-    // ((await ky
-    //   .get(`${this.endpoint}/tracking/available`)
-    //   .json()) as any).results
-    //   .toString()
-    //   .includes(termId.toString());
+    const available: boolean =
+      // await this.trackingAvailable(termId);
+      ((await ky
+        .get(`${this.endpoint}/tracking/available`)
+        .json()) as any).results
+        .toString()
+        .includes(termId);
     // if (!(await this.trackingAvailable(termId))) {
-    if (!available) {
-      console.log('not available');
-      return [];
-    }
+    // if (!available) {
+    //   console.log('not available');
+    //   return [];
+    // }
     const res = (await ky
       .get(
         `${

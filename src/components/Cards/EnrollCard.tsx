@@ -15,6 +15,7 @@ import { CourseEnrollment } from '../../models/course.model';
 export interface EnrollCardProps {
   tracking: CourseEnrollment[];
   prevStart: Date;
+  curStart: Date;
   quarter: number;
 }
 
@@ -75,6 +76,8 @@ const EnrollCard: React.SFC<EnrollCardProps> = props => {
     props.prevStart.getDate() + (props.prevStart.getMonth() === 8 ? 49 : 50)
   );
   let secondPass = datePlus(firstPass, 8);
+  let quarterStart = props.curStart;
+  console.log(quarterStart.toDateString());
 
   return (
     <React.Fragment>
@@ -139,8 +142,9 @@ const EnrollCard: React.SFC<EnrollCardProps> = props => {
             },
             margin: { l: 25, r: 25, b: 50, t: 10 },
             ...[
-              { date: firstPass, label: 'First' },
-              { date: secondPass, label: 'Second' },
+              { date: firstPass, label: 'First Pass' },
+              { date: secondPass, label: 'Second Pass' },
+              { date: quarterStart, label: 'Quarter Start' },
             ].reduce(
               (acc, pass) =>
                 tracking[0].date.getTime() > pass.date.getTime()
@@ -153,9 +157,6 @@ const EnrollCard: React.SFC<EnrollCardProps> = props => {
                           y0: 0,
                           x1: print4(pass.date),
                           y1: maxHeight,
-                          line: {
-                            hoverlabel: pass.label + ' Pass',
-                          },
                         },
                       ],
                       annotations: [
@@ -168,7 +169,7 @@ const EnrollCard: React.SFC<EnrollCardProps> = props => {
                             return print4(d);
                           })(pass.date),
                           y: maxHeight * 0.9,
-                          text: pass.label + ' Pass',
+                          text: pass.label,
                           textangle: 90,
                           showarrow: false,
                         },
