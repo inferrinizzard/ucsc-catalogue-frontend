@@ -71,14 +71,10 @@ function convertAndMergeCourse(
           ? t.c + '0'
           : t.c)
       ).slice(-4),
-    level: (() => {
-      const n = parseInt(t.c);
-      return n < 100
-        ? 'Lower Div'
-        : n >= 100 && n < 200
-        ? 'Upper Div'
-        : 'Graduate';
-    })(),
+    level: (n =>
+      n < 100 ? 'Lower Div' : n >= 100 && n < 200 ? 'Upper Div' : 'Graduate')(
+      parseInt(t.c)
+    ),
   };
 }
 
@@ -123,16 +119,14 @@ class _API {
         .json() as Promise<ApiResponseModel.CoursesApiResponse>,
     ]);
     return Object.entries(termsData).reduce<model.Course[]>(
-      (prev, [subject, rawTermCourses]) => {
-        return [
-          ...prev,
-          ...rawTermCourses
-            .filter(x => coursesData[x.num])
-            .map((x: any) =>
-              convertAndMergeCourse(subject, x, coursesData[x.num])
-            ),
-        ];
-      },
+      (prev, [subject, rawTermCourses]) => [
+        ...prev,
+        ...rawTermCourses
+          .filter(x => coursesData[x.num])
+          .map((x: any) =>
+            convertAndMergeCourse(subject, x, coursesData[x.num])
+          ),
+      ],
       []
     );
   }
@@ -227,13 +221,9 @@ class _API {
     if (profId <= 0) return {} as model.professorRating;
     const rawString: string = await ky
       .get(this.endpoint + '/data/fetch/rmp/stats/' + profId + '.json')
-      .catch(x => {
-        return !x.ok ? '' : x;
-      })
-      .then(x => {
-        return x === '' ? '' : x.text();
-      });
-    if (rawString === '') return {} as model.professorRating;
+      .catch(x => (x.ok ? x : ''))
+      .then(x => (x ? x.text() : ''));
+    if (!rawString) return {} as model.professorRating;
     const d: number = parseFloat(
       rawString.substring(
         rawString.indexOf('easy') + 6,

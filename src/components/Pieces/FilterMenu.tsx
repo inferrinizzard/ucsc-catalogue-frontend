@@ -61,10 +61,10 @@ class FilterMenu extends React.Component<FilterMenuProps, FilterMenuState> {
           onScroll={e => {
             if (!this.state.scrolling) this.setState({ scrolling: true });
             clearTimeout(this.scrollTimer);
-            this.scrollTimer = setTimeout(
+            this.scrollTimer = (setTimeout(
               () => this.setState({ scrolling: false }),
               50
-            );
+            ) as any) as number;
           }}
           PaperProps={{
             style: {
