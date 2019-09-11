@@ -1,10 +1,13 @@
 import * as React from 'react';
+
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import Fade from '@material-ui/core/Fade';
 import Menu from '@material-ui/core/Menu';
+
 import MenuItem from '@material-ui/core/MenuItem';
+
 import { CourseType } from '../../store/course';
 import { Term } from '../../models/course.model';
 import quarterData from '../Data/quarters.json';

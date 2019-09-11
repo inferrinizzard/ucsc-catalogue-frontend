@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { Dispatch } from 'redux';
 
+import { Dispatch } from 'redux';
 import { connect } from 'react-redux';
 import { ReduxState, ReduxAction } from './store';
 
@@ -8,8 +8,9 @@ import Main from './components/Main';
 import Basket from './components/Pieces/Basket';
 import SelectDrawer from './components/SelectDrawer';
 import CourseDrawer from './components/CourseDrawer';
-import q from './components/Data/quarters.json';
 import TopLiner from './components/Pieces/TopLiner';
+
+import q from './components/Data/quarters.json';
 
 import {
   Course,

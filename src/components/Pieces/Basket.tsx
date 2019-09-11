@@ -1,5 +1,5 @@
 import * as React from 'react';
-import styled from 'styled-components';
+
 import Drawer from '@material-ui/core/Drawer';
 import Typography from '@material-ui/core/Typography';
 

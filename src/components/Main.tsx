@@ -5,8 +5,8 @@ import toPX from 'to-px';
 import { AutoSizer } from 'react-virtualized/dist/es/AutoSizer';
 import { List } from 'react-virtualized/dist/es/List';
 
-import { Course } from '../models/course.model';
 import ClassCard from './Pieces/ClassCard';
+import { Course } from '../models/course.model';
 
 export interface MainProps {
   courses: Course[];
