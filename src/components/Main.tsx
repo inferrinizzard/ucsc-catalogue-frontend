@@ -93,7 +93,6 @@ const Main: React.SFC<MainProps & MainDivProps> = props => (
                   fromIndex + columns,
                   props.courses.length
                 );
-                console.log(fromIndex, props.courses[fromIndex]);
 
                 // slice, maybe?
                 for (let i = fromIndex; i < toIndex; i++)
