@@ -6,6 +6,7 @@ import CardContent from '@material-ui/core/CardContent';
 import Typography from '@material-ui/core/Typography';
 
 import { Course } from '../../models/course.model';
+import { isMobileOnly } from 'react-device-detect';
 
 export interface ClassCardProps {
   openDetail: (course: Course, k: number) => void;
@@ -18,7 +19,7 @@ const ClassCard: React.SFC<ClassCardProps> = props => (
   <Card
     style={{
       margin: '0.15em 0.25em',
-      width: '200px',
+      width: isMobileOnly ? '48vw' : '200px',
       display: 'inline-block',
     }}
   >

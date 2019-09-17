@@ -8,6 +8,8 @@ import { List } from 'react-virtualized/dist/es/List';
 import ClassCard from './Pieces/ClassCard';
 import { Course } from '../models/course.model';
 
+import { isMobileOnly } from 'react-device-detect';
+
 export interface MainProps {
   courses: Course[];
   openDetail: (course: Course, row: number) => void;
@@ -22,16 +24,16 @@ export interface MainProps {
 export interface MainDivProps {
   open: boolean;
   topLinerHeight: number;
-  drawerWidth: number;
 }
 
 const MainDiv = styled.div<MainDivProps>`
-  margin-top: ${(p: MainDivProps) => p.topLinerHeight}px;
-  margin-left: ${(p: MainDivProps) => toPX(p.drawerWidth + 'em')}px;
-  width: calc(
-    ${(p: MainDivProps) => (p.open ? 52 : 100)}% -
-      ${(p: MainDivProps) => toPX(p.drawerWidth + 'em') + 10}px
-  );
+  margin-top: ${(p: MainDivProps) =>
+    isMobileOnly ? p.topLinerHeight + 'px' + '15vw' : p.topLinerHeight + 'px'};
+  margin-left: ${isMobileOnly ? 0 : 'calc(12vw + 10px)'};
+  width: ${(p: MainDivProps) =>
+    isMobileOnly
+      ? '100vw'
+      : 'calc(' + (p.open ? 52 : 100) + '% - 12vw - 11px)'};
   height: 100%;
 `;
 
@@ -39,7 +41,6 @@ const Main: React.SFC<MainProps & MainDivProps> = props => (
   <MainDiv
     {...{
       topLinerHeight: props.topLinerHeight,
-      drawerWidth: props.drawerWidth,
       open: props.open,
     }}
   >
@@ -58,7 +59,9 @@ const Main: React.SFC<MainProps & MainDivProps> = props => (
       ></div> */}
     <AutoSizer>
       {({ height, width }: { height: number; width: number }) => {
-        const columns = Math.floor(width / toPX(props.cardWidth + 'em'));
+        const columns = isMobileOnly
+          ? 2
+          : Math.floor(width / toPX(props.cardWidth + 'em'));
         const rows = Math.ceil(props.courses.length / columns);
         return (
           <div>

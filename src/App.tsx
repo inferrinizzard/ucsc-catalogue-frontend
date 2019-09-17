@@ -9,6 +9,7 @@ import Basket from './components/Pieces/Basket';
 import SelectDrawer from './components/SelectDrawer';
 import CourseDrawer from './components/CourseDrawer';
 import TopLiner from './components/Pieces/TopLiner';
+import BottomTabs from './components/Pieces/BottomTabs';
 
 import q from './components/Data/quarters.json';
 
@@ -65,11 +66,11 @@ export interface AppState {
   topLinerHeight: number;
   basketHeight: number;
   basketOpen: boolean;
-  drawerWidth: number;
   cardHeight: number;
   cardWidth: number;
   aboutOpen: boolean;
   scrollIndex: number;
+  bottomTabHeight: number;
 }
 
 const quarter: number = q[q[0].code.toString().endsWith('4') ? 1 : 0].code;
@@ -79,11 +80,11 @@ class App extends React.Component<AppProps, AppState> {
     topLinerHeight: 30,
     basketHeight: 30,
     basketOpen: true,
-    drawerWidth: 13.75,
     cardHeight: 6,
     cardWidth: 12.5,
     aboutOpen: false,
     scrollIndex: 0,
+    bottomTabHeight: 0,
   };
 
   componentDidMount = () => {
@@ -128,9 +129,6 @@ class App extends React.Component<AppProps, AppState> {
             sort={(type: CourseType) => this.props.sort(type)}
             sortKey={this.props.sortKey}
             open={!this.props.activeCourse}
-            setDrawerWidth={(width: number) =>
-              this.setState({ drawerWidth: width })
-            }
             addFilter={(type: Filter) => this.props.addFilter(type)}
             removeFilter={(type: Filter) => this.props.removeFilter(type)}
             clearFilters={() =>
@@ -147,7 +145,6 @@ class App extends React.Component<AppProps, AppState> {
             open={Boolean(this.props.activeCourse)}
             topLinerHeight={this.state.topLinerHeight}
             basketHeight={this.state.basketHeight}
-            drawerWidth={this.state.drawerWidth}
             openDetail={this.setActive}
             cardHeight={this.state.cardHeight}
             cardWidth={this.state.cardWidth}
@@ -179,6 +176,7 @@ class App extends React.Component<AppProps, AppState> {
             loading={this.props.loading}
             rmp={this.props.rmp}
           />
+          {/* <BottomTabs /> */}
         </div>
       </div>
     );
