@@ -23,14 +23,15 @@ import { isMobileOnly, MobileOnlyView } from 'react-device-detect';
 
 export interface SelectDrawerProps {
   courses: Course[];
-  sort: (type: CourseType) => void;
+  backup: Course[];
   sortKey: CourseType;
   open: boolean;
+  sort: (type: CourseType) => void;
+  activeFilters: Filter[];
   addFilter: (f: Filter) => void;
   removeFilter: (f: Filter) => void;
   clearFilters: () => void;
   changeQuarter: (n: number) => void;
-  activeFilters: Filter[];
   search: (name: string) => void;
 }
 export interface SelectDrawerState {
@@ -73,7 +74,7 @@ class SelectDrawer extends React.Component<
   );
 
   render() {
-    let availableFilters = this.getAvailableFilters(this.props.courses);
+    let availableFilters = this.getAvailableFilters(this.props.backup);
     return (
       <Drawer
         anchor={isMobileOnly ? 'top' : 'left'}
@@ -86,16 +87,20 @@ class SelectDrawer extends React.Component<
             padding: isMobileOnly ? '0.25em 0' : '0.25em',
             width: isMobileOnly ? '100vw' : '12vw',
             height: this.state.available ? undefined : '15vw',
-            flexDirection: 'row',
+            flexDirection: this.state.available ? undefined : 'row',
+            whiteSpace: 'nowrap',
           },
         }}
       >
         <SearchBar search={this.props.search} />
         <MobileOnlyView
           style={{
-            width: 'fit-content',
-            display: 'inline-block',
-            marginTop: '3px',
+            // width: 'fit-content',
+            // display: 'inline',
+            // marginTop: '3px',
+            position: 'absolute',
+            top: 7,
+            right: 7,
           }}
         >
           <NotchedOutline>
@@ -109,7 +114,7 @@ class SelectDrawer extends React.Component<
         </MobileOnlyView>
         {this.state.available && (
           <React.Fragment>
-            <Section>
+            <Section style={{ display: 'block' }}>
               <NotchedOutline width={50} title="Sorting">
                 <SelectMenu
                   sort={this.props.sort}

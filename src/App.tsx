@@ -36,6 +36,7 @@ import {
 
 interface PropsFromStore {
   courses: Course[];
+  backup: Course[];
   filters: FilterList<FilterDomain, CourseType>;
   sortKey: CourseType;
   activeCourse: Course | null;
@@ -126,9 +127,11 @@ class App extends React.Component<AppProps, AppState> {
         <div id="main">
           <SelectDrawer
             courses={this.props.courses}
-            sort={(type: CourseType) => this.props.sort(type)}
+            backup={this.props.backup}
             sortKey={this.props.sortKey}
             open={!this.props.activeCourse}
+            sort={(type: CourseType) => this.props.sort(type)}
+            activeFilters={this.condenseFilter(this.props.filters)}
             addFilter={(type: Filter) => this.props.addFilter(type)}
             removeFilter={(type: Filter) => this.props.removeFilter(type)}
             clearFilters={() =>
@@ -136,7 +139,6 @@ class App extends React.Component<AppProps, AppState> {
                 this.props.removeFilter(f)
               )
             }
-            activeFilters={this.condenseFilter(this.props.filters)}
             changeQuarter={(q: number) => this.props.load(q)}
             search={this.props.search}
           />
@@ -185,6 +187,7 @@ class App extends React.Component<AppProps, AppState> {
 
 const mapStateToProps = (state: ReduxState): PropsFromStore => ({
   courses: state.course.courses,
+  backup: state.course.backup,
   filters: state.course.filters,
   sortKey: state.course.sort,
   activeCourse: state.course.activeCourse,

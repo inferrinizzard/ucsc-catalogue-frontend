@@ -10,6 +10,8 @@ import Tooltip from '@material-ui/core/Tooltip';
 
 import { Filter, CourseType } from '../../store/course';
 
+import { isMobileOnly } from 'react-device-detect';
+
 export interface FilterMenuProps {
   addFilter: (f: Filter) => void;
   removeFilter: (f: Filter) => void;
@@ -59,12 +61,14 @@ class FilterMenu extends React.Component<FilterMenuProps, FilterMenuState> {
           TransitionComponent={Fade}
           onBackdropClick={e => this.setState({ anchor: null })}
           onScroll={e => {
-            if (!this.state.scrolling) this.setState({ scrolling: true });
-            clearTimeout(this.scrollTimer);
-            this.scrollTimer = (setTimeout(
-              () => this.setState({ scrolling: false }),
-              50
-            ) as any) as number;
+            if (!isMobileOnly) {
+              if (!this.state.scrolling) this.setState({ scrolling: true });
+              clearTimeout(this.scrollTimer);
+              this.scrollTimer = (setTimeout(
+                () => this.setState({ scrolling: false }),
+                50
+              ) as any) as number;
+            }
           }}
           PaperProps={{
             style: {
@@ -84,7 +88,7 @@ class FilterMenu extends React.Component<FilterMenuProps, FilterMenuState> {
                     ? ''
                     : this.props.toolTips[this.props.filterList.indexOf(f)]
                 }
-                placement="right"
+                placement={isMobileOnly ? 'left' : 'right'}
               >
                 <MenuItem
                   onClick={e => {

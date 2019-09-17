@@ -28,7 +28,7 @@ const SearchBar: React.SFC<SearchBarProps> = props => {
         marginTop: '3px',
         marginLeft: '5px',
         width: isMobileOnly ? '83vw' : undefined,
-        display: isMobileOnly ? 'inline-block' : undefined,
+        display: isMobileOnly ? 'inline' : undefined,
       }}
     />
   );
