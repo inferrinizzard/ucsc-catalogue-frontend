@@ -1,6 +1,7 @@
 import * as React from 'react';
 import styled from 'styled-components';
 
+import Button from '@material-ui/core/Button';
 import Card from '@material-ui/core/Card';
 import Drawer from '@material-ui/core/Drawer';
 import Fab from '@material-ui/core/Fab';
@@ -14,13 +15,14 @@ import LocCard from './Cards/LocCard';
 import SectionCard from './Cards/SectionCard';
 import NotchedOutline from './Pieces/NotchedOutline';
 
-import { isMobileOnly } from 'react-device-detect';
+import { isMobileOnly, isMobile } from 'react-device-detect';
 
 import {
   Course,
   CourseEnrollment,
   professorRating,
 } from '../models/course.model';
+import { Typography } from '@material-ui/core';
 
 export interface CourseDrawerProps {
   addBasket: (c: Course) => void;
@@ -68,7 +70,21 @@ class CourseDrawer extends React.Component<
           },
         }}
       >
-        <Spacer />
+        {isMobileOnly ? (
+          <Button
+            fullWidth
+            onClick={e => this.props.closeDetail()}
+            style={{
+              backgroundColor: 'aliceblue',
+              position: 'sticky',
+              top: 0,
+            }}
+          >
+            <Typography>{'Close'}</Typography>
+          </Button>
+        ) : (
+          <Spacer />
+        )}
         <Card className="styleCard">
           <NotchedOutline width={52} title={'Details'}>
             <DescCard
@@ -133,9 +149,7 @@ class CourseDrawer extends React.Component<
               <NotchedOutline width={66} title={'Location'}>
                 <LocCard
                   location={
-                    c && c!.settings!.length > 0
-                      ? c!.settings![0].location
-                      : 'TBA'
+                    c && c!.settings!.length ? c!.settings![0].location : 'TBA'
                   }
                 />
               </NotchedOutline>

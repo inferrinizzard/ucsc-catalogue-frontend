@@ -23,6 +23,7 @@ import {
   sortAction,
   searchAction,
   setActiveAction,
+  closeActiveAction,
   addFilterAction,
   removeFilterAction,
   Filter,
@@ -56,6 +57,7 @@ interface PropsToDispatch {
   sort: (n: CourseType) => void;
   search: (name: string) => void;
   setActive: (c: Course | null, q: string) => void;
+  closeActive: () => void;
   addBookmark: (c: Course) => void;
   removeBookmark: (c: Course) => void;
   loadBookmark: () => void;
@@ -169,7 +171,7 @@ class App extends React.Component<AppProps, AppState> {
             removeBasket={this.props.removeBookmark}
             basketCourses={this.props.bookmarks}
             open={Boolean(this.props.activeCourse)}
-            closeDetail={() => this.setActive(null, 0)}
+            closeDetail={this.props.closeActive}
             course={this.props.activeCourse}
             tracking={this.props.tracking}
             prevStart={this.props.prevStart}
@@ -206,6 +208,7 @@ const mapDispatchToProps = (
   sort: key => dispatch(sortAction(key)),
   search: name => dispatch(searchAction(name)),
   setActive: (course, quarter) => dispatch(setActiveAction(course, quarter)),
+  closeActive: () => dispatch(closeActiveAction()),
   addFilter: type => dispatch(addFilterAction(type)),
   removeFilter: type => dispatch(removeFilterAction(type)),
   addBookmark: course => dispatch(addBookmarkAction(course)),

@@ -79,6 +79,7 @@ enum ActionTypes {
   ADD_FILTER = 'add-filter',
   REMOVE_FILTER = 'remove-filter',
   SET_ACTIVE = 'set-active',
+  CLOSE_ACTIVE = 'close-active',
   ACTIVE_SUCCESS = 'active-success',
   ADD_BOOKMARK = 'add-bookmark',
   REMOVE_BOOKMARK = 'remove-bookmark',
@@ -162,6 +163,13 @@ export const setActiveAction = (
   quarter,
 });
 
+interface CloseActiveAction extends Action {
+  type: ActionTypes.CLOSE_ACTIVE;
+}
+export const closeActiveAction = (): CloseActiveAction => ({
+  type: ActionTypes.CLOSE_ACTIVE,
+});
+
 interface ActiveSuccessAction extends Action {
   type: ActionTypes.ACTIVE_SUCCESS;
   data: CourseEnrollment[];
@@ -223,6 +231,7 @@ export type CourseActions =
   | AddFilterAction
   | RemoveFilterAction
   | SetActiveAction
+  | CloseActiveAction
   | ActiveSuccessAction
   | AddBookmarkAction
   | RemoveBookmarkAction
@@ -295,6 +304,13 @@ export default function courseReducer(
       return state;
     case ActionTypes.SET_ACTIVE:
       return { ...state, fetchTracking: true };
+    case ActionTypes.CLOSE_ACTIVE:
+      return {
+        ...state,
+        activeCourse: null,
+        tracking: [],
+        fetchTracking: false,
+      };
     case ActionTypes.ACTIVE_SUCCESS:
       return {
         ...state,

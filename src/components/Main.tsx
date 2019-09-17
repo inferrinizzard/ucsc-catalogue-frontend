@@ -29,7 +29,7 @@ export interface MainDivProps {
 const MainDiv = styled.div<MainDivProps>`
   margin-top: ${(p: MainDivProps) =>
     isMobileOnly
-      ? 'calc(' + p.topLinerHeight + 'px + 15vw)'
+      ? 'calc(' + (p.topLinerHeight + 13) + 'px + 15vw)'
       : p.topLinerHeight + 'px'};
   margin-left: ${isMobileOnly ? 0 : 'calc(12vw + 10px)'};
   width: ${(p: MainDivProps) =>
