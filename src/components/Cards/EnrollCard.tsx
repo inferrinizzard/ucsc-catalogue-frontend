@@ -12,6 +12,8 @@ const Plot = createPlotlyComponent(Plotly);
 
 import { CourseEnrollment } from '../../models/course.model';
 
+import { isMobileOnly } from 'react-device-detect';
+
 export interface EnrollCardProps {
   tracking: CourseEnrollment[];
   prevStart: Date;
@@ -81,7 +83,12 @@ const EnrollCard: React.SFC<EnrollCardProps> = props => {
 
   return (
     <React.Fragment>
-      <div style={{ marginBottom: '5px' }}>
+      <div
+        style={{
+          marginBottom: '5px',
+          height: isMobileOnly ? '20em' : undefined,
+        }}
+      >
         <Plot
           //dates:
           //enrollment for fall is 51 days after start of previous spring
@@ -206,14 +213,14 @@ const EnrollCard: React.SFC<EnrollCardProps> = props => {
               {stat.label +
                 ': ' +
                 (tracking.length
-                  ? tracking[0].enrolled +
+                  ? tracking[0][stat.key] +
                     '/' +
-                    tracking[0][stat.key] +
+                    tracking[0].capacity +
                     (tracking[0][stat.key]
                       ? ' - ' +
                         (
-                          (tracking[0].enrolled /
-                            (tracking[0][stat.key] as number)) *
+                          ((tracking[0][stat.key] as number) /
+                            tracking[0].capacity) *
                           100
                         ).toFixed(0) +
                         '%'

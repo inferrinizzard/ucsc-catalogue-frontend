@@ -14,6 +14,8 @@ import LocCard from './Cards/LocCard';
 import SectionCard from './Cards/SectionCard';
 import NotchedOutline from './Pieces/NotchedOutline';
 
+import { isMobileOnly } from 'react-device-detect';
+
 import {
   Course,
   CourseEnrollment,
@@ -55,13 +57,14 @@ class CourseDrawer extends React.Component<
     let c = p.course;
     return (
       <Drawer
-        anchor="right"
+        anchor={isMobileOnly ? 'bottom' : 'right'}
         open={Boolean(c)}
         variant="persistent"
         elevation={1}
         PaperProps={{
           style: {
-            width: '48%',
+            width: isMobileOnly ? '100%' : '48%',
+            height: isMobileOnly ? '50%' : undefined,
           },
         }}
       >
