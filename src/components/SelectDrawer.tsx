@@ -85,49 +85,39 @@ class SelectDrawer extends React.Component<
       >
         <SearchBar search={this.props.search} />
         <Section>
-          <NotchedOutline
-            width={50}
-            title={'Sorting'}
-            inner={
-              <SelectMenu sort={this.props.sort} sortKey={this.props.sortKey} />
-            }
-          />
+          <NotchedOutline width={50} title={'Sorting'}>
+            <SelectMenu sort={this.props.sort} sortKey={this.props.sortKey} />
+          </NotchedOutline>
         </Section>
         <Section>
-          <NotchedOutline
-            width={44}
-            title={'Filters'}
-            inner={
-              <React.Fragment>
-                {(Object.keys(availableFilters) as CourseType[]).map(
-                  (category, k) => (
-                    <React.Fragment key={k}>
-                      <FilterMenu
-                        addFilter={this.props.addFilter}
-                        removeFilter={this.props.removeFilter}
-                        category={category}
-                        filterList={
-                          availableFilters[category]!.map(f => f.name) || []
-                        }
-                        activeFilters={this.props.activeFilters.filter(
-                          f => f.type === category
-                        )}
-                        toolTips={
-                          availableFilters[category]!.map(f => f.desc) || []
-                        }
-                      />
-                      <Divider />
-                    </React.Fragment>
-                  )
-                )}
-                <QuarterMenu changeQuarter={this.props.changeQuarter} />
-                <Divider />
-                <Button fullWidth onClick={e => this.props.clearFilters()}>
-                  {'Clear All'}
-                </Button>
-              </React.Fragment>
-            }
-          />
+          <NotchedOutline width={44} title={'Filters'}>
+            {(Object.keys(availableFilters) as CourseType[]).map(
+              (category, k) => (
+                <React.Fragment key={k}>
+                  <FilterMenu
+                    addFilter={this.props.addFilter}
+                    removeFilter={this.props.removeFilter}
+                    category={category}
+                    filterList={
+                      availableFilters[category]!.map(f => f.name) || []
+                    }
+                    activeFilters={this.props.activeFilters.filter(
+                      f => f.type === category
+                    )}
+                    toolTips={
+                      availableFilters[category]!.map(f => f.desc) || []
+                    }
+                  />
+                  <Divider />
+                </React.Fragment>
+              )
+            )}
+            <QuarterMenu changeQuarter={this.props.changeQuarter} />
+            <Divider />
+            <Button fullWidth onClick={e => this.props.clearFilters()}>
+              {'Clear All'}
+            </Button>
+          </NotchedOutline>
         </Section>
       </Drawer>
     );

@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import Typography from '@material-ui/core/Typography';
 
 export interface NotchedOutlineProps {
-  inner: JSX.Element;
+  inner?: JSX.Element;
   width: number;
   title: string;
 }
@@ -36,7 +36,7 @@ const NotchedOutline: React.SFC<NotchedOutlineProps> = props => {
       <Legend style={{ width: props.width + 'px' }}>
         <Typography style={{ display: 'inline' }}>{props.title}</Typography>
       </Legend>
-      {props.inner}
+      {props.inner ? props.inner : props.children}
     </Fieldset>
   );
 };

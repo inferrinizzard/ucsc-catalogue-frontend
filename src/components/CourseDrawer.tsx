@@ -67,49 +67,37 @@ class CourseDrawer extends React.Component<
       >
         <Spacer />
         <Card className="styleCard">
-          <NotchedOutline
-            width={52}
-            title={'Details'}
-            inner={
-              <DescCard
-                basketCourses={p.basketCourses}
-                courseData={c}
-                tracking={p.tracking.length ? p.tracking[0] : null}
-                addBasket={p.addBasket}
-                removeBasket={p.removeBasket}
-              />
-            }
-          />
+          <NotchedOutline width={52} title={'Details'}>
+            <DescCard
+              basketCourses={p.basketCourses}
+              courseData={c}
+              tracking={p.tracking.length ? p.tracking[0] : null}
+              addBasket={p.addBasket}
+              removeBasket={p.removeBasket}
+            />
+          </NotchedOutline>
         </Card>
         <Card className="styleCard">
-          <NotchedOutline
-            width={74}
-            title={'Enrollment'}
-            inner={
-              <EnrollCard
-                tracking={p.tracking}
-                prevStart={p.prevStart}
-                curStart={p.curStart}
-                quarter={p.quarter}
-              />
-            }
-          />
+          <NotchedOutline width={74} title={'Enrollment'}>
+            <EnrollCard
+              tracking={p.tracking}
+              prevStart={p.prevStart}
+              curStart={p.curStart}
+              quarter={p.quarter}
+            />
+          </NotchedOutline>
         </Card>
         {c &&
           p.tracking.length &&
           p.tracking[0] &&
           p.tracking[0].sections.length && (
             <Card className="styleCard">
-              <NotchedOutline
-                width={66}
-                title={'Sections'}
-                inner={
-                  <SectionCard
-                    section={p.tracking[0].sections}
-                    setting={c.settings ? c.settings.slice(1) : []}
-                  />
-                }
-              />
+              <NotchedOutline width={66} title={'Sections'}>
+                <SectionCard
+                  section={p.tracking[0].sections}
+                  setting={c.settings ? c.settings.slice(1) : []}
+                />
+              </NotchedOutline>
             </Card>
           )}
         <Card className="styleCard">
@@ -118,49 +106,36 @@ class CourseDrawer extends React.Component<
         <div>
           <span className="third">
             <Card className="styleCard">
-              <NotchedOutline
-                width={72}
-                title={'Professor'}
-                inner={
-                  <ProfCard
-                    rmp={p.rmp}
-                    name={
-                      c &&
-                      c.instructor &&
-                      c.instructor.first &&
-                      c.instructor.last
-                        ? c.instructor.first + ' ' + c.instructor.last
-                        : 'STAFF'
-                    }
-                  />
-                }
-              />
+              <NotchedOutline width={72} title={'Professor'}>
+                <ProfCard
+                  rmp={p.rmp}
+                  name={
+                    c && c.instructor && c.instructor.first && c.instructor.last
+                      ? c.instructor.first + ' ' + c.instructor.last
+                      : 'STAFF'
+                  }
+                />
+              </NotchedOutline>
             </Card>
           </span>
           <span className="third">
             <Card className="styleCard">
-              <NotchedOutline
-                width={50}
-                title={'Major'}
-                inner={<MajorCard />}
-              />
+              <NotchedOutline width={50} title={'Major'}>
+                <MajorCard />
+              </NotchedOutline>
             </Card>
           </span>
           <span className="third">
             <Card className="styleCard">
-              <NotchedOutline
-                width={66}
-                title={'Location'}
-                inner={
-                  <LocCard
-                    location={
-                      c && c!.settings!.length > 0
-                        ? c!.settings![0].location
-                        : 'TBA'
-                    }
-                  />
-                }
-              />
+              <NotchedOutline width={66} title={'Location'}>
+                <LocCard
+                  location={
+                    c && c!.settings!.length > 0
+                      ? c!.settings![0].location
+                      : 'TBA'
+                  }
+                />
+              </NotchedOutline>
             </Card>
           </span>
         </div>

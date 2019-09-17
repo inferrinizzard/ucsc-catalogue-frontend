@@ -68,7 +68,7 @@ const Main: React.SFC<MainProps & MainDivProps> = props => (
               rowCount={rows}
               rowHeight={toPX(props.cardHeight + 'em')}
               overscanRowCount={4}
-              scrollToAlignment={'start'}
+              scrollToAlignment="start"
               scrollToIndex={props.scrollIndex}
               style={{
                 outline: 'none',
