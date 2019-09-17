@@ -15,13 +15,13 @@ export interface MainProps {
   openDetail: (course: Course, row: number) => void;
   cardWidth: number;
   cardHeight: number;
-  active: Course | null;
   scrollIndex: number;
   scrollTo: (row: number) => void;
   basketHeight: number;
 }
 
 export interface MainDivProps {
+  active: Course | null;
   open: boolean;
   topLinerHeight: number;
 }
@@ -36,12 +36,13 @@ const MainDiv = styled.div<MainDivProps>`
     isMobileOnly
       ? '100vw'
       : 'calc(' + (p.open ? 52 : 100) + '% - 12vw - 11px)'};
-  height: 100%;
+  height: ${(p: MainDivProps) => (isMobileOnly && p.active ? '40%' : '100%')};
 `;
 
 const Main: React.SFC<MainProps & MainDivProps> = props => (
   <MainDiv
     {...{
+      active: props.active,
       topLinerHeight: props.topLinerHeight,
       open: props.open,
     }}

@@ -9,6 +9,7 @@ import Card from '@material-ui/core/Card';
 import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 import FilterList from '@material-ui/icons/FilterList';
+import Clear from '@material-ui/icons/Clear';
 
 import SearchBar from './Pieces/SearchBar';
 import SelectMenu from './Pieces/SortMenu';
@@ -65,7 +66,11 @@ class SelectDrawer extends React.Component<
           ? {
               ...filtered,
               [cur]: catMap[cur]!.filter(f =>
-                courses.some(c => c[cur] === f.name)
+                courses.some(
+                  c =>
+                    c[cur] === f.name ||
+                    (cur === 'ge' && (c[cur]! as string[]).includes(f.name))
+                )
               ),
             }
           : filtered,
@@ -108,7 +113,11 @@ class SelectDrawer extends React.Component<
               onClick={e => this.setState({ available: !this.state.available })}
               style={{ padding: '15px' }}
             >
-              <FilterList style={{ transform: 'scale(1.25)' }} />
+              {this.state.available ? (
+                <Clear style={{ transform: 'scale(1.25)' }} />
+              ) : (
+                <FilterList style={{ transform: 'scale(1.25)' }} />
+              )}
             </IconButton>
           </NotchedOutline>
         </MobileOnlyView>

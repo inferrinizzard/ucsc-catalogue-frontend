@@ -15,7 +15,7 @@ import LocCard from './Cards/LocCard';
 import SectionCard from './Cards/SectionCard';
 import NotchedOutline from './Pieces/NotchedOutline';
 
-import { isMobileOnly, isMobile } from 'react-device-detect';
+import { isMobileOnly } from 'react-device-detect';
 
 import {
   Course,

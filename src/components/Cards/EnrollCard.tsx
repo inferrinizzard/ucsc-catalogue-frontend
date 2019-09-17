@@ -170,7 +170,12 @@ const EnrollCard: React.SFC<EnrollCardProps> = props => {
                         ...acc.annotations,
                         {
                           x: ((p: Date) => {
-                            let d = datePlus(p, 1);
+                            let d = datePlus(
+                              p,
+                              isMobileOnly && tracking.length > 100 ? 4 : 1
+                            );
+                            if (tracking[0].date.getTime() <= d.getTime())
+                              d.setDate(p.getDate() + (isMobileOnly ? 1 : -1));
                             if (tracking[0].date.getTime() <= d.getTime())
                               d.setDate(p.getDate() - 1);
                             return print4(d);
@@ -207,7 +212,7 @@ const EnrollCard: React.SFC<EnrollCardProps> = props => {
               variant="h5"
               style={{
                 display: 'inline-block !important',
-                width: '50%',
+                width: isMobileOnly ? '100%' : '50%',
               }}
             >
               {stat.label +
@@ -216,7 +221,7 @@ const EnrollCard: React.SFC<EnrollCardProps> = props => {
                   ? tracking[0][stat.key] +
                     '/' +
                     tracking[0].capacity +
-                    (tracking[0][stat.key]
+                    (tracking[0].capacity
                       ? ' - ' +
                         (
                           ((tracking[0][stat.key] as number) /

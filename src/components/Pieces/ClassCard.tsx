@@ -19,7 +19,7 @@ const ClassCard: React.SFC<ClassCardProps> = props => (
   <Card
     style={{
       margin: '0.15em 0.25em',
-      width: isMobileOnly ? '48vw' : '200px',
+      width: isMobileOnly ? 'calc(50vw - 0.6em)' : '200px',
       display: 'inline-block',
     }}
   >
