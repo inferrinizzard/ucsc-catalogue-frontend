@@ -204,7 +204,7 @@ const EnrollCard: React.SFC<EnrollCardProps> = props => {
           (stat, i) => (
             <Typography
               key={i}
-              variant={'h5'}
+              variant="h5"
               style={{
                 display: 'inline-block !important',
                 width: '50%',

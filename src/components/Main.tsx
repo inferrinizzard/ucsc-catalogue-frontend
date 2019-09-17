@@ -28,7 +28,9 @@ export interface MainDivProps {
 
 const MainDiv = styled.div<MainDivProps>`
   margin-top: ${(p: MainDivProps) =>
-    isMobileOnly ? p.topLinerHeight + 'px' + '15vw' : p.topLinerHeight + 'px'};
+    isMobileOnly
+      ? 'calc(' + p.topLinerHeight + 'px + 15vw)'
+      : p.topLinerHeight + 'px'};
   margin-left: ${isMobileOnly ? 0 : 'calc(12vw + 10px)'};
   width: ${(p: MainDivProps) =>
     isMobileOnly
@@ -91,6 +93,7 @@ const Main: React.SFC<MainProps & MainDivProps> = props => (
                   fromIndex + columns,
                   props.courses.length
                 );
+                console.log(fromIndex, props.courses[fromIndex]);
 
                 // slice, maybe?
                 for (let i = fromIndex; i < toIndex; i++)
