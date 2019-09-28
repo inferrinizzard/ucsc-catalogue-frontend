@@ -85,10 +85,12 @@ class FilterMenu extends React.Component<FilterMenuProps, FilterMenuState> {
                 key={k}
                 title={
                   this.state.scrolling
-                    ? ''
+                    ? null
                     : this.props.toolTips[this.props.filterList.indexOf(f)]
                 }
                 placement={isMobileOnly ? 'left' : 'right'}
+                open={isMobileOnly ? true : undefined}
+                PopperProps={{ style: { disablePortal: isMobileOnly } }}
               >
                 <MenuItem
                   onClick={e => {
