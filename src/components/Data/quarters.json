@@ -1,4 +1,6 @@
 [
+  { "name": "Fall Quarter 2020", "code": 2208 },
+  { "name": "Summer Quarter 2020", "code": 2204 },
   { "name": "Spring Quarter 2020", "code": 2202 },
   { "name": "Winter Quarter 2020", "code": 2200 },
   { "name": "Fall Quarter 2019", "code": 2198 },
