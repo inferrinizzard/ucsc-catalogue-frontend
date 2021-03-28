@@ -1,4 +1,4 @@
-import ky, { HTTPError } from 'ky';
+import ky from 'ky';
 
 import * as model from '../models/course.model';
 import * as ApiResponseModel from '../models/api.model';
