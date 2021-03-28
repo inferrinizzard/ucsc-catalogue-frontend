@@ -46,7 +46,7 @@ class FilterMenu extends React.Component<FilterMenuProps, FilterMenuState> {
 				<RootRef rootRef={this.state.widthRef}>
 					<Button
 						fullWidth
-						aria-owns={open ? 'fade-menu' : undefined}
+						aria-owns={Boolean(this.state.anchor) ? 'fade-menu' : undefined}
 						aria-haspopup="true"
 						onClick={e => this.setState({ anchor: e.currentTarget })}>
 						{this.props.category}
@@ -81,13 +81,12 @@ class FilterMenu extends React.Component<FilterMenuProps, FilterMenuState> {
 							<Tooltip
 								key={k}
 								title={
-									this.state.scrolling
-										? null
-										: this.props.toolTips[this.props.filterList.indexOf(f)]
+									this.state.scrolling ? '' : this.props.toolTips[this.props.filterList.indexOf(f)]
 								}
 								placement={isMobileOnly ? 'left' : 'right'}
 								open={isMobileOnly ? true : undefined}
-								PopperProps={{ style: { disablePortal: isMobileOnly } }}>
+								// PopperProps={{ style: { disablePortal: isMobileOnly } }}
+							>
 								<MenuItem
 									onClick={e => {
 										this.props.addFilter({

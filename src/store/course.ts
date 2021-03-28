@@ -27,7 +27,7 @@ export interface CourseState {
 }
 //#region define types
 export type CourseType = keyof Course;
-export type Course = Course;
+export { Course } from '../models/course.model';
 export type Filter = { type: CourseType; name: string };
 export enum FilterDomain {
 	subject = 'subject',

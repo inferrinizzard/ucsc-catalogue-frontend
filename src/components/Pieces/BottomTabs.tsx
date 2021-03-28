@@ -12,11 +12,12 @@ class BottomTabs extends React.Component<BottomTabsProps, BottomTabsState> {
 	state = {};
 	render() {
 		return (
-			<Tabs value={1} fullWidth>
-				<Tab icon={<Home />} />
-				<Tab icon={<Home />} />
-				<Tab icon={<Home />} />
-			</Tabs>
+			<div></div>
+			// <Tabs value={1} component="div">
+			// 	<Tab icon={<Home />} />
+			// 	<Tab icon={<Home />} />
+			// 	<Tab icon={<Home />} />
+			// </Tabs>
 		);
 	}
 }
