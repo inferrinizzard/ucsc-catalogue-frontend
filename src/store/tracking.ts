@@ -3,5 +3,5 @@ import * as APIModel from '../models/course.model';
 import API from '../services/api';
 
 export interface TrackingState {
-  courseEnrollment: APIModel.CourseEnrollment[];
+	courseEnrollment: APIModel.CourseEnrollment[];
 }

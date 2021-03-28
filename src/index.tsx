@@ -10,8 +10,8 @@ import './index.css';
 
 const root = document.querySelector('#root');
 ReactDOM.render(
-  <Provider store={store}>
-    <App />
-  </Provider>,
-  root
+	<Provider store={store}>
+		<App />
+	</Provider>,
+	root
 );

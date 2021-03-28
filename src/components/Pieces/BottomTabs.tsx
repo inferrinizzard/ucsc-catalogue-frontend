@@ -9,16 +9,16 @@ export interface BottomTabsProps {}
 export interface BottomTabsState {}
 
 class BottomTabs extends React.Component<BottomTabsProps, BottomTabsState> {
-  state = {};
-  render() {
-    return (
-      <Tabs value={1} fullWidth>
-        <Tab icon={<Home />} />
-        <Tab icon={<Home />} />
-        <Tab icon={<Home />} />
-      </Tabs>
-    );
-  }
+	state = {};
+	render() {
+		return (
+			<Tabs value={1} fullWidth>
+				<Tab icon={<Home />} />
+				<Tab icon={<Home />} />
+				<Tab icon={<Home />} />
+			</Tabs>
+		);
+	}
 }
 
 export default BottomTabs;

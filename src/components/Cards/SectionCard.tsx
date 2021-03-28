@@ -11,31 +11,26 @@ import Typography from '@material-ui/core/Typography';
 import { SectionEnrollment, Setting } from '../../models/course.model';
 
 export interface SectionCardProps {
-  section: SectionEnrollment[];
-  setting: Setting[];
+	section: SectionEnrollment[];
+	setting: Setting[];
 }
 export interface SectionCardState {}
 
 class SectionCard extends React.Component<SectionCardProps, SectionCardState> {
-  render() {
-    return (
-      <React.Fragment>
-        <CardContent style={{ padding: '8px' }}>
-          <GridList>
-            {this.props.section.map((cur, k) => (
-              <GridListTile
-                key={k}
-                style={{ width: 100 / 5 + '%', height: 'auto' }}
-              >
-                <Card>
-                  <CardHeader title={cur.name} style={{ padding: '8px' }} />
-                  <Divider />
-                  <CardContent style={{ padding: '8px' }}>
-                    <Typography>
-                      {'Enrolled: ' + cur.enrolled + '/' + cur.capacity}
-                    </Typography>
-                    <Typography>{'Waitlisted: ' + cur.waitlist}</Typography>
-                    {/* {this.props.setting.length > 0 && (
+	render() {
+		return (
+			<React.Fragment>
+				<CardContent style={{ padding: '8px' }}>
+					<GridList>
+						{this.props.section.map((cur, k) => (
+							<GridListTile key={k} style={{ width: 100 / 5 + '%', height: 'auto' }}>
+								<Card>
+									<CardHeader title={cur.name} style={{ padding: '8px' }} />
+									<Divider />
+									<CardContent style={{ padding: '8px' }}>
+										<Typography>{'Enrolled: ' + cur.enrolled + '/' + cur.capacity}</Typography>
+										<Typography>{'Waitlisted: ' + cur.waitlist}</Typography>
+										{/* {this.props.setting.length > 0 && (
                         <Typography>
                           {'Time: ' +
                             (this.props.setting && this.props.setting[k]
@@ -62,15 +57,15 @@ class SectionCard extends React.Component<SectionCardProps, SectionCardState> {
                               : 'TBA')}
                         </Typography>
                       )} */}
-                  </CardContent>
-                </Card>
-              </GridListTile>
-            ))}
-          </GridList>
-        </CardContent>
-      </React.Fragment>
-    );
-  }
+									</CardContent>
+								</Card>
+							</GridListTile>
+						))}
+					</GridList>
+				</CardContent>
+			</React.Fragment>
+		);
+	}
 }
 
 export default SectionCard;
