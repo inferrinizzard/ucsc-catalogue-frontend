@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import styled from 'styled-components';
 
 import Button from '@material-ui/core/Button';
@@ -28,7 +28,7 @@ const TextBlock = styled(Typography)<any>`
 	width: 50%;
 `;
 
-const DescCard: React.SFC<DescCardProps> = props => {
+const DescCard: React.FC<DescCardProps> = props => {
 	let course = props.courseData;
 	let tracking = props.tracking;
 	let inBasket =

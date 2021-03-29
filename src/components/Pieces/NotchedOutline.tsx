@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import styled from 'styled-components';
 
 import Typography from '@material-ui/core/Typography';
@@ -36,7 +36,7 @@ const Legend = styled.legend`
 	line-height: 11px;
 `;
 
-const NotchedOutline: React.SFC<NotchedOutlineProps> = props => {
+const NotchedOutline: React.FC<NotchedOutlineProps> = props => {
 	return (
 		<Fieldset>
 			<Legend style={{ width: (props.width ? props.width : 0) + 'px' }}>

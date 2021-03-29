@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 
 import Button from '@material-ui/core/Button';
 import Collapse from '@material-ui/core/Collapse';
@@ -10,7 +10,7 @@ export interface TopLinerProps {
 	height: number;
 }
 
-const TopLiner: React.SFC<TopLinerProps> = props => {
+const TopLiner: React.FC<TopLinerProps> = props => {
 	return (
 		<div
 			style={{

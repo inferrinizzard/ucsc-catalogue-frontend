@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 
 import TextField from '@material-ui/core/TextField';
 import SearchRounded from '@material-ui/icons/SearchRounded';
@@ -9,7 +9,7 @@ export interface SearchBarProps {
 	search: (name: string) => void;
 }
 
-const SearchBar: React.SFC<SearchBarProps> = props => {
+const SearchBar: React.FC<SearchBarProps> = props => {
 	return (
 		<TextField
 			variant="outlined"

@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import styled from 'styled-components';
 
 import Card from '@material-ui/core/Card';
@@ -17,7 +17,7 @@ export interface ProfCardProps {
 	name: string;
 }
 
-const ProfCard: React.SFC<ProfCardProps> = props => {
+const ProfCard: React.FC<ProfCardProps> = props => {
 	function stars(num: number): JSX.Element {
 		let result: JSX.Element[] = [] as JSX.Element[];
 		for (let i = 0; i < Math.floor(num); i++) result.push(<StarRounded key={'a' + i} />);

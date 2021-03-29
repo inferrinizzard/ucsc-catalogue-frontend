@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 
 import Drawer from '@material-ui/core/Drawer';
 import Typography from '@material-ui/core/Typography';
@@ -18,7 +18,7 @@ export interface BasketProps {
 	scrollTo: (row: number) => void;
 }
 
-const Basket: React.SFC<BasketProps> = props => {
+const Basket: React.FC<BasketProps> = props => {
 	return (
 		<Drawer
 			variant="persistent"

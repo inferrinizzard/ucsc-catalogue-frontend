@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import styled from 'styled-components';
 import toPX from 'to-px';
 
@@ -35,7 +35,7 @@ const MainDiv = styled.div<MainDivProps>`
 	height: ${(p: MainDivProps) => (isMobileOnly && p.active ? '40%' : '100%')};
 `;
 
-const Main: React.SFC<MainProps & MainDivProps> = props => (
+const Main: React.FC<MainProps & MainDivProps> = props => (
 	<MainDiv
 		{...{
 			active: props.active,

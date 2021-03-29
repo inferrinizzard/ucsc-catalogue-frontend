@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 
 import Card from '@material-ui/core/Card';
 import CardActionArea from '@material-ui/core/CardActionArea';
@@ -15,7 +15,7 @@ export interface ClassCardProps {
 	row: number;
 }
 
-const ClassCard: React.SFC<ClassCardProps> = props => (
+const ClassCard: React.FC<ClassCardProps> = props => (
 	<Card
 		style={{
 			margin: '0.15em 0.25em',
