@@ -40,7 +40,7 @@ export interface SelectDrawerState {
 	available: boolean;
 }
 
-const Section = styled(Card)<any>`
+const Section = styled(Card)`
 	margin: 0.25em 0.15em;
 	padding: 0;
 	box-shadow: none !important;

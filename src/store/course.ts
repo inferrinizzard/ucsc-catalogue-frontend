@@ -367,7 +367,9 @@ const Filter = (
 	// see if a course passes a single filter
 	const SingleFilter = (course: Course, filter: Filter): boolean =>
 		course[filter.type] instanceof Array
-			? (course[filter.type] as Array<any>).includes(filter.name)
+			? (course[filter.type] as Course['ge' | 'combinedSections'])!.includes(filter.name)
+			  // | 'sections'
+			  // | 'settings'
 			: course[filter.type] === filter.name;
 
 	// see if the course satisfies 1 or more filters (OR conditioning)

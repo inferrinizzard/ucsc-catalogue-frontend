@@ -23,7 +23,7 @@ export interface DescCardProps {
 	removeBasket: (c: Course) => void;
 }
 
-const TextBlock = styled(Typography)<any>`
+const TextBlock = styled(Typography)`
 	display: inline-block !important;
 	width: 50%;
 `;
