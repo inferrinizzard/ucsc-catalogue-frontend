@@ -15,13 +15,7 @@ function convertAndMergeCourse(
 		description: c.desc ?? '',
 		number: t.num,
 		settings:
-			t.loct
-				?.filter(x => x.loc && x.t)
-				.map(x => ({
-					day: x.t.day,
-					time: x.t.time,
-					location: x.loc,
-				})) ?? null,
+			t.loct?.filter(x => x.loc && x.t).map(({ t, loc: location }) => ({ ...t, location })) ?? null,
 		capacity: t.cap,
 		instructor: t.ins
 			? {
@@ -41,35 +35,12 @@ function convertAndMergeCourse(
 			number: s.num,
 			classSection: s.sec,
 			settings:
-				t.loct
-					?.filter(x => x.loc && x.t)
-					.map(x => ({
-						day: x.t.day,
-						time: x.t.time,
-						location: x.loc,
-					})) ?? null,
+				t.loct?.filter(x => x.loc && x.t).map(({ t, loc: location }) => ({ ...t, location })) ??
+				null,
 			instructor: s.ins,
 			capacity: s.cap,
 		})),
-		// fix this
-		subjectCode:
-			subject +
-			' ' +
-			(
-				'00' +
-				(t.c.endsWith('0') ||
-				t.c.endsWith('1') ||
-				t.c.endsWith('2') ||
-				t.c.endsWith('3') ||
-				t.c.endsWith('4') ||
-				t.c.endsWith('5') ||
-				t.c.endsWith('6') ||
-				t.c.endsWith('7') ||
-				t.c.endsWith('8') ||
-				t.c.endsWith('9')
-					? t.c + '0'
-					: t.c)
-			).slice(-4),
+		subjectCode: subject + ' ' + ('00' + (isNaN(+t.c.slice(-1)) ? t.c : t.c + '_')).slice(-4),
 		level: ['Lower Div', 'Upper Div', 'Graduate'][(+t.c / 100) >> 0],
 	};
 }
@@ -78,11 +49,7 @@ function convertTracking(rawResults: ApiResponseModel.trackingApiData[]): model.
 	return rawResults.map<model.CourseEnrollment>(x => ({
 		termId: x.termId,
 		courseNum: x.courseNum,
-		date: [x.date].map(s => {
-			let d = new Date(0);
-			d.setUTCSeconds(s);
-			return d;
-		})[0],
+		date: [x.date].map(s => (d => (d.setUTCSeconds(s), d))(new Date(0)))[0],
 		status: x.status,
 		available: x.avail,
 		capacity: x.cap,
