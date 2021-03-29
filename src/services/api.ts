@@ -120,7 +120,7 @@ class _API {
 				...prev,
 				...rawTermCourses
 					.filter(x => coursesData[x.num])
-					.map((x: any) => convertAndMergeCourse(subject, x, coursesData[x.num])),
+					.map(x => convertAndMergeCourse(subject, x, coursesData[x.num])),
 			],
 			[]
 		);
@@ -135,9 +135,10 @@ class _API {
 	private trackingAvailableTerms?: (number | string)[];
 	private async trackingAvailable(termId: string): Promise<boolean> {
 		if (!this.trackingAvailableTerms) {
-			const res = (this.trackingAvailableTerms = (await ky
-				.get(`${this.endpoint}/tracking/available`)
-				.json()) as any);
+			const res = (await ky.get(`${this.endpoint}/tracking/available`).json()) as {
+				ok: boolean;
+				results: number[];
+			};
 			if (!res.ok) {
 				throw new Error('Error fetching tracking available terms');
 			}
@@ -152,7 +153,10 @@ class _API {
 	): Promise<model.CourseEnrollment[]> {
 		const available: boolean =
 			// await this.trackingAvailable(termId);
-			((await ky.get(`${this.endpoint}/tracking/available`).json()) as any).results
+			((await ky.get(`${this.endpoint}/tracking/available`).json()) as {
+				ok: boolean;
+				results: number[];
+			}).results
 				.toString()
 				.includes(termId);
 		// if (!(await this.trackingAvailable(termId))) {
@@ -162,7 +166,7 @@ class _API {
 		// }
 		const res = (await ky
 			.get(`${this.endpoint}/tracking/fetch?termId=${termId}&courseNum=${courseNum}`)
-			.json()) as any;
+			.json()) as { ok: boolean; results: ApiResponseModel.trackingApiData[] };
 		if (available && !res.ok) {
 			throw new Error('Error fetching tracking data');
 		}

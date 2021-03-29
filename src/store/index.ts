@@ -15,7 +15,7 @@ export type ReduxState = {
 	course: CourseState;
 };
 
-const rootEpic = combineEpics(CourseEpics) as any;
+const rootEpic = combineEpics(CourseEpics);
 const epicMiddleware = createEpicMiddleware();
 
 export type ReduxAction = UIActions | CourseActions | Action;

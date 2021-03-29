@@ -40,7 +40,7 @@ const Spacer = styled.div`
 	margin-top: 30px;
 `;
 
-const FloatButton = styled(Fab)<any>`
+const FloatButton = styled(Fab)`
 	position: sticky !important;
 	bottom: 25px;
 	left: 85%;

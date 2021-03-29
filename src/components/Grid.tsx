@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import toPX from 'to-px';
 
 import { AutoSizer } from 'react-virtualized/dist/es/AutoSizer';
-import { List } from 'react-virtualized/dist/es/List';
+import { List, ListRowProps } from 'react-virtualized/dist/es/List';
 
 import ClassCard from './DrawerItems/ClassCard';
 import { Course } from '../models/course.model';
@@ -72,7 +72,7 @@ const Grid: React.FC<GridProps & GridDivProps> = props => (
 							style={{
 								outline: 'none',
 							}}
-							rowRenderer={({ index, key, style }: { index: number; key: string; style: any }) => {
+							rowRenderer={({ index, key, style }: ListRowProps) => {
 								const items = [];
 								const fromIndex: number = index * columns;
 								const toIndex: number = Math.min(fromIndex + columns, props.courses.length);

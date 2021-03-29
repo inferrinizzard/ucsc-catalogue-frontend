@@ -34,7 +34,7 @@ export interface CourseApiCourse {
 	cr: number;
 	ge: string[];
 	re: string;
-	com: any[];
+	com: string[];
 	sec: {
 		num: number;
 		sec: string;
