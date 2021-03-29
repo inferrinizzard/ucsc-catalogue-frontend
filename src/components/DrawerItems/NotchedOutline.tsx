@@ -39,10 +39,10 @@ const Legend = styled.legend`
 const NotchedOutline: React.FC<NotchedOutlineProps> = props => {
 	return (
 		<Fieldset>
-			<Legend style={{ width: (props.width ? props.width : 0) + 'px' }}>
-				<Typography style={{ display: 'inline' }}>{props.title ? props.title : ''}</Typography>
+			<Legend style={{ width: (props.width ?? 0) + 'px' }}>
+				<Typography style={{ display: 'inline' }}>{props.title ?? ''}</Typography>
 			</Legend>
-			{props.inner ? props.inner : props.children}
+			{props.inner ?? props.children}
 		</Fieldset>
 	);
 };

@@ -34,15 +34,13 @@ class SelectMenu extends React.Component<SelectMenuProps, SelectMenuState> {
 				<List component="nav">
 					<ListItem
 						button
-						aria-owns={Boolean(this.state.anchor) ? 'fade-menu' : undefined}
+						aria-owns={this.state.anchor ? 'fade-menu' : undefined}
 						aria-haspopup="true"
 						aria-controls="lock-menu"
 						onClick={e => this.setState({ anchor: e.currentTarget })}
 						style={{ padding: '8px' }}>
 						<ListItemText
-							primary={
-								keyNameMap[this.props.sortKey] ? keyNameMap[this.props.sortKey] : 'Course Name'
-							}
+							primary={keyNameMap[this.props.sortKey] ?? 'Course Name'}
 							primaryTypographyProps={{
 								style: {
 									font: 'Roboto',

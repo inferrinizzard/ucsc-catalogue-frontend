@@ -97,13 +97,10 @@ class CourseDrawer extends React.Component<CourseDrawerProps, CourseDrawerState>
 						/>
 					</NotchedOutline>
 				</Card>
-				{c && p.tracking.length && p.tracking[0] && p.tracking[0].sections.length && (
+				{c && p.tracking.length && p.tracking[0]?.sections.length && (
 					<Card className="styleCard">
 						<NotchedOutline width={66} title={'Sections'}>
-							<SectionCard
-								section={p.tracking[0].sections}
-								setting={c.settings ? c.settings.slice(1) : []}
-							/>
+							<SectionCard section={p.tracking[0].sections} setting={c.settings?.slice(1) ?? []} />
 						</NotchedOutline>
 					</Card>
 				)}
@@ -116,11 +113,7 @@ class CourseDrawer extends React.Component<CourseDrawerProps, CourseDrawerState>
 							<NotchedOutline width={72} title={'Professor'}>
 								<ProfCard
 									rmp={p.rmp}
-									name={
-										c && c.instructor && c.instructor.first && c.instructor.last
-											? c.instructor.first + ' ' + c.instructor.last
-											: 'STAFF'
-									}
+									name={(c?.instructor?.first + ' ' + c?.instructor?.last).trim() || 'STAFF'}
 								/>
 							</NotchedOutline>
 						</Card>
@@ -135,7 +128,7 @@ class CourseDrawer extends React.Component<CourseDrawerProps, CourseDrawerState>
 					<span className="third">
 						<Card className="styleCard">
 							<NotchedOutline width={66} title={'Location'}>
-								<LocCard location={c && c!.settings!.length ? c!.settings![0].location : 'TBA'} />
+								<LocCard location={c?.settings?.length ? c.settings[0].location : 'TBA'} />
 							</NotchedOutline>
 						</Card>
 					</span>

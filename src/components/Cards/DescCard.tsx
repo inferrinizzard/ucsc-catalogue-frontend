@@ -41,7 +41,7 @@ const DescCard: React.FC<DescCardProps> = props => {
 			{course && (
 				<CardHeader
 					title={course.subject + ' ' + course.code}
-					subheader={course.fullName ? course.fullName : course.name}
+					subheader={course.fullName || course.name}
 					action={
 						<Button
 							variant="outlined"

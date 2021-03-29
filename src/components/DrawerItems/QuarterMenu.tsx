@@ -36,7 +36,7 @@ class QuarterMenu extends React.Component<QuarterMenuProps, QuarterMenuState> {
 				<List component="nav" style={{ padding: 0 }}>
 					<ListItem
 						button
-						aria-owns={Boolean(this.state.anchor) ? 'fade-menu' : undefined}
+						aria-owns={this.state.anchor ? 'fade-menu' : undefined}
 						aria-haspopup="true"
 						aria-controls="lock-menu"
 						onClick={e => this.setState({ anchor: e.currentTarget })}

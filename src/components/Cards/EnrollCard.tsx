@@ -73,7 +73,6 @@ const EnrollCard: React.FC<EnrollCardProps> = props => {
 	);
 	let secondPass = datePlus(firstPass, 8);
 	let quarterStart = props.curStart;
-	console.log(quarterStart.toDateString());
 
 	return (
 		<React.Fragment>

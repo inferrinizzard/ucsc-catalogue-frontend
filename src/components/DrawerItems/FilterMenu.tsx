@@ -46,7 +46,7 @@ class FilterMenu extends React.Component<FilterMenuProps, FilterMenuState> {
 				<RootRef rootRef={this.state.widthRef}>
 					<Button
 						fullWidth
-						aria-owns={Boolean(this.state.anchor) ? 'fade-menu' : undefined}
+						aria-owns={this.state.anchor ? 'fade-menu' : undefined}
 						aria-haspopup="true"
 						onClick={e => this.setState({ anchor: e.currentTarget })}>
 						{this.props.category}
