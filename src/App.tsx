@@ -5,11 +5,11 @@ import { connect } from 'react-redux';
 import { ReduxState, ReduxAction } from './store';
 
 import Grid from './components/Grid';
-import Basket from './components/Pieces/Basket';
+import Basket from './components/DrawerItems/Basket';
 import SelectDrawer from './components/SelectDrawer';
 import CourseDrawer from './components/CourseDrawer';
-import TopLiner from './components/Pieces/TopLiner';
-import BottomTabs from './components/Pieces/BottomTabs';
+import TopLiner from './components/DrawerItems/TopLiner';
+import BottomTabs from './components/DrawerItems/BottomTabs';
 
 import q from './components/Data/quarters.json';
 

@@ -5,7 +5,7 @@ import toPX from 'to-px';
 import { AutoSizer } from 'react-virtualized/dist/es/AutoSizer';
 import { List } from 'react-virtualized/dist/es/List';
 
-import ClassCard from './Pieces/ClassCard';
+import ClassCard from './DrawerItems/ClassCard';
 import { Course } from '../models/course.model';
 
 import { isMobileOnly } from 'react-device-detect';

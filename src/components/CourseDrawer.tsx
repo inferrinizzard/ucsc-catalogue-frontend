@@ -13,7 +13,7 @@ import ProfCard from './Cards/ProfCard';
 import MajorCard from './Cards/MajorCard';
 import LocCard from './Cards/LocCard';
 import SectionCard from './Cards/SectionCard';
-import NotchedOutline from './Pieces/NotchedOutline';
+import NotchedOutline from './DrawerItems/NotchedOutline';
 
 import { isMobileOnly } from 'react-device-detect';
 

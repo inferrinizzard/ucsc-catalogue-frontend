@@ -11,11 +11,11 @@ import Typography from '@material-ui/core/Typography';
 import FilterList from '@material-ui/icons/FilterList';
 import Clear from '@material-ui/icons/Clear';
 
-import SearchBar from './Pieces/SearchBar';
-import SelectMenu from './Pieces/SortMenu';
-import FilterMenu from './Pieces/FilterMenu';
-import QuarterMenu from './Pieces/QuarterMenu';
-import NotchedOutline from './Pieces/NotchedOutline';
+import SearchBar from './DrawerItems/SearchBar';
+import SelectMenu from './DrawerItems/SortMenu';
+import FilterMenu from './DrawerItems/FilterMenu';
+import QuarterMenu from './DrawerItems/QuarterMenu';
+import NotchedOutline from './DrawerItems/NotchedOutline';
 
 import filterData from './Data/filters.json';
 import { Filter, Course, CourseType } from '../store/course';
