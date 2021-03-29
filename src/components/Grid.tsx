@@ -10,7 +10,7 @@ import { Course } from '../models/course.model';
 
 import { isMobileOnly } from 'react-device-detect';
 
-export interface MainProps {
+export interface GridProps {
 	courses: Course[];
 	openDetail: (course: Course, row: number) => void;
 	cardWidth: number;
@@ -20,23 +20,23 @@ export interface MainProps {
 	basketHeight: number;
 }
 
-export interface MainDivProps {
+export interface GridDivProps {
 	active: Course | null;
 	open: boolean;
 	topLinerHeight: number;
 }
 
-const MainDiv = styled.div<MainDivProps>`
-	margin-top: ${(p: MainDivProps) =>
+const GridContainer = styled.div<GridDivProps>`
+	margin-top: ${(p: GridDivProps) =>
 		isMobileOnly ? 'calc(' + (p.topLinerHeight + 13) + 'px + 15vw)' : p.topLinerHeight + 'px'};
 	margin-left: ${isMobileOnly ? 0 : 'calc(12vw + 10px)'};
-	width: ${(p: MainDivProps) =>
+	width: ${(p: GridDivProps) =>
 		isMobileOnly ? '100vw' : 'calc(' + (p.open ? 52 : 100) + '% - 12vw - 11px)'};
-	height: ${(p: MainDivProps) => (isMobileOnly && p.active ? '40%' : '100%')};
+	height: ${(p: GridDivProps) => (isMobileOnly && p.active ? '40%' : '100%')};
 `;
 
-const Main: React.FC<MainProps & MainDivProps> = props => (
-	<MainDiv
+const Grid: React.FC<GridProps & GridDivProps> = props => (
+	<GridContainer
 		{...{
 			active: props.active,
 			topLinerHeight: props.topLinerHeight,
@@ -102,7 +102,7 @@ const Main: React.FC<MainProps & MainDivProps> = props => (
 				);
 			}}
 		</AutoSizer>
-	</MainDiv>
+	</GridContainer>
 );
 
-export default Main;
+export default Grid;

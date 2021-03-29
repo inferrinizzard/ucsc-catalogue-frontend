@@ -4,7 +4,7 @@ import { Dispatch } from 'redux';
 import { connect } from 'react-redux';
 import { ReduxState, ReduxAction } from './store';
 
-import Main from './components/Main';
+import Grid from './components/Grid';
 import Basket from './components/Pieces/Basket';
 import SelectDrawer from './components/SelectDrawer';
 import CourseDrawer from './components/CourseDrawer';
@@ -133,7 +133,7 @@ class App extends React.Component<AppProps, AppState> {
 						changeQuarter={(q: number) => this.props.load(q)}
 						search={this.props.search}
 					/>
-					<Main
+					<Grid
 						courses={this.props.courses}
 						open={Boolean(this.props.activeCourse)}
 						topLinerHeight={this.state.topLinerHeight}
