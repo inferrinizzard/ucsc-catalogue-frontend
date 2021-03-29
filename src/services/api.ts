@@ -12,17 +12,10 @@ function convertAndMergeCourse(
 		code: t.c,
 		classSection: t.s,
 		name: t.n,
-		description: c.desc ? c.desc : '',
+		description: c.desc ?? '',
 		number: t.num,
-		settings: !!t.loct
-			? t.loct
-					.filter(x => x.loc && x.t)
-					.map(x => ({
-						day: x.t.day,
-						time: x.t.time,
-						location: x.loc,
-					}))
-			: null,
+		settings:
+			t.loct?.filter(x => x.loc && x.t).map(({ t, loc: location }) => ({ ...t, location })) ?? null,
 		capacity: t.cap,
 		instructor: t.ins
 			? {
@@ -41,39 +34,14 @@ function convertAndMergeCourse(
 		sections: c.sec.map<model.Section>(s => ({
 			number: s.num,
 			classSection: s.sec,
-			settings: !!t.loct
-				? t.loct
-						.filter(x => x.loc && x.t)
-						.map(x => ({
-							day: x.t.day,
-							time: x.t.time,
-							location: x.loc,
-						}))
-				: null,
+			settings:
+				t.loct?.filter(x => x.loc && x.t).map(({ t, loc: location }) => ({ ...t, location })) ??
+				null,
 			instructor: s.ins,
 			capacity: s.cap,
 		})),
-		subjectCode:
-			subject +
-			' ' +
-			(
-				'00' +
-				(t.c.endsWith('0') ||
-				t.c.endsWith('1') ||
-				t.c.endsWith('2') ||
-				t.c.endsWith('3') ||
-				t.c.endsWith('4') ||
-				t.c.endsWith('5') ||
-				t.c.endsWith('6') ||
-				t.c.endsWith('7') ||
-				t.c.endsWith('8') ||
-				t.c.endsWith('9')
-					? t.c + '0'
-					: t.c)
-			).slice(-4),
-		level: (n => (n < 100 ? 'Lower Div' : n >= 100 && n < 200 ? 'Upper Div' : 'Graduate'))(
-			parseInt(t.c)
-		),
+		subjectCode: subject + ' ' + ('00' + (isNaN(+t.c.slice(-1)) ? t.c : t.c + '_')).slice(-4),
+		level: ['Lower Div', 'Upper Div', 'Graduate'][(+t.c / 100) >> 0],
 	};
 }
 
@@ -81,11 +49,7 @@ function convertTracking(rawResults: ApiResponseModel.trackingApiData[]): model.
 	return rawResults.map<model.CourseEnrollment>(x => ({
 		termId: x.termId,
 		courseNum: x.courseNum,
-		date: [x.date].map(s => {
-			let d = new Date(0);
-			d.setUTCSeconds(s);
-			return d;
-		})[0],
+		date: [x.date].map(s => (d => (d.setUTCSeconds(s), d))(new Date(0)))[0],
 		status: x.status,
 		available: x.avail,
 		capacity: x.cap,
@@ -173,6 +137,7 @@ class _API {
 		return convertTracking(available ? res.results : []);
 	}
 	public async fetchName(course: number | string, quarter: number | string): Promise<string> {
+		// broken, 403 forbidden, switch to ky
 		return fetch(
 			'https://cors-anywhere.herokuapp.com/https://pisa.ucsc.edu/cs9/prd/sr9_2013/index.php',
 			{
@@ -187,20 +152,14 @@ class _API {
 				},
 				referrer: 'https://pisa.ucsc.edu/cs9/prd/sr9_2013/index.php',
 				referrerPolicy: 'no-referrer-when-downgrade',
-				body:
-					'action=detail&class_data%5B%3ASTRM%5D=' +
-					quarter +
-					'&class_data%5B%3ACLASS_NBR%5D=' +
-					course +
-					'&binds%5B%3Aterm%5D=' +
-					quarter +
-					'&binds%5B%3Areg_status%5D=O&binds%5B%3Asubject%5D=&binds%5B%3Acatalog_nbr_op%5D=%3D&binds%5B%3Acatalog_nbr%5D=&binds%5B%3Atitle%5D=&binds%5B%3Ainstr_name_op%5D=%3D&binds%5B%3Ainstructor%5D=&binds%5B%3Age%5D=&binds%5B%3Acrse_units_op%5D=%3D&binds%5B%3Acrse_units_from%5D=&binds%5B%3Acrse_units_to%5D=&binds%5B%3Acrse_units_exact%5D=&binds%5B%3Adays%5D=&binds%5B%3Atimes%5D=&binds%5B%3Aacad_career%5D=&binds%5B%3Asession_code%5D=&rec_start=0&rec_dur=25',
+				body: `action=detail&class_data%5B%3ASTRM%5D=${quarter}&class_data%5B%3ACLASS_NBR%5D=${course}&binds%5B%3Aterm%5D=${quarter}&binds%5B%3Areg_status%5D=O&binds%5B%3Asubject%5D=&binds%5B%3Acatalog_nbr_op%5D=%3D&binds%5B%3Acatalog_nbr%5D=&binds%5B%3Atitle%5D=&binds%5B%3Ainstr_name_op%5D=%3D&binds%5B%3Ainstructor%5D=&binds%5B%3Age%5D=&binds%5B%3Acrse_units_op%5D=%3D&binds%5B%3Acrse_units_from%5D=&binds%5B%3Acrse_units_to%5D=&binds%5B%3Acrse_units_exact%5D=&binds%5B%3Adays%5D=&binds%5B%3Atimes%5D=&binds%5B%3Aacad_career%5D=&binds%5B%3Asession_code%5D=&rec_start=0&rec_dur=25`,
 				method: 'POST',
 				mode: 'cors',
 			}
 		)
 			.then(x => x.text())
 			.then(s =>
+				// console.log(s),
 				s.substr(
 					s.indexOf('<h2 style="margin:0px;">') + 24,
 					s.substr(s.indexOf('<h2 style="margin:0px;">') + 24).indexOf('</h2>')
@@ -235,14 +194,17 @@ class _API {
 			.catch(x => (x.ok ? x : ''))
 			.then(x => (x ? x.text() : ''));
 		if (!rawString) return {} as model.professorRating;
-		const d: number = parseFloat(
-			rawString.substring(rawString.indexOf('easy') + 6, rawString.indexOf('clarity') - 2)
+		const d: number = +rawString.substring(
+			rawString.indexOf('easy') + 6,
+			rawString.indexOf('clarity') - 2
 		);
-		const c: number = parseFloat(
-			rawString.substring(rawString.indexOf('clarity') + 9, rawString.indexOf('overall') - 2)
+		const c: number = +rawString.substring(
+			rawString.indexOf('clarity') + 9,
+			rawString.indexOf('overall') - 2
 		);
-		const o: number = parseFloat(
-			rawString.substring(rawString.indexOf('overall') + 9, rawString.indexOf('quality') - 2)
+		const o: number = +rawString.substring(
+			rawString.indexOf('overall') + 9,
+			rawString.indexOf('quality') - 2
 		);
 		return {
 			difficulty: d,
