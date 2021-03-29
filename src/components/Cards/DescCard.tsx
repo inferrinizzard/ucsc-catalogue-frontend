@@ -5,9 +5,9 @@ import Button from '@material-ui/core/Button';
 import CardHeader from '@material-ui/core/CardHeader';
 import CardContent from '@material-ui/core/CardContent';
 import Divider from '@material-ui/core/Divider';
-import ExpansionPanel from '@material-ui/core/ExpansionPanel';
-import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
-import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
+import Accordion from '@material-ui/core/Accordion';
+import AccordionSummary from '@material-ui/core/AccordionSummary';
+import AccordionDetails from '@material-ui/core/AccordionDetails';
 import KeyboardArrowDownRounded from '@material-ui/icons/KeyboardArrowDownRounded';
 import Typography from '@material-ui/core/Typography';
 import Bookmark from '@material-ui/icons/Bookmark';
@@ -107,27 +107,27 @@ const DescCard: React.SFC<DescCardProps> = props => {
 					</TextBlock>
 					<Divider />
 					<div>
-						<ExpansionPanel>
-							<ExpansionPanelSummary>
+						<Accordion>
+							<AccordionSummary>
 								<Typography variant="body2">Description</Typography>
 								<KeyboardArrowDownRounded />
-							</ExpansionPanelSummary>
-							<ExpansionPanelDetails>
+							</AccordionSummary>
+							<AccordionDetails>
 								<Typography>{course.description}</Typography>
-							</ExpansionPanelDetails>
-						</ExpansionPanel>
-						<ExpansionPanel disabled={!course.prerequisites}>
-							<ExpansionPanelSummary>
+							</AccordionDetails>
+						</Accordion>
+						<Accordion disabled={!course.prerequisites}>
+							<AccordionSummary>
 								<Typography variant="body2">Prerequisites </Typography>
 								{course.prerequisites && <KeyboardArrowDownRounded />}
 								{!course.prerequisites && <Typography variant="body2"> - None</Typography>}
-							</ExpansionPanelSummary>
+							</AccordionSummary>
 							{course.prerequisites && (
-								<ExpansionPanelDetails>
+								<AccordionDetails>
 									<Typography>{course.prerequisites}</Typography>
-								</ExpansionPanelDetails>
+								</AccordionDetails>
 							)}
-						</ExpansionPanel>
+						</Accordion>
 					</div>
 				</CardContent>
 			)}
