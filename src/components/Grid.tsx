@@ -18,30 +18,21 @@ export interface GridProps {
 	scrollIndex: number;
 	scrollTo: (row: number) => void;
 	basketHeight: number;
-}
-
-export interface GridDivProps {
 	active: Course | null;
 	open: boolean;
 	topLinerHeight: number;
 }
 
-const GridContainer = styled.div<GridDivProps>`
-	margin-top: ${(p: GridDivProps) =>
-		isMobileOnly ? 'calc(' + (p.topLinerHeight + 13) + 'px + 15vw)' : p.topLinerHeight + 'px'};
+const GridContainer = styled.div<Pick<GridProps, 'active' | 'topLinerHeight' | 'open'>>`
+	margin-top: ${({ topLinerHeight: height }) =>
+		isMobileOnly ? 'calc(' + (height + 13) + 'px + 15vw)' : height + 'px'};
 	margin-left: ${isMobileOnly ? 0 : 'calc(12vw + 10px)'};
-	width: ${(p: GridDivProps) =>
-		isMobileOnly ? '100vw' : 'calc(' + (p.open ? 52 : 100) + '% - 12vw - 11px)'};
-	height: ${(p: GridDivProps) => (isMobileOnly && p.active ? '40%' : '100%')};
+	width: ${p => (isMobileOnly ? '100vw' : 'calc(' + (p.open ? 52 : 100) + '% - 12vw - 11px)')};
+	height: ${p => (isMobileOnly && p.active ? '40%' : '100%')};
 `;
 
-const Grid: React.FC<GridProps & GridDivProps> = props => (
-	<GridContainer
-		{...{
-			active: props.active,
-			topLinerHeight: props.topLinerHeight,
-			open: props.open,
-		}}>
+const Grid: React.FC<GridProps> = props => (
+	<GridContainer active={props.active} topLinerHeight={props.topLinerHeight} open={props.open}>
 		{/* <div
         style={{
           marginTop: props.topLinerHeight + 'px',
@@ -69,9 +60,7 @@ const Grid: React.FC<GridProps & GridDivProps> = props => (
 							overscanRowCount={4}
 							scrollToAlignment="start"
 							scrollToIndex={props.scrollIndex}
-							style={{
-								outline: 'none',
-							}}
+							style={{ outline: 'none' }}
 							rowRenderer={({ index, key, style }: ListRowProps) => {
 								const items = [];
 								const fromIndex: number = index * columns;
