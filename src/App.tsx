@@ -74,6 +74,7 @@ export interface AppState {
 
 const quarter: number = q[q[0].code.toString().endsWith('4') ? 1 : 0].code;
 
+export const ActiveCourseContext = createContext(null as Course | null);
 class App extends React.Component<AppProps, AppState> {
 	state = {
 		topLinerHeight: 30,
@@ -118,58 +119,55 @@ class App extends React.Component<AppProps, AppState> {
 					height={this.state.topLinerHeight}
 				/>
 				<div id="main">
-					<SelectDrawer
-						courses={this.props.courses}
-						backup={this.props.backup}
-						sortKey={this.props.sortKey}
-						open={!this.props.activeCourse}
+					<ActiveCourseContext.Provider value={this.props.activeCourse}>
+						<SelectDrawer
+							courses={this.props.courses}
+							backup={this.props.backup}
+							sortKey={this.props.sortKey}
+							open={!this.props.activeCourse}
 							sort={this.props.sort}
-						activeFilters={this.condenseFilter(this.props.filters)}
+							activeFilters={this.condenseFilter(this.props.filters)}
 							addFilter={this.props.addFilter}
 							removeFilter={this.props.removeFilter}
-						clearFilters={() =>
-							this.condenseFilter(this.props.filters).forEach(f => this.props.removeFilter(f))
-						}
+							clearFilters={() =>
+								this.condenseFilter(this.props.filters).forEach(f => this.props.removeFilter(f))
+							}
 							changeQuarter={this.props.load}
-						search={this.props.search}
-					/>
-					<Grid
-						courses={this.props.courses}
+							search={this.props.search}
+						/>
+						<Grid
+							courses={this.props.courses}
 							open={!!this.props.activeCourse}
-						topLinerHeight={this.state.topLinerHeight}
-						basketHeight={this.state.basketHeight}
-						openDetail={this.setActive}
-						cardHeight={this.state.cardHeight}
-						cardWidth={this.state.cardWidth}
-						active={this.props.activeCourse}
-						scrollTo={this.scrollTo}
-						scrollIndex={this.state.scrollIndex}
-					/>
-					<Basket
-						basketOpen={this.state.basketOpen}
-						courses={this.props.bookmarks}
-						cardHeight={this.state.cardHeight}
-						active={this.props.activeCourse}
-						activeOpen={Boolean(this.props.activeCourse)}
-						openDetail={this.setActive}
-						tracking={this.props.tracking}
-						scrollTo={this.scrollTo}
-					/>
-					<CourseDrawer
-						addBasket={this.props.addBookmark}
-						removeBasket={this.props.removeBookmark}
-						basketCourses={this.props.bookmarks}
-						open={Boolean(this.props.activeCourse)}
-						closeDetail={this.props.closeActive}
-						course={this.props.activeCourse}
-						tracking={this.props.tracking}
-						prevStart={this.props.prevStart}
-						curStart={this.props.curStart}
-						quarter={this.props.quarter}
-						loading={this.props.loading}
-						rmp={this.props.rmp}
-					/>
-					{/* <BottomTabs /> */}
+							topLinerHeight={this.state.topLinerHeight}
+							basketHeight={this.state.basketHeight}
+							openDetail={this.setActive}
+							cardHeight={this.state.cardHeight}
+							cardWidth={this.state.cardWidth}
+							scrollTo={this.scrollTo}
+							scrollIndex={this.state.scrollIndex}
+						/>
+						<Basket
+							basketOpen={this.state.basketOpen}
+							courses={this.props.bookmarks}
+							cardHeight={this.state.cardHeight}
+							openDetail={this.setActive}
+							tracking={this.props.tracking}
+							scrollTo={this.scrollTo}
+						/>
+						<CourseDrawer
+							addBasket={this.props.addBookmark}
+							removeBasket={this.props.removeBookmark}
+							basketCourses={this.props.bookmarks}
+							closeDetail={this.props.closeActive}
+							tracking={this.props.tracking}
+							prevStart={this.props.prevStart}
+							curStart={this.props.curStart}
+							quarter={this.props.quarter}
+							loading={this.props.loading}
+							rmp={this.props.rmp}
+						/>
+						{/* <BottomTabs /> */}
+					</ActiveCourseContext.Provider>
 				</div>
 			</div>
 		);
