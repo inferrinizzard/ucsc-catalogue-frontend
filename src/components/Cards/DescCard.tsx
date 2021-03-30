@@ -45,9 +45,7 @@ const DescCard: React.FC<DescCardProps> = props => {
 					action={
 						<Button
 							variant="outlined"
-							onClick={event =>
-								inBasket ? props.removeBasket(course as Course) : props.addBasket(course as Course)
-							}
+							onClick={event => (inBasket ? props.removeBasket(course!) : props.addBasket(course!))}
 							style={{ paddingRight: '10px' }}>
 							{inBasket ? 'Remove' : 'Bookmark'}
 							{inBasket ? <Bookmark /> : <BookmarkBorder />}

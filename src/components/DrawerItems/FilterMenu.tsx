@@ -34,7 +34,7 @@ const FilterMenu: React.FC<FilterMenuProps> = props => {
 	let widthRef = useRef<HTMLElement>(null);
 
 	const ITEM_HEIGHT = 48;
-	let scrollTimer: number = -1;
+	let scrollTimer: ReturnType<typeof setTimeout> | null = null;
 
 	useLayoutEffect(() => setWidth(widthRef.current!.offsetWidth), [widthRef.current]);
 
@@ -58,8 +58,8 @@ const FilterMenu: React.FC<FilterMenuProps> = props => {
 				onScroll={e => {
 					if (!isMobileOnly) {
 						!scrolling && setScrolling(true);
-						clearTimeout(scrollTimer);
-						scrollTimer = (setTimeout(() => setScrolling(false), 50) as any) as number;
+						scrollTimer && clearTimeout(scrollTimer);
+						scrollTimer = setTimeout(() => setScrolling(false), 50);
 					}
 				}}
 				PaperProps={{ style: { maxHeight: ITEM_HEIGHT * 7.5, width } }}>

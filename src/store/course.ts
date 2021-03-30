@@ -340,8 +340,8 @@ const Search = (courses: Course[], search: string): Course[] =>
 				f =>
 					f.name &&
 					[f.subjectCode, f.name.toUpperCase(), f.subject + ' ' + f.code].some(crit =>
-						crit.includes(search)
-					)
+					crit.includes(search)
+				)
 		  )
 		: courses;
 
@@ -378,8 +378,7 @@ const Filter = (
 
 	let processing = [...courses]; // copy into processing
 
-	Object.keys(filterListObj).forEach(_key => {
-		const key = _key as CourseType;
+	(Object.keys(filterListObj) as CourseType[]).forEach(key => {
 		const filters: Filter[] = filterListObj[key].map(x => ({
 			type: key,
 			name: x,
@@ -412,21 +411,21 @@ const trackCourseEpic: Epic<CourseActions> = (action$, state$) =>
 	action$.ofType(ActionTypes.SET_ACTIVE).pipe(
 		map(action => action as SetActiveAction),
 		switchMap(async action => {
-			const course: Course = { ...action.course } as Course;
+			const course = { ...action.course } as Course;
 			course['fullName'] = action.course
 				? await API.fetchName(action.course.number, action.quarter)
 				: '';
 			const tracking: CourseEnrollment[] = action.course
 				? await API.tracking(action.course.number, action.quarter)
-				: ([] as CourseEnrollment[]);
+				: [];
 			const rmp: professorRating =
 				action.course && action.course.instructor
-					? await API.rmp(
-							await API.getProfId(
-								action.course.instructor['first'] + action.course.instructor['last']
-							)
-					  )
-					: ({} as professorRating);
+				? await API.rmp(
+						await API.getProfId(
+							action.course.instructor['first'] + action.course.instructor['last']
+						)
+				  )
+				: ({} as professorRating);
 			return { tracking: tracking, course: course, rmp: rmp };
 		}),
 		map(data => activeSuccessAction(data['tracking'], data['course'], data['rmp']))

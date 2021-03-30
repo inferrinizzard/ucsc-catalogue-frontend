@@ -103,10 +103,10 @@ class App extends React.Component<AppProps, AppState> {
 				this.state.scrollIndex > 4 && !this.props.activeCourse ? Math.floor(row / 3) * 7 + 5 : row,
 		});
 
-	condenseFilter = (filters: FilterList<FilterDomain, CourseType>): Filter[] =>
-		Object.keys(filters).reduce(
-			(list, type) => [...list, ...filters[type].map(f => ({ type: type, name: f } as Filter))],
-			[] as Filter[]
+	condenseFilter = (filters: FilterList<FilterDomain, CourseType>) =>
+		Object.keys(filters).reduce<Filter[]>(
+			(list, type) => [...list, ...filters[type].map(f => ({ type, name: f } as Filter))],
+			[]
 		);
 	//#endregion
 	render() {
