@@ -46,7 +46,7 @@ const Section = styled(Card)`
 	box-shadow: none !important;
 `;
 
-const catMap: { [K in CourseType]?: { name: string; desc: string }[] } = filterData;
+const catMap: Partial<Record<CourseType, { name: string; desc: string }[]>> = filterData;
 
 const SelectDrawer: React.FC<SelectDrawerProps> = props => {
 	const [basket, setBasket] = useState([]);
@@ -65,7 +65,7 @@ const SelectDrawer: React.FC<SelectDrawerProps> = props => {
 							),
 					  }
 					: filtered,
-			{} as { [K in CourseType]?: { name: string; desc: string }[] }
+			{} as typeof catMap
 		)
 	);
 
