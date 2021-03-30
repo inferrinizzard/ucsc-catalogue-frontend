@@ -8,7 +8,7 @@ import Chip from '@material-ui/core/Chip';
 import RootRef from '@material-ui/core/RootRef';
 import Tooltip from '@material-ui/core/Tooltip';
 
-import { Filter, CourseType } from '../../store/course';
+import { Filter, CourseType, FilterDomain } from '../../store/course';
 
 import { isMobileOnly } from 'react-device-detect';
 
@@ -76,7 +76,8 @@ const FilterMenu: React.FC<FilterMenuProps> = props => {
 						>
 							<MenuItem
 								onClick={e => (
-									props.addFilter({ type: props.category, name: f }), setAnchor(null)
+									props.addFilter({ type: props.category as FilterDomain, name: f }),
+									setAnchor(null)
 								)}>
 								{f}
 							</MenuItem>

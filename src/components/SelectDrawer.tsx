@@ -18,7 +18,7 @@ import QuarterMenu from './DrawerItems/QuarterMenu';
 import NotchedOutline from './DrawerItems/NotchedOutline';
 
 import filterData from './Data/filters.json';
-import { Filter, Course, CourseType } from '../store/course';
+import { Filter, Course, CourseType, FilterDomain } from '../store/course';
 
 import { isMobileOnly, MobileOnlyView } from 'react-device-detect';
 
@@ -46,21 +46,21 @@ const Section = styled(Card)`
 	box-shadow: none !important;
 `;
 
-const catMap: Partial<Record<CourseType, { name: string; desc: string }[]>> = filterData;
+const catMap: Record<FilterDomain, { name: string; desc: string }[]> = filterData;
 
 const SelectDrawer: React.FC<SelectDrawerProps> = props => {
 	const [basket, setBasket] = useState([]);
 	const [available, setAvailable] = useState(!isMobileOnly);
 
 	const getAvailableFilters = memoize((courses: Course[]) =>
-		(Object.keys(catMap) as CourseType[]).reduce(
-			(filtered, cur) =>
-				catMap[cur]
+		Object.entries(catMap).reduce(
+			(filtered, [cur, dataFilter]) =>
+				dataFilter
 					? {
 							...filtered,
-							[cur]: catMap[cur]!.filter(f =>
+							[cur]: dataFilter.filter(f =>
 								courses.some(
-									c => c[cur] === f.name || (cur === 'ge' && (c[cur]! as string[]).includes(f.name))
+									c => c[cur as CourseType] === f.name || (cur === 'ge' && c[cur].includes(f.name))
 								)
 							),
 					  }
@@ -98,11 +98,8 @@ const SelectDrawer: React.FC<SelectDrawerProps> = props => {
 				}}>
 				<NotchedOutline>
 					<IconButton onClick={e => setAvailable(!available)} style={{ padding: '15px' }}>
-						{available ? (
-							<Clear style={{ transform: 'scale(1.25)' }} />
-						) : (
-							<FilterList style={{ transform: 'scale(1.25)' }} />
-						)}
+						{available && <Clear style={{ transform: 'scale(1.25)' }} />}
+						{!available && <FilterList style={{ transform: 'scale(1.25)' }} />}
 					</IconButton>
 				</NotchedOutline>
 			</MobileOnlyView>
@@ -115,15 +112,15 @@ const SelectDrawer: React.FC<SelectDrawerProps> = props => {
 					</Section>
 					<Section>
 						<NotchedOutline width={44} title="Filters">
-							{(Object.keys(availableFilters) as CourseType[]).map((category, k) => (
-								<React.Fragment key={k}>
+							{Object.entries(availableFilters).map(([category, filter]) => (
+								<React.Fragment key={category}>
 									<FilterMenu
 										addFilter={props.addFilter}
 										removeFilter={props.removeFilter}
-										category={category}
-										filterList={availableFilters[category]?.map(f => f.name) ?? []}
+										category={category as CourseType}
+										filterList={filter?.map(f => f.name) ?? []}
 										activeFilters={props.activeFilters.filter(f => f.type === category)}
-										toolTips={availableFilters[category]?.map(f => f.desc) ?? []}
+										toolTips={filter?.map(f => f.desc) ?? []}
 									/>
 									<Divider />
 								</React.Fragment>

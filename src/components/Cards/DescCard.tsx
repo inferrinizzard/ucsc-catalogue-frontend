@@ -28,14 +28,8 @@ const TextBlock = styled(Typography)`
 	width: 50%;
 `;
 
-const DescCard: React.FC<DescCardProps> = props => {
-	let course = props.courseData;
-	let tracking = props.tracking;
-	let inBasket =
-		course &&
-		props.basketCourses
-			.reduce((numbers: number[], cur: Course) => [...numbers, cur.number], [])
-			.includes(course!.number);
+const DescCard: React.FC<DescCardProps> = ({ courseData: course, tracking, ...props }) => {
+	let inBasket = course && props.basketCourses.some(cur => cur.number === course!.number);
 	return (
 		<React.Fragment>
 			{course && (
@@ -58,12 +52,12 @@ const DescCard: React.FC<DescCardProps> = props => {
 				<CardContent>
 					<TextBlock variant="body2">
 						{'Date and Time: ' +
-							(course.settings!.length
-								? course.settings![0].day.map(d => d.substring(0, 2)).join('') +
+							(course.settings?.length
+								? course.settings[0].day.map(d => d.substring(0, 2)).join('') +
 								  ' ' +
-								  course.settings![0].time.start +
+								  course.settings[0].time.start +
 								  '-' +
-								  course.settings![0].time.end
+								  course.settings[0].time.end
 								: 'TBA')}
 					</TextBlock>
 					<TextBlock variant="body2">{'Class type: ' + course.type}</TextBlock>
@@ -90,8 +84,8 @@ const DescCard: React.FC<DescCardProps> = props => {
 					<div />
 					<TextBlock variant="body2">
 						{'Professor: ' +
-							(course.instructor && course.instructor.first
-								? course.instructor!.first +
+							(course.instructor?.first
+								? course.instructor.first +
 								  ' ' +
 								  (course.instructor!.middle ? course.instructor!.middle + ' ' : '') +
 								  course.instructor!.last

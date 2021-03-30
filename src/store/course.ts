@@ -28,7 +28,7 @@ export interface CourseState {
 //#region define types
 export type CourseType = keyof Course;
 export { Course } from '../models/course.model';
-export type Filter = { type: CourseType; name: string };
+export type Filter = { type: FilterDomain; name: string };
 export enum FilterDomain {
 	subject = 'subject',
 	level = 'level',
@@ -325,8 +325,7 @@ const Sort = (courses: Course[], sort: CourseType): Course[] =>
 	[...courses].sort((a: Course, b: Course) => InnerSort(a, b, sort));
 
 const InnerSort = (a: Course, b: Course, sort: CourseType): number => {
-	const left = a[sort];
-	const right = b[sort];
+	const [left, right] = [a[sort], b[sort]];
 	if (left && right) {
 		if (left > right) return 1;
 		if (left < right) return -1;
@@ -336,10 +335,8 @@ const InnerSort = (a: Course, b: Course, sort: CourseType): number => {
 
 const Search = (courses: Course[], search: string): Course[] =>
 	search
-		? courses.filter(
-				f =>
-					f.name &&
-					[f.subjectCode, f.name.toUpperCase(), f.subject + ' ' + f.code].some(crit =>
+		? courses.filter(f =>
+				[f.subjectCode, f.name?.toUpperCase(), f.subject + ' ' + f.code].some(crit =>
 					crit.includes(search)
 				)
 		  )
@@ -378,12 +375,9 @@ const Filter = (
 
 	let processing = [...courses]; // copy into processing
 
-	(Object.keys(filterListObj) as CourseType[]).forEach(key => {
-		const filters: Filter[] = filterListObj[key].map(x => ({
-			type: key,
-			name: x,
-		}));
-		if (!filters.length) return;
+	Object.entries(filterListObj).forEach(([type, _filters]) => {
+		if (!_filters.length) return;
+		const filters: Filter[] = _filters.map(f => ({ type: type as FilterDomain, name: f }));
 
 		// for each iteration, update processing
 		processing = processing.filter(course => CourseFilterOR(course, filters));
@@ -420,13 +414,13 @@ const trackCourseEpic: Epic<CourseActions> = (action$, state$) =>
 				: [];
 			const rmp: professorRating =
 				action.course && action.course.instructor
-				? await API.rmp(
-						await API.getProfId(
-							action.course.instructor['first'] + action.course.instructor['last']
-						)
-				  )
-				: ({} as professorRating);
-			return { tracking: tracking, course: course, rmp: rmp };
+					? await API.rmp(
+							await API.getProfId(
+								action.course.instructor['first'] + action.course.instructor['last']
+							)
+					  )
+					: ({} as professorRating);
+			return { tracking, course, rmp };
 		}),
 		map(data => activeSuccessAction(data['tracking'], data['course'], data['rmp']))
 	);

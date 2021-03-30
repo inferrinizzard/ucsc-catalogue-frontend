@@ -15,7 +15,7 @@ export interface ClassCardProps {
 	row: number;
 }
 
-const ClassCard: React.FC<ClassCardProps> = props => (
+const ClassCard: React.FC<ClassCardProps> = ({ active, courseData, ...props }) => (
 	<Card
 		style={{
 			margin: '0.15em 0.25em',
@@ -24,22 +24,19 @@ const ClassCard: React.FC<ClassCardProps> = props => (
 		}}>
 		<CardActionArea
 			style={{
-				backgroundColor:
-					props.active && props.active.number === props.courseData.number
-						? '#92c2ff'
-						: 'transparent',
+				backgroundColor: active?.number === courseData.number ? '#92c2ff' : 'transparent',
 			}}
-			onClick={e => props.openDetail(props.courseData, props.row)}>
+			onClick={e => props.openDetail(courseData, props.row)}>
 			<CardContent>
 				<div
 				// style={{ backgroundColor: 'aliceblue' }}
 				>
 					<Typography gutterBottom variant="h5" component="h2">
-						{props.courseData.subject + ' ' + props.courseData.code}
+						{courseData.subject + ' ' + courseData.code}
 					</Typography>
 				</div>
 				<Typography style={{ overflow: 'hidden', maxHeight: '20.444px' }}>
-					{props.courseData.name}
+					{courseData.name}
 				</Typography>
 			</CardContent>
 		</CardActionArea>

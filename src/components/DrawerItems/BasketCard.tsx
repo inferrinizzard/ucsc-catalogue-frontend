@@ -17,7 +17,7 @@ export interface BasketCardProps {
 }
 
 const BasketCard: React.FC<BasketCardProps> = props => {
-	// const [tracking, setTracking] = useState(props.tracking);
+	const [tracking, setTracking] = useState(props.tracking);
 
 	return (
 		<Card
@@ -41,9 +41,9 @@ const BasketCard: React.FC<BasketCardProps> = props => {
 					</Typography>
 					<Divider />
 					<Typography variant={'h6'}>
-						{props.tracking.enrolled < props.tracking.capacity
-							? 'Enrolled: ' + props.tracking.enrolled + '/' + props.tracking.capacity
-							: 'Waitlisted: ' + props.tracking.waitlistTotal}
+						{tracking.enrolled < tracking.capacity
+							? 'Enrolled: ' + tracking.enrolled + '/' + tracking.capacity
+							: 'Waitlisted: ' + tracking.waitlistTotal}
 					</Typography>
 				</CardContent>
 			</CardActionArea>

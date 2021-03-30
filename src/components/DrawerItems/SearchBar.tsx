@@ -9,19 +9,16 @@ export interface SearchBarProps {
 	search: (name: string) => void;
 }
 
-const SearchBar: React.FC<SearchBarProps> = props => {
+const SearchBar: React.FC<SearchBarProps> = ({ search }) => {
 	return (
 		<TextField
 			variant="outlined"
 			label="Search"
 			placeholder="Search class by name"
-			onChange={event => props.search(event.target.value.toUpperCase())}
+			onChange={e => search(e.target.value.toUpperCase())}
 			InputProps={{
 				endAdornment: <SearchRounded />,
-				style: {
-					paddingRight: '6px',
-					width: isMobileOnly ? '80vw' : undefined,
-				},
+				style: { paddingRight: '6px', width: isMobileOnly ? '80vw' : undefined },
 			}}
 			style={{
 				padding: '0 .15em .15em',

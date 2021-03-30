@@ -36,12 +36,12 @@ const Basket: React.FC<BasketProps> = props => {
 					flexDirection: 'row',
 					width: props.courses.length > 4 ? 'max-content' : 'auto',
 				}}>
-				{Object.keys(props.courses).map((key, index) => {
+				{Object.keys(props.courses).map((_, i) => {
 					return (
 						<BasketCard
-							key={index}
+							key={i}
 							active={props.active}
-							courseData={props.courses[index]}
+							courseData={props.courses[i]}
 							openDetail={props.openDetail}
 							tracking={props.tracking[0]}
 							scrollTo={props.scrollTo}

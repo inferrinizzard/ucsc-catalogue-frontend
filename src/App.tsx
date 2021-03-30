@@ -104,8 +104,8 @@ class App extends React.Component<AppProps, AppState> {
 		});
 
 	condenseFilter = (filters: FilterList<FilterDomain, CourseType>) =>
-		Object.keys(filters).reduce<Filter[]>(
-			(list, type) => [...list, ...filters[type].map(f => ({ type, name: f } as Filter))],
+		Object.entries(filters).reduce<Filter[]>(
+			(list, [type, filter]) => [...list, ...filter.map(f => ({ type, name: f } as Filter))],
 			[]
 		);
 	//#endregion
@@ -123,19 +123,19 @@ class App extends React.Component<AppProps, AppState> {
 						backup={this.props.backup}
 						sortKey={this.props.sortKey}
 						open={!this.props.activeCourse}
-						sort={(type: CourseType) => this.props.sort(type)}
+							sort={this.props.sort}
 						activeFilters={this.condenseFilter(this.props.filters)}
-						addFilter={(type: Filter) => this.props.addFilter(type)}
-						removeFilter={(type: Filter) => this.props.removeFilter(type)}
+							addFilter={this.props.addFilter}
+							removeFilter={this.props.removeFilter}
 						clearFilters={() =>
 							this.condenseFilter(this.props.filters).forEach(f => this.props.removeFilter(f))
 						}
-						changeQuarter={(q: number) => this.props.load(q)}
+							changeQuarter={this.props.load}
 						search={this.props.search}
 					/>
 					<Grid
 						courses={this.props.courses}
-						open={Boolean(this.props.activeCourse)}
+							open={!!this.props.activeCourse}
 						topLinerHeight={this.state.topLinerHeight}
 						basketHeight={this.state.basketHeight}
 						openDetail={this.setActive}

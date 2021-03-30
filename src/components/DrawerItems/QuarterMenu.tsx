@@ -57,9 +57,7 @@ const QuarterMenu: React.FC<QuarterMenuProps> = ({ changeQuarter }) => {
 				anchorEl={anchor}
 				TransitionComponent={Fade}
 				onBackdropClick={e => setAnchor(null)}
-				PaperProps={{
-					style: { maxHeight: ITEM_HEIGHT * 4.5 },
-				}}>
+				PaperProps={{ style: { maxHeight: ITEM_HEIGHT * 4.5 } }}>
 				{quarters.map(q => (
 					<MenuItem
 						key={q.name}

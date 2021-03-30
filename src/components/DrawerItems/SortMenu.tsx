@@ -20,7 +20,7 @@ const keyNameMap: { [K in CourseType]?: string } = {
 	type: 'Class Type',
 };
 
-const SelectMenu: React.FC<SelectMenuProps> = props => {
+const SelectMenu: React.FC<SelectMenuProps> = ({ sort, sortKey }) => {
 	const [anchor, setAnchor] = useState(null as HTMLElement | null);
 
 	return (
@@ -34,7 +34,7 @@ const SelectMenu: React.FC<SelectMenuProps> = props => {
 					onClick={e => setAnchor(e.currentTarget)}
 					style={{ padding: '8px' }}>
 					<ListItemText
-						primary={keyNameMap[props.sortKey] ?? 'Course Name'}
+						primary={keyNameMap[sortKey] ?? 'Course Name'}
 						primaryTypographyProps={{
 							style: {
 								font: 'Roboto',
@@ -54,13 +54,13 @@ const SelectMenu: React.FC<SelectMenuProps> = props => {
 				open={Boolean(anchor)}
 				anchorEl={anchor}
 				TransitionComponent={Fade}
-				onBackdropClick={e => (props.sort(props.sortKey), setAnchor(null))}>
-				{(Object.keys(keyNameMap) as CourseType[]).map(key => (
+				onBackdropClick={e => (sort(sortKey), setAnchor(null))}>
+				{Object.entries(keyNameMap).map(([key, val]) => (
 					<MenuItem
 						key={key}
-						selected={key === props.sortKey}
-						onClick={e => (key !== props.sortKey && props.sort(key), setAnchor(null))}>
-						{keyNameMap[key]}
+						selected={key === sortKey}
+						onClick={e => (key !== sortKey && sort(key as CourseType), setAnchor(null))}>
+						{val}
 					</MenuItem>
 				))}
 			</Menu>
