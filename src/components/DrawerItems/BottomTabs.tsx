@@ -6,20 +6,15 @@ import Home from '@material-ui/icons/Home';
 
 export interface BottomTabsProps {}
 
-export interface BottomTabsState {}
-
-class BottomTabs extends React.Component<BottomTabsProps, BottomTabsState> {
-	state = {};
-	render() {
-		return (
-			<div></div>
-			// <Tabs value={1} component="div">
-			// 	<Tab icon={<Home />} />
-			// 	<Tab icon={<Home />} />
-			// 	<Tab icon={<Home />} />
-			// </Tabs>
-		);
-	}
-}
+const BottomTabs: React.FC<BottomTabsProps> = props => {
+	return (
+		<div></div>
+		// <Tabs value={1} component="div">
+		// 	<Tab icon={<Home />} />
+		// 	<Tab icon={<Home />} />
+		// 	<Tab icon={<Home />} />
+		// </Tabs>
+	);
+};
 
 export default BottomTabs;

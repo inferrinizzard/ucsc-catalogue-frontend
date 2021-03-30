@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import memoize from 'memoize-one';
 import styled from 'styled-components';
 
@@ -46,17 +46,13 @@ const Section = styled(Card)`
 	box-shadow: none !important;
 `;
 
-const catMap: {
-	[K in CourseType]?: { name: string; desc: string }[];
-} = filterData;
+const catMap: { [K in CourseType]?: { name: string; desc: string }[] } = filterData;
 
-class SelectDrawer extends React.Component<SelectDrawerProps, SelectDrawerState> {
-	state = {
-		basket: [],
-		available: !isMobileOnly,
-	};
+const SelectDrawer: React.FC<SelectDrawerProps> = props => {
+	const [basket, setBasket] = useState([]);
+	const [available, setAvailable] = useState(!isMobileOnly);
 
-	getAvailableFilters = memoize((courses: Course[]) =>
+	const getAvailableFilters = memoize((courses: Course[]) =>
 		(Object.keys(catMap) as CourseType[]).reduce(
 			(filtered, cur) =>
 				catMap[cur]
@@ -73,80 +69,76 @@ class SelectDrawer extends React.Component<SelectDrawerProps, SelectDrawerState>
 		)
 	);
 
-	render() {
-		let availableFilters = this.getAvailableFilters(this.props.backup);
-		return (
-			<Drawer
-				anchor={isMobileOnly ? 'top' : 'left'}
-				open={this.props.open}
-				variant="permanent"
-				elevation={1}
-				PaperProps={{
-					style: {
-						marginTop: '32px',
-						padding: isMobileOnly ? '0.25em 0' : '0.25em',
-						width: isMobileOnly ? '100vw' : '12vw',
-						height: this.state.available ? undefined : '15vw',
-						flexDirection: this.state.available ? undefined : 'row',
-						whiteSpace: 'nowrap',
-					},
+	const availableFilters = getAvailableFilters(props.backup);
+	return (
+		<Drawer
+			anchor={isMobileOnly ? 'top' : 'left'}
+			open={props.open}
+			variant="permanent"
+			elevation={1}
+			PaperProps={{
+				style: {
+					marginTop: '32px',
+					padding: isMobileOnly ? '0.25em 0' : '0.25em',
+					width: isMobileOnly ? '100vw' : '12vw',
+					height: available ? undefined : '15vw',
+					flexDirection: available ? undefined : 'row',
+					whiteSpace: 'nowrap',
+				},
+			}}>
+			<SearchBar search={props.search} />
+			<MobileOnlyView
+				style={{
+					// width: 'fit-content',
+					// display: 'inline',
+					// marginTop: '3px',
+					position: 'absolute',
+					top: 7,
+					right: 7,
 				}}>
-				<SearchBar search={this.props.search} />
-				<MobileOnlyView
-					style={{
-						// width: 'fit-content',
-						// display: 'inline',
-						// marginTop: '3px',
-						position: 'absolute',
-						top: 7,
-						right: 7,
-					}}>
-					<NotchedOutline>
-						<IconButton
-							onClick={e => this.setState({ available: !this.state.available })}
-							style={{ padding: '15px' }}>
-							{this.state.available ? (
-								<Clear style={{ transform: 'scale(1.25)' }} />
-							) : (
-								<FilterList style={{ transform: 'scale(1.25)' }} />
-							)}
-						</IconButton>
-					</NotchedOutline>
-				</MobileOnlyView>
-				{this.state.available && (
-					<React.Fragment>
-						<Section style={{ display: 'block' }}>
-							<NotchedOutline width={50} title="Sorting">
-								<SelectMenu sort={this.props.sort} sortKey={this.props.sortKey} />
-							</NotchedOutline>
-						</Section>
-						<Section>
-							<NotchedOutline width={44} title="Filters">
-								{(Object.keys(availableFilters) as CourseType[]).map((category, k) => (
-									<React.Fragment key={k}>
-										<FilterMenu
-											addFilter={this.props.addFilter}
-											removeFilter={this.props.removeFilter}
-											category={category}
-											filterList={availableFilters[category]!.map(f => f.name) || []}
-											activeFilters={this.props.activeFilters.filter(f => f.type === category)}
-											toolTips={availableFilters[category]!.map(f => f.desc) || []}
-										/>
-										<Divider />
-									</React.Fragment>
-								))}
-								<QuarterMenu changeQuarter={this.props.changeQuarter} />
-								<Divider />
-								<Button fullWidth onClick={e => this.props.clearFilters()}>
-									{'Clear All'}
-								</Button>
-							</NotchedOutline>
-						</Section>
-					</React.Fragment>
-				)}
-			</Drawer>
-		);
-	}
-}
+				<NotchedOutline>
+					<IconButton onClick={e => setAvailable(!available)} style={{ padding: '15px' }}>
+						{available ? (
+							<Clear style={{ transform: 'scale(1.25)' }} />
+						) : (
+							<FilterList style={{ transform: 'scale(1.25)' }} />
+						)}
+					</IconButton>
+				</NotchedOutline>
+			</MobileOnlyView>
+			{available && (
+				<React.Fragment>
+					<Section style={{ display: 'block' }}>
+						<NotchedOutline width={50} title="Sorting">
+							<SelectMenu sort={props.sort} sortKey={props.sortKey} />
+						</NotchedOutline>
+					</Section>
+					<Section>
+						<NotchedOutline width={44} title="Filters">
+							{(Object.keys(availableFilters) as CourseType[]).map((category, k) => (
+								<React.Fragment key={k}>
+									<FilterMenu
+										addFilter={props.addFilter}
+										removeFilter={props.removeFilter}
+										category={category}
+										filterList={availableFilters[category]?.map(f => f.name) ?? []}
+										activeFilters={props.activeFilters.filter(f => f.type === category)}
+										toolTips={availableFilters[category]?.map(f => f.desc) ?? []}
+									/>
+									<Divider />
+								</React.Fragment>
+							))}
+							<QuarterMenu changeQuarter={props.changeQuarter} />
+							<Divider />
+							<Button fullWidth onClick={e => props.clearFilters()}>
+								{'Clear All'}
+							</Button>
+						</NotchedOutline>
+					</Section>
+				</React.Fragment>
+			)}
+		</Drawer>
+	);
+};
 
 export default SelectDrawer;

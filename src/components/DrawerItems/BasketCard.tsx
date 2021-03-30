@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 import Card from '@material-ui/core/Card';
 import CardActionArea from '@material-ui/core/CardActionArea';
@@ -16,52 +16,39 @@ export interface BasketCardProps {
 	scrollTo: (row: number) => void;
 }
 
-export interface BasketCardState {
-	enrolled: number;
-	capacity: number;
-	waitlist: number;
-}
+const BasketCard: React.FC<BasketCardProps> = props => {
+	// const [tracking, setTracking] = useState(props.tracking);
 
-class BasketCard extends React.Component<BasketCardProps, BasketCardState> {
-	state = {
-		enrolled: this.props.tracking.enrolled,
-		capacity: this.props.tracking.capacity,
-		waitlist: this.props.tracking.waitlistTotal,
-	};
-	render() {
-		return (
-			<Card
+	return (
+		<Card
+			style={{
+				margin: '0.15em 0.25em',
+				width: '200px',
+				display: 'inline-block',
+			}}>
+			<CardActionArea
 				style={{
-					margin: '0.15em 0.25em',
-					width: '200px',
-					display: 'inline-block',
-				}}>
-				<CardActionArea
-					style={{
-						backgroundColor:
-							this.props.active && this.props.active.number === this.props.courseData.number
-								? '#92c2ff'
-								: 'transparent',
-					}}
-					onClick={event => this.props.openDetail(this.props.courseData)}>
-					<CardContent>
-						<Typography gutterBottom variant="h5" component="h2">
-							{this.props.courseData.subject + ' ' + this.props.courseData.code}
-						</Typography>
-						<Typography component="p" gutterBottom>
-							{this.props.courseData.name}
-						</Typography>
-						<Divider />
-						<Typography variant={'h6'}>
-							{this.state.enrolled < this.state.capacity
-								? 'Enrolled: ' + this.state.enrolled + '/' + this.state.capacity
-								: 'Waitlisted: ' + this.state.waitlist}
-						</Typography>
-					</CardContent>
-				</CardActionArea>
-			</Card>
-		);
-	}
-}
+					backgroundColor:
+						props.active?.number === props.courseData.number ? '#92c2ff' : 'transparent',
+				}}
+				onClick={event => props.openDetail(props.courseData)}>
+				<CardContent>
+					<Typography gutterBottom variant="h5" component="h2">
+						{props.courseData.subject + ' ' + props.courseData.code}
+					</Typography>
+					<Typography component="p" gutterBottom>
+						{props.courseData.name}
+					</Typography>
+					<Divider />
+					<Typography variant={'h6'}>
+						{props.tracking.enrolled < props.tracking.capacity
+							? 'Enrolled: ' + props.tracking.enrolled + '/' + props.tracking.capacity
+							: 'Waitlisted: ' + props.tracking.waitlistTotal}
+					</Typography>
+				</CardContent>
+			</CardActionArea>
+		</Card>
+	);
+};
 
 export default BasketCard;

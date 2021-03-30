@@ -34,7 +34,6 @@ export interface CourseDrawerProps {
 	loading: boolean;
 	rmp: professorRating;
 }
-export interface CourseDrawerState {}
 
 const Spacer = styled.div`
 	margin-top: 30px;
@@ -46,97 +45,91 @@ const FloatButton = styled(Fab)`
 	left: 85%;
 `;
 
-class CourseDrawer extends React.Component<CourseDrawerProps, CourseDrawerState> {
-	render() {
-		let p = this.props;
-		let c = p.course;
-		return (
-			<Drawer
-				anchor={isMobileOnly ? 'bottom' : 'right'}
-				open={Boolean(c)}
-				variant="persistent"
-				elevation={1}
-				PaperProps={{
-					style: {
-						width: isMobileOnly ? '100%' : '48%',
-						height: isMobileOnly ? '50%' : undefined,
-					},
+const CourseDrawer: React.FC<CourseDrawerProps> = ({ course: c, ...props }) => (
+	<Drawer
+		anchor={isMobileOnly ? 'bottom' : 'right'}
+		open={Boolean(c)}
+		variant="persistent"
+		elevation={1}
+		PaperProps={{
+			style: {
+				width: isMobileOnly ? '100%' : '48%',
+				height: isMobileOnly ? '50%' : undefined,
+			},
+		}}>
+		{isMobileOnly ? (
+			<Button
+				fullWidth
+				onClick={e => props.closeDetail()}
+				style={{
+					backgroundColor: 'aliceblue',
+					position: 'sticky',
+					top: 0,
 				}}>
-				{isMobileOnly ? (
-					<Button
-						fullWidth
-						onClick={e => this.props.closeDetail()}
-						style={{
-							backgroundColor: 'aliceblue',
-							position: 'sticky',
-							top: 0,
-						}}>
-						<Typography>{'Close'}</Typography>
-					</Button>
-				) : (
-					<Spacer />
-				)}
+				<Typography>{'Close'}</Typography>
+			</Button>
+		) : (
+			<Spacer />
+		)}
+		<Card className="styleCard">
+			<NotchedOutline width={52} title={'Details'}>
+				<DescCard
+					basketCourses={props.basketCourses}
+					courseData={c}
+					tracking={props.tracking.length ? props.tracking[0] : null}
+					addBasket={props.addBasket}
+					removeBasket={props.removeBasket}
+				/>
+			</NotchedOutline>
+		</Card>
+		<Card className="styleCard">
+			<NotchedOutline width={74} title={'Enrollment'}>
+				<EnrollCard
+					tracking={props.tracking}
+					prevStart={props.prevStart}
+					curStart={props.curStart}
+					quarter={props.quarter}
+				/>
+			</NotchedOutline>
+		</Card>
+		{c && props.tracking.length && props.tracking[0]?.sections.length && (
+			<Card className="styleCard">
+				<NotchedOutline width={66} title={'Sections'}>
+					<SectionCard section={props.tracking[0].sections} setting={c.settings?.slice(1) ?? []} />
+				</NotchedOutline>
+			</Card>
+		)}
+		<Card className="styleCard">
+			<NotchedOutline width={50} title={'Grades'} inner={<GradesCard />} />
+		</Card>
+		<div>
+			<span className="third">
 				<Card className="styleCard">
-					<NotchedOutline width={52} title={'Details'}>
-						<DescCard
-							basketCourses={p.basketCourses}
-							courseData={c}
-							tracking={p.tracking.length ? p.tracking[0] : null}
-							addBasket={p.addBasket}
-							removeBasket={p.removeBasket}
+					<NotchedOutline width={72} title={'Professor'}>
+						<ProfCard
+							rmp={props.rmp}
+							name={(c?.instructor?.first + ' ' + c?.instructor?.last).trim() || 'STAFF'}
 						/>
 					</NotchedOutline>
 				</Card>
+			</span>
+			<span className="third">
 				<Card className="styleCard">
-					<NotchedOutline width={74} title={'Enrollment'}>
-						<EnrollCard
-							tracking={p.tracking}
-							prevStart={p.prevStart}
-							curStart={p.curStart}
-							quarter={p.quarter}
-						/>
+					<NotchedOutline width={50} title={'Major'}>
+						<MajorCard />
 					</NotchedOutline>
 				</Card>
-				{c && p.tracking.length && p.tracking[0]?.sections.length && (
-					<Card className="styleCard">
-						<NotchedOutline width={66} title={'Sections'}>
-							<SectionCard section={p.tracking[0].sections} setting={c.settings?.slice(1) ?? []} />
-						</NotchedOutline>
-					</Card>
-				)}
+			</span>
+			<span className="third">
 				<Card className="styleCard">
-					<NotchedOutline width={50} title={'Grades'} inner={<GradesCard />} />
+					<NotchedOutline width={66} title={'Location'}>
+						<LocCard location={c?.settings?.length ? c.settings[0].location : 'TBA'} />
+					</NotchedOutline>
 				</Card>
-				<div>
-					<span className="third">
-						<Card className="styleCard">
-							<NotchedOutline width={72} title={'Professor'}>
-								<ProfCard
-									rmp={p.rmp}
-									name={(c?.instructor?.first + ' ' + c?.instructor?.last).trim() || 'STAFF'}
-								/>
-							</NotchedOutline>
-						</Card>
-					</span>
-					<span className="third">
-						<Card className="styleCard">
-							<NotchedOutline width={50} title={'Major'}>
-								<MajorCard />
-							</NotchedOutline>
-						</Card>
-					</span>
-					<span className="third">
-						<Card className="styleCard">
-							<NotchedOutline width={66} title={'Location'}>
-								<LocCard location={c?.settings?.length ? c.settings[0].location : 'TBA'} />
-							</NotchedOutline>
-						</Card>
-					</span>
-				</div>
-				{/* <FloatButton onClick={p.closeDetail}>BACK</FloatButton> */}
-			</Drawer>
-		);
-	}
-}
+			</span>
+		</div>
+		{/* <FloatButton onClick={props.closeDetail}>BACK</FloatButton> */}
+	</Drawer>
+);
 
 export default CourseDrawer;

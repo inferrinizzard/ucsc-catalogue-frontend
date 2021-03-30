@@ -10,21 +10,18 @@ import Typography from '@material-ui/core/Typography';
 export interface LocCardProps {
 	location: string;
 }
-export interface LocCardState {}
 
-class LocCard extends React.Component<LocCardProps, LocCardState> {
-	render() {
-		return (
-			<React.Fragment>
-				{/* <CardMedia /> */}
-				{/* <div>image goes here</div> */}
-				<CardContent>
-					<Typography>{'Location: ' + this.props.location}</Typography>
-					{/* <div>Google Maps this</div> */}
-				</CardContent>
-			</React.Fragment>
-		);
-	}
-}
+const LocCard: React.FC<LocCardProps> = props => {
+	return (
+		<React.Fragment>
+			{/* <CardMedia /> */}
+			{/* <div>image goes here</div> */}
+			<CardContent>
+				<Typography>{'Location: ' + props.location}</Typography>
+				{/* <div>Google Maps this</div> */}
+			</CardContent>
+		</React.Fragment>
+	);
+};
 
 export default LocCard;
