@@ -1,22 +1,26 @@
-import React, { useContext } from 'react';
+import React, { useState, useContext } from 'react';
 
 import Card from '@material-ui/core/Card';
 import CardActionArea from '@material-ui/core/CardActionArea';
 import CardContent from '@material-ui/core/CardContent';
+import Divider from '@material-ui/core/Divider';
 import Typography from '@material-ui/core/Typography';
 
 import { ActiveCourseContext } from '../../App';
-import { Course } from '../../models/course.model';
+import { Course, CourseEnrollment } from '../../models/course.model';
 import { isMobileOnly } from 'react-device-detect';
 
 export interface ClassCardProps {
-	openDetail: (course: Course, k: number) => void;
+	openDetail: (course: Course, k?: number) => void;
 	courseData: Course;
-	row: number;
+	row?: number;
+	tracking?: CourseEnrollment;
 }
 
 const ClassCard: React.FC<ClassCardProps> = ({ courseData, ...props }) => {
+	const [tracking, setTracking] = useState(props.tracking);
 	const activeCourse = useContext(ActiveCourseContext);
+
 	return (
 		<Card
 			style={{
@@ -40,6 +44,16 @@ const ClassCard: React.FC<ClassCardProps> = ({ courseData, ...props }) => {
 					<Typography style={{ overflow: 'hidden', maxHeight: '20.444px' }}>
 						{courseData.name}
 					</Typography>
+					{tracking && (
+						<>
+							<Divider />
+							<Typography variant={'h6'}>
+								{tracking.enrolled < tracking.capacity
+									? 'Enrolled: ' + tracking.enrolled + '/' + tracking.capacity
+									: 'Waitlisted: ' + tracking.waitlistTotal}
+							</Typography>
+						</>
+					)}
 				</CardContent>
 			</CardActionArea>
 		</Card>

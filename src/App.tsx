@@ -152,7 +152,7 @@ class App extends React.Component<AppProps, AppState> {
 							cardHeight={this.state.cardHeight}
 							openDetail={this.setActive}
 							tracking={this.props.tracking}
-							scrollTo={this.scrollTo}
+							activeOpen={!!this.props.activeCourse}
 						/>
 						<CourseDrawer
 							addBasket={this.props.addBookmark}

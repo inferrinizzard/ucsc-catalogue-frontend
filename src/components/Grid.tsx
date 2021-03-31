@@ -12,7 +12,7 @@ import { isMobileOnly } from 'react-device-detect';
 
 export interface GridProps {
 	courses: Course[];
-	openDetail: (course: Course, row: number) => void;
+	openDetail: (course: Course, row?: number) => void;
 	cardWidth: number;
 	cardHeight: number;
 	scrollIndex: number;
@@ -74,7 +74,7 @@ const Grid: React.FC<GridProps> = props => (
 											courseData={props.courses[i]}
 											openDetail={(course, row) => {
 												props.openDetail(course, row);
-												props.scrollTo(row);
+												row && props.scrollTo(row);
 											}}
 										/>
 									);
