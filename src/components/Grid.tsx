@@ -19,19 +19,17 @@ export interface GridProps {
 	scrollTo: (row: number) => void;
 	basketHeight: number;
 	open: boolean;
-	topLinerHeight: number;
 }
 
-const GridContainer = styled.div<Pick<GridProps, 'topLinerHeight' | 'open'>>`
-	margin-top: ${({ topLinerHeight: height }) =>
-		isMobileOnly ? 'calc(' + (height + 13) + 'px + 15vw)' : height + 'px'};
+const GridContainer = styled.div<Pick<GridProps, 'open'>>`
+	margin-top: ${isMobileOnly && '15vw'};
 	margin-left: ${isMobileOnly ? 0 : 'calc(12vw + 10px)'};
 	width: ${p => (isMobileOnly ? '100vw' : 'calc(' + (p.open ? 52 : 100) + '% - 12vw - 11px)')};
 	height: ${p => (isMobileOnly && p.open ? '40%' : '100%')};
 `;
 
 const Grid: React.FC<GridProps> = props => (
-	<GridContainer topLinerHeight={props.topLinerHeight} open={props.open}>
+	<GridContainer open={props.open}>
 		{/* <div
         style={{
           marginTop: props.topLinerHeight + 'px',
