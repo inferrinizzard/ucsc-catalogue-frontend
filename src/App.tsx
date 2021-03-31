@@ -66,8 +66,6 @@ type AppProps = PropsFromStore & PropsToDispatch;
 export interface AppState {
 	basketHeight: number;
 	basketOpen: boolean;
-	cardHeight: number;
-	cardWidth: number;
 	aboutOpen: boolean;
 	scrollIndex: number;
 	bottomTabHeight: number;
@@ -78,9 +76,8 @@ const quarter: number = q[q[0].code.toString().endsWith('4') ? 1 : 0].code;
 export const ActiveCourseContext = createContext(null as Course | null);
 const theme = {
 	topLinerHeight: '2.5rem',
+	selectDrawerWidth: 12.5,
 	basketHeight: 30,
-	cardHeight: 6,
-	cardWidth: 12.5,
 	aboutOpen: false,
 	scrollIndex: 0,
 	bottomTabHeight: 0,
@@ -90,8 +87,6 @@ class App extends React.Component<AppProps, AppState> {
 	state = {
 		basketHeight: 30,
 		basketOpen: true,
-		cardHeight: 6,
-		cardWidth: 12.5,
 		aboutOpen: false,
 		scrollIndex: 0,
 		bottomTabHeight: 0,
@@ -155,15 +150,12 @@ class App extends React.Component<AppProps, AppState> {
 								open={!!this.props.activeCourse}
 								basketHeight={this.state.basketHeight}
 								openDetail={this.setActive}
-								cardHeight={this.state.cardHeight}
-								cardWidth={this.state.cardWidth}
 								scrollTo={this.scrollTo}
 								scrollIndex={this.state.scrollIndex}
 							/>
 							<Basket
 								basketOpen={this.state.basketOpen}
 								courses={this.props.bookmarks}
-								cardHeight={this.state.cardHeight}
 								openDetail={this.setActive}
 								tracking={this.props.tracking}
 								activeOpen={!!this.props.activeCourse}

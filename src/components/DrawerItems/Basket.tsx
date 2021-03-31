@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useContext } from 'react';
+import { ThemeContext } from 'styled-components';
 
 import Drawer from '@material-ui/core/Drawer';
 import Typography from '@material-ui/core/Typography';
@@ -11,13 +12,14 @@ import { CourseEpics } from '../../store/course';
 export interface BasketProps {
 	basketOpen: boolean;
 	courses: Course[];
-	cardHeight: number;
 	openDetail: (c: Course) => void;
 	tracking: CourseEnrollment[];
 	activeOpen: boolean;
 }
 
 const Basket: React.FC<BasketProps> = props => {
+	const theme = useContext(ThemeContext);
+
 	return (
 		<Drawer
 			variant="persistent"
@@ -27,7 +29,7 @@ const Basket: React.FC<BasketProps> = props => {
 			PaperProps={{
 				style: {
 					// maxHeight: props.cardHeight + 0.5 + 'em',
-					width: (props.activeOpen ? 52 : 100) + '%',
+					width: (props.activeOpen ? 50 + theme.selectDrawerWidth / 2 : 100) + '%',
 				},
 			}}>
 			<div
@@ -40,6 +42,7 @@ const Basket: React.FC<BasketProps> = props => {
 						<ClassCard
 							key={'basket-' + course.subjectCode}
 							courseData={course}
+							width={25}
 							openDetail={props.openDetail}
 							tracking={props.tracking[0]}
 						/>

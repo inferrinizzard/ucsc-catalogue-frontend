@@ -82,7 +82,7 @@ const SelectDrawer: React.FC<SelectDrawerProps> = props => {
 				style: {
 					top: theme.topLinerHeight,
 					padding: isMobileOnly ? '0.25em 0' : '0.25em',
-					width: isMobileOnly ? '100vw' : '12vw',
+					width: isMobileOnly ? '100%' : theme.selectDrawerWidth + '%',
 					height: available ? undefined : '15vw',
 					flexDirection: available ? undefined : 'row',
 					whiteSpace: 'nowrap',
