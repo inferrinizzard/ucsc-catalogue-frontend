@@ -42,7 +42,9 @@ export interface SelectDrawerState {
 const Section = styled(Card)`
 	margin: 0.25em 0.15em;
 	padding: 0;
-	box-shadow: none !important;
+	&& {
+		box-shadow: none;
+	}
 `;
 
 const catMap: Record<FilterDomain, { name: string; desc: string }[]> = filterData;
