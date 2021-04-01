@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 import styled from 'styled-components';
 
@@ -15,12 +15,10 @@ const TopBar = styled.div`
 	height: ${p => p.theme.topLinerHeight};
 `;
 
-export interface TopLinerProps {
-	open: boolean;
-	setAbout: (status: boolean) => void;
-}
+export interface TopLinerProps {}
 
 const TopLiner: React.FC<TopLinerProps> = props => {
+	const [open, setOpen] = useState(false);
 	return (
 		<TopBar>
 			<span>
@@ -35,11 +33,11 @@ const TopLiner: React.FC<TopLinerProps> = props => {
 				</Typography>
 			</span>
 			<span style={{ float: 'right' }}>
-				<Button size="small" onClick={e => props.setAbout(!props.open)}>
+				<Button size="small" onClick={e => setOpen(!open)}>
 					<Typography>About</Typography>
 				</Button>
 			</span>
-			<Collapse in={props.open}>
+			<Collapse in={open}>
 				<Typography>Made by Sean Song with special help from Shun Kashiwa</Typography>
 				<Typography>Data provided by slugsurvival</Typography>
 			</Collapse>

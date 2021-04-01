@@ -49,7 +49,7 @@ interface PropsFromStore {
 }
 
 interface PropsToDispatch {
-	load: (q: number) => void;
+	loadQuarter: (q: number) => void;
 	addFilter: (f: Filter) => void;
 	removeFilter: (f: Filter) => void;
 	sort: (n: CourseType) => void;
@@ -64,11 +64,7 @@ interface PropsToDispatch {
 type AppProps = PropsFromStore & PropsToDispatch;
 
 export interface AppState {
-	basketHeight: number;
-	basketOpen: boolean;
-	aboutOpen: boolean;
 	scrollIndex: number;
-	bottomTabHeight: number;
 }
 
 const quarter: number = q[q[0].code.toString().endsWith('4') ? 1 : 0].code;
@@ -77,23 +73,15 @@ export const ActiveCourseContext = createContext(null as Course | null);
 const theme = {
 	topLinerHeight: '2.5rem',
 	selectDrawerWidth: 12.5,
-	basketHeight: 30,
-	aboutOpen: false,
-	scrollIndex: 0,
-	bottomTabHeight: 0,
 };
 
 class App extends React.Component<AppProps, AppState> {
 	state = {
-		basketHeight: 30,
-		basketOpen: true,
-		aboutOpen: false,
 		scrollIndex: 0,
-		bottomTabHeight: 0,
 	};
 
 	componentDidMount = () => {
-		this.props.load(quarter);
+		this.props.loadQuarter(quarter);
 		// this.props.loadBookmark();
 	};
 
@@ -119,10 +107,7 @@ class App extends React.Component<AppProps, AppState> {
 		return (
 			<div id="app">
 				<ThemeProvider theme={theme}>
-					<TopLiner
-						open={this.state.aboutOpen}
-						setAbout={status => this.setState({ aboutOpen: status })}
-					/>
+					<TopLiner />
 					<div
 						id="main"
 						style={{
@@ -140,21 +125,19 @@ class App extends React.Component<AppProps, AppState> {
 								addFilter={this.props.addFilter}
 								removeFilter={this.props.removeFilter}
 								clearFilters={() =>
-									this.condenseFilter(this.props.filters).forEach(f => this.props.removeFilter(f))
+									this.condenseFilter(this.props.filters).forEach(this.props.removeFilter)
 								}
-								changeQuarter={this.props.load}
+								changeQuarter={this.props.loadQuarter}
 								search={this.props.search}
 							/>
 							<Grid
 								courses={this.props.courses}
 								open={!!this.props.activeCourse}
-								basketHeight={this.state.basketHeight}
 								openDetail={this.setActive}
 								scrollTo={this.scrollTo}
 								scrollIndex={this.state.scrollIndex}
 							/>
 							<Basket
-								basketOpen={this.state.basketOpen}
 								courses={this.props.bookmarks}
 								openDetail={this.setActive}
 								tracking={this.props.tracking}
@@ -196,7 +179,7 @@ const mapStateToProps = (state: ReduxState): PropsFromStore => ({
 	bookmarks: state.course.bookmarks,
 });
 const mapDispatchToProps = (dispatch: Dispatch<ReduxAction>): PropsToDispatch => ({
-	load: quarter => dispatch(fetchAction(quarter)),
+	loadQuarter: quarter => dispatch(fetchAction(quarter)),
 	sort: key => dispatch(sortAction(key)),
 	search: name => dispatch(searchAction(name)),
 	setActive: (course, quarter) => dispatch(setActiveAction(course, quarter)),

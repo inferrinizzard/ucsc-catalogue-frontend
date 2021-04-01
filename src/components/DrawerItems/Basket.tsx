@@ -10,7 +10,6 @@ import { Course, CourseEnrollment } from '../../models/course.model';
 import { CourseEpics } from '../../store/course';
 
 export interface BasketProps {
-	basketOpen: boolean;
 	courses: Course[];
 	openDetail: (c: Course) => void;
 	tracking: CourseEnrollment[];
@@ -24,7 +23,7 @@ const Basket: React.FC<BasketProps> = props => {
 		<Drawer
 			variant="persistent"
 			anchor="bottom"
-			open={props.basketOpen}
+			open={!!props.courses.length}
 			elevation={1}
 			PaperProps={{
 				style: {

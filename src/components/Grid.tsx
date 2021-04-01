@@ -15,7 +15,6 @@ export interface GridProps {
 	openDetail: (course: Course, row?: number) => void;
 	scrollIndex: number;
 	scrollTo: (row: number) => void;
-	basketHeight: number;
 	open: boolean;
 }
 

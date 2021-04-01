@@ -49,7 +49,7 @@ const Section = styled(Card)`
 const catMap: Record<FilterDomain, { name: string; desc: string }[]> = filterData;
 
 const SelectDrawer: React.FC<SelectDrawerProps> = props => {
-	const [basket, setBasket] = useState([]);
+	// const [basket, setBasket] = useState([]);
 	const [available, setAvailable] = useState(!isMobileOnly);
 
 	const theme = useContext(ThemeContext);
