@@ -12,20 +12,22 @@ import { isMobileOnly } from 'react-device-detect';
 
 export interface ClassCardProps {
 	openDetail: (course: Course, k?: number) => void;
+	width: number;
 	courseData: Course;
 	row?: number;
 	tracking?: CourseEnrollment;
 }
 
-const ClassCard: React.FC<ClassCardProps> = ({ courseData, ...props }) => {
+const ClassCard: React.FC<ClassCardProps> = ({ width, courseData, ...props }) => {
 	const [tracking, setTracking] = useState(props.tracking);
 	const activeCourse = useContext(ActiveCourseContext);
 
+	const margin = { x: 0.25, y: 0.15 };
 	return (
 		<Card
 			style={{
-				margin: '0.15em 0.25em',
-				width: isMobileOnly ? 'calc(50vw - 0.6em)' : '200px',
+				margin: `${margin.y}rem ${margin.x}rem`,
+				width: isMobileOnly ? 'calc(50% - 0.6em)' : `calc(${width}% - ${margin.x * 2}rem)`,
 				display: 'inline-block',
 			}}>
 			<CardActionArea

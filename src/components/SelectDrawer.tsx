@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import memoize from 'memoize-one';
-import styled from 'styled-components';
+import styled, { ThemeContext } from 'styled-components';
 
 import Divider from '@material-ui/core/Divider';
 import Drawer from '@material-ui/core/Drawer';
@@ -52,6 +52,8 @@ const SelectDrawer: React.FC<SelectDrawerProps> = props => {
 	const [basket, setBasket] = useState([]);
 	const [available, setAvailable] = useState(!isMobileOnly);
 
+	const theme = useContext(ThemeContext);
+
 	const getAvailableFilters = memoize((courses: Course[]) =>
 		Object.entries(catMap).reduce(
 			(filtered, [cur, dataFilter]) =>
@@ -78,9 +80,9 @@ const SelectDrawer: React.FC<SelectDrawerProps> = props => {
 			elevation={1}
 			PaperProps={{
 				style: {
-					marginTop: '32px',
+					top: theme.topLinerHeight,
 					padding: isMobileOnly ? '0.25em 0' : '0.25em',
-					width: isMobileOnly ? '100vw' : '12vw',
+					width: isMobileOnly ? '100%' : theme.selectDrawerWidth + '%',
 					height: available ? undefined : '15vw',
 					flexDirection: available ? undefined : 'row',
 					whiteSpace: 'nowrap',

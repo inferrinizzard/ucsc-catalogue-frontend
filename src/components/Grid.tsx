@@ -13,79 +13,59 @@ import { isMobileOnly } from 'react-device-detect';
 export interface GridProps {
 	courses: Course[];
 	openDetail: (course: Course, row?: number) => void;
-	cardWidth: number;
-	cardHeight: number;
 	scrollIndex: number;
 	scrollTo: (row: number) => void;
 	basketHeight: number;
 	open: boolean;
-	topLinerHeight: number;
 }
 
-const GridContainer = styled.div<Pick<GridProps, 'topLinerHeight' | 'open'>>`
-	margin-top: ${({ topLinerHeight: height }) =>
-		isMobileOnly ? 'calc(' + (height + 13) + 'px + 15vw)' : height + 'px'};
-	margin-left: ${isMobileOnly ? 0 : 'calc(12vw + 10px)'};
-	width: ${p => (isMobileOnly ? '100vw' : 'calc(' + (p.open ? 52 : 100) + '% - 12vw - 11px)')};
+const GridContainer = styled.div<Pick<GridProps, 'open'>>`
+	margin-top: ${isMobileOnly && '15vw'};
+	margin-left: ${p => !isMobileOnly && p.theme.selectDrawerWidth + '%'};
+	width: ${p =>
+		isMobileOnly ? '100vw' : `calc(${(100 - p.theme.selectDrawerWidth) / (p.open ? 2 : 1)}%)`};
 	height: ${p => (isMobileOnly && p.open ? '40%' : '100%')};
 `;
 
 const Grid: React.FC<GridProps> = props => (
-	<GridContainer topLinerHeight={props.topLinerHeight} open={props.open}>
-		{/* <div
-        style={{
-          marginTop: props.topLinerHeight + 'px',
-          marginLeft: props.drawerWidth + 'em',
-          width:
-            'calc(' +
-            (props.open ? '52%' : '100%') +
-            ' - ' +
-            (props.drawerWidth + 'em') +
-            ')',
-          height: '100%',
-        }}
-      ></div> */}
+	<GridContainer open={props.open}>
 		<AutoSizer>
 			{({ height, width }: { height: number; width: number }) => {
-				const columns = isMobileOnly ? 2 : Math.floor(width / toPX(props.cardWidth + 'em'));
+				const columns = isMobileOnly ? 2 : props.open ? 4 : 8;
 				const rows = Math.ceil(props.courses.length / columns);
+				const cardWidth = 100 / columns,
+					cardHeight = 6;
 				return (
-					<div>
-						<List
-							width={width}
-							height={height}
-							rowCount={rows}
-							rowHeight={toPX(props.cardHeight + 'em')}
-							overscanRowCount={4}
-							scrollToAlignment="start"
-							scrollToIndex={props.scrollIndex}
-							style={{ outline: 'none' }}
-							rowRenderer={({ index, key, style }: ListRowProps) => {
-								const items = [];
-								const fromIndex: number = index * columns;
-								const toIndex: number = Math.min(fromIndex + columns, props.courses.length);
-
-								// slice, maybe?
-								for (let i = fromIndex; i < toIndex; i++)
-									items.push(
+					<List
+						width={width}
+						height={height}
+						rowCount={rows}
+						rowHeight={toPX(cardHeight + 'rem')}
+						overscanRowCount={4}
+						scrollToAlignment="start"
+						scrollToIndex={props.scrollIndex}
+						style={{ outline: 'none' }}
+						rowRenderer={({ index, key, style }: ListRowProps) => {
+							const fromIndex: number = index * columns;
+							const toIndex: number = Math.min(fromIndex + columns, props.courses.length);
+							return (
+								<div key={key} style={{ ...style, padding: '0 0.5rem' }}>
+									{props.courses.slice(fromIndex, toIndex).map((course, i) => (
 										<ClassCard
-											key={i}
+											key={course.subjectCode + '_' + i}
 											row={index}
-											courseData={props.courses[i]}
+											courseData={course}
+											width={cardWidth}
 											openDetail={(course, row) => {
 												props.openDetail(course, row);
 												row && props.scrollTo(row);
 											}}
 										/>
-									);
-								return (
-									<div key={key} style={style}>
-										{items}
-									</div>
-								);
-							}}
-						/>
-					</div>
+									))}
+								</div>
+							);
+						}}
+					/>
 				);
 			}}
 		</AutoSizer>

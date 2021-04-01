@@ -1,30 +1,32 @@
 import React from 'react';
 
+import styled from 'styled-components';
+
 import Button from '@material-ui/core/Button';
 import Collapse from '@material-ui/core/Collapse';
 import Typography from '@material-ui/core/Typography';
 
+const TopBar = styled.div`
+	width: 100%;
+	background: #5d92dd;
+	z-index: 1201;
+	position: fixed;
+	top: 0;
+	height: ${p => p.theme.topLinerHeight};
+`;
+
 export interface TopLinerProps {
 	open: boolean;
 	setAbout: (status: boolean) => void;
-	height: number;
 }
 
 const TopLiner: React.FC<TopLinerProps> = props => {
 	return (
-		<div
-			style={{
-				width: '100%',
-				background: '#5d92dd',
-				zIndex: 1201,
-				position: 'fixed',
-				top: '0',
-			}}>
+		<TopBar>
 			<span>
 				<Typography
-					variant={'h6'}
+					variant="h5"
 					style={{
-						height: props.height + 'px',
 						display: 'inline',
 						paddingLeft: '8px',
 						fontWeight: 400,
@@ -41,7 +43,7 @@ const TopLiner: React.FC<TopLinerProps> = props => {
 				<Typography>Made by Sean Song with special help from Shun Kashiwa</Typography>
 				<Typography>Data provided by slugsurvival</Typography>
 			</Collapse>
-		</div>
+		</TopBar>
 	);
 };
 

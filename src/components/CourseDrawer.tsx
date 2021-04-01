@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import styled from 'styled-components';
+import styled, { ThemeContext } from 'styled-components';
 
 import Button from '@material-ui/core/Button';
 import Card from '@material-ui/core/Card';
@@ -46,6 +46,8 @@ const FloatButton = styled(Fab)`
 
 const CourseDrawer: React.FC<CourseDrawerProps> = ({ tracking, ...props }) => {
 	const course = useContext(ActiveCourseContext);
+	const theme = useContext(ThemeContext);
+
 	return (
 		<Drawer
 			anchor={isMobileOnly ? 'bottom' : 'right'}
@@ -54,7 +56,7 @@ const CourseDrawer: React.FC<CourseDrawerProps> = ({ tracking, ...props }) => {
 			elevation={1}
 			PaperProps={{
 				style: {
-					width: isMobileOnly ? '100%' : '48%',
+					width: isMobileOnly ? '100%' : `${(100 - theme.selectDrawerWidth) / 2}%`,
 					height: isMobileOnly ? '50%' : undefined,
 				},
 			}}>

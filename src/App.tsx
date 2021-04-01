@@ -4,6 +4,8 @@ import { Dispatch } from 'redux';
 import { connect } from 'react-redux';
 import { ReduxState, ReduxAction } from './store';
 
+import { ThemeProvider } from 'styled-components';
+
 import Grid from './components/Grid';
 import Basket from './components/DrawerItems/Basket';
 import SelectDrawer from './components/SelectDrawer';
@@ -62,11 +64,8 @@ interface PropsToDispatch {
 type AppProps = PropsFromStore & PropsToDispatch;
 
 export interface AppState {
-	topLinerHeight: number;
 	basketHeight: number;
 	basketOpen: boolean;
-	cardHeight: number;
-	cardWidth: number;
 	aboutOpen: boolean;
 	scrollIndex: number;
 	bottomTabHeight: number;
@@ -75,13 +74,19 @@ export interface AppState {
 const quarter: number = q[q[0].code.toString().endsWith('4') ? 1 : 0].code;
 
 export const ActiveCourseContext = createContext(null as Course | null);
+const theme = {
+	topLinerHeight: '2.5rem',
+	selectDrawerWidth: 12.5,
+	basketHeight: 30,
+	aboutOpen: false,
+	scrollIndex: 0,
+	bottomTabHeight: 0,
+};
+
 class App extends React.Component<AppProps, AppState> {
 	state = {
-		topLinerHeight: 30,
 		basketHeight: 30,
 		basketOpen: true,
-		cardHeight: 6,
-		cardWidth: 12.5,
 		aboutOpen: false,
 		scrollIndex: 0,
 		bottomTabHeight: 0,
@@ -113,62 +118,64 @@ class App extends React.Component<AppProps, AppState> {
 	render() {
 		return (
 			<div id="app">
-				<TopLiner
-					open={this.state.aboutOpen}
-					setAbout={status => this.setState({ aboutOpen: status })}
-					height={this.state.topLinerHeight}
-				/>
-				<div id="main">
-					<ActiveCourseContext.Provider value={this.props.activeCourse}>
-						<SelectDrawer
-							courses={this.props.courses}
-							backup={this.props.backup}
-							sortKey={this.props.sortKey}
-							open={!this.props.activeCourse}
-							sort={this.props.sort}
-							activeFilters={this.condenseFilter(this.props.filters)}
-							addFilter={this.props.addFilter}
-							removeFilter={this.props.removeFilter}
-							clearFilters={() =>
-								this.condenseFilter(this.props.filters).forEach(f => this.props.removeFilter(f))
-							}
-							changeQuarter={this.props.load}
-							search={this.props.search}
-						/>
-						<Grid
-							courses={this.props.courses}
-							open={!!this.props.activeCourse}
-							topLinerHeight={this.state.topLinerHeight}
-							basketHeight={this.state.basketHeight}
-							openDetail={this.setActive}
-							cardHeight={this.state.cardHeight}
-							cardWidth={this.state.cardWidth}
-							scrollTo={this.scrollTo}
-							scrollIndex={this.state.scrollIndex}
-						/>
-						<Basket
-							basketOpen={this.state.basketOpen}
-							courses={this.props.bookmarks}
-							cardHeight={this.state.cardHeight}
-							openDetail={this.setActive}
-							tracking={this.props.tracking}
-							activeOpen={!!this.props.activeCourse}
-						/>
-						<CourseDrawer
-							addBasket={this.props.addBookmark}
-							removeBasket={this.props.removeBookmark}
-							basketCourses={this.props.bookmarks}
-							closeDetail={this.props.closeActive}
-							tracking={this.props.tracking}
-							prevStart={this.props.prevStart}
-							curStart={this.props.curStart}
-							quarter={this.props.quarter}
-							loading={this.props.loading}
-							rmp={this.props.rmp}
-						/>
-						{/* <BottomTabs /> */}
-					</ActiveCourseContext.Provider>
-				</div>
+				<ThemeProvider theme={theme}>
+					<TopLiner
+						open={this.state.aboutOpen}
+						setAbout={status => this.setState({ aboutOpen: status })}
+					/>
+					<div
+						id="main"
+						style={{
+							paddingTop: theme.topLinerHeight,
+							height: `calc(100% - ${theme.topLinerHeight})`,
+						}}>
+						<ActiveCourseContext.Provider value={this.props.activeCourse}>
+							<SelectDrawer
+								courses={this.props.courses}
+								backup={this.props.backup}
+								sortKey={this.props.sortKey}
+								open={!this.props.activeCourse}
+								sort={this.props.sort}
+								activeFilters={this.condenseFilter(this.props.filters)}
+								addFilter={this.props.addFilter}
+								removeFilter={this.props.removeFilter}
+								clearFilters={() =>
+									this.condenseFilter(this.props.filters).forEach(f => this.props.removeFilter(f))
+								}
+								changeQuarter={this.props.load}
+								search={this.props.search}
+							/>
+							<Grid
+								courses={this.props.courses}
+								open={!!this.props.activeCourse}
+								basketHeight={this.state.basketHeight}
+								openDetail={this.setActive}
+								scrollTo={this.scrollTo}
+								scrollIndex={this.state.scrollIndex}
+							/>
+							<Basket
+								basketOpen={this.state.basketOpen}
+								courses={this.props.bookmarks}
+								openDetail={this.setActive}
+								tracking={this.props.tracking}
+								activeOpen={!!this.props.activeCourse}
+							/>
+							<CourseDrawer
+								addBasket={this.props.addBookmark}
+								removeBasket={this.props.removeBookmark}
+								basketCourses={this.props.bookmarks}
+								closeDetail={this.props.closeActive}
+								tracking={this.props.tracking}
+								prevStart={this.props.prevStart}
+								curStart={this.props.curStart}
+								quarter={this.props.quarter}
+								loading={this.props.loading}
+								rmp={this.props.rmp}
+							/>
+							{/* <BottomTabs /> */}
+						</ActiveCourseContext.Provider>
+					</div>
+				</ThemeProvider>
 			</div>
 		);
 	}
