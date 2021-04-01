@@ -34,6 +34,18 @@ export interface CourseDrawerProps {
 	rmp: professorRating;
 }
 
+const StyledCard = styled(Card)`
+	margin: 0.5rem;
+	&& {
+		overflow: visible;
+		box-shadow: none;
+	}
+`;
+const InlineStyledCard = styled(StyledCard).attrs((p: { n?: number }) => ({ n: p.n || 3 }))`
+	width: ${p => `calc(${100 / p.n}% - 1rem)`};
+	display: inline-block;
+`;
+
 const Spacer = styled.div`
 	margin-top: 30px;
 `;
@@ -74,7 +86,7 @@ const CourseDrawer: React.FC<CourseDrawerProps> = ({ tracking, ...props }) => {
 			) : (
 				<Spacer />
 			)}
-			<Card className="styleCard">
+			<StyledCard>
 				<NotchedOutline width={52} title={'Details'}>
 					<DescCard
 						basketCourses={props.basketCourses}
@@ -84,8 +96,8 @@ const CourseDrawer: React.FC<CourseDrawerProps> = ({ tracking, ...props }) => {
 						removeBasket={props.removeBasket}
 					/>
 				</NotchedOutline>
-			</Card>
-			<Card className="styleCard">
+			</StyledCard>
+			<StyledCard>
 				<NotchedOutline width={74} title={'Enrollment'}>
 					<EnrollCard
 						tracking={tracking}
@@ -94,52 +106,44 @@ const CourseDrawer: React.FC<CourseDrawerProps> = ({ tracking, ...props }) => {
 						quarter={props.quarter}
 					/>
 				</NotchedOutline>
-			</Card>
+			</StyledCard>
 			{activeCourse && tracking.length && tracking[0]?.sections.length && (
-				<Card className="styleCard">
+				<StyledCard>
 					<NotchedOutline width={66} title={'Sections'}>
 						<SectionCard
 							section={tracking[0].sections}
 							setting={activeCourse.settings?.slice(1) ?? []}
 						/>
 					</NotchedOutline>
-				</Card>
+				</StyledCard>
 			)}
-			<Card className="styleCard">
+			<StyledCard>
 				<NotchedOutline width={50} title={'Grades'} inner={<GradesCard />} />
-			</Card>
+			</StyledCard>
 			<div>
-				<span className="third">
-					<Card className="styleCard">
-						<NotchedOutline width={72} title={'Professor'}>
-							<ProfCard
-								rmp={props.rmp}
-								name={
-									(activeCourse?.instructor?.first + ' ' + activeCourse?.instructor?.last).trim() ||
-									'STAFF'
-								}
-							/>
-						</NotchedOutline>
-					</Card>
-				</span>
-				<span className="third">
-					<Card className="styleCard">
-						<NotchedOutline width={50} title={'Major'}>
-							<MajorCard />
-						</NotchedOutline>
-					</Card>
-				</span>
-				<span className="third">
-					<Card className="styleCard">
-						<NotchedOutline width={66} title={'Location'}>
-							<LocCard
-								location={
-									activeCourse?.settings?.length ? activeCourse.settings[0].location : 'TBA'
-								}
-							/>
-						</NotchedOutline>
-					</Card>
-				</span>
+				<InlineStyledCard n={3}>
+					<NotchedOutline width={72} title={'Professor'}>
+						<ProfCard
+							rmp={props.rmp}
+							name={
+								(activeCourse?.instructor?.first + ' ' + activeCourse?.instructor?.last).trim() ||
+								'STAFF'
+							}
+						/>
+					</NotchedOutline>
+				</InlineStyledCard>
+				<InlineStyledCard n={3}>
+					<NotchedOutline width={50} title={'Major'}>
+						<MajorCard />
+					</NotchedOutline>
+				</InlineStyledCard>
+				<InlineStyledCard n={3}>
+					<NotchedOutline width={66} title={'Location'}>
+						<LocCard
+							location={activeCourse?.settings?.length ? activeCourse.settings[0].location : 'TBA'}
+						/>
+					</NotchedOutline>
+				</InlineStyledCard>
 			</div>
 			{/* <FloatButton onClick={props.closeDetail}>BACK</FloatButton> */}
 		</Drawer>

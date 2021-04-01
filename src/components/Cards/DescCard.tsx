@@ -24,7 +24,9 @@ export interface DescCardProps {
 }
 
 const TextBlock = styled(Typography)`
-	display: inline-block !important;
+	&& {
+		display: inline-block;
+	}
 	width: 50%;
 `;
 
