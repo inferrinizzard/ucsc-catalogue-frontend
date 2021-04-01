@@ -69,7 +69,10 @@ export interface AppState {
 
 const quarter: number = q[q[0].code.toString().endsWith('4') ? 1 : 0].code;
 
-export const ActiveCourseContext = createContext(null as Course | null);
+export const CourseContext = createContext({ active: null, list: [] } as {
+	active: Course | null;
+	list: Course[];
+});
 const theme = {
 	topLinerHeight: '2.5rem',
 	selectDrawerWidth: 12.5,
@@ -114,9 +117,9 @@ class App extends React.Component<AppProps, AppState> {
 							paddingTop: theme.topLinerHeight,
 							height: `calc(100% - ${theme.topLinerHeight})`,
 						}}>
-						<ActiveCourseContext.Provider value={this.props.activeCourse}>
+						<CourseContext.Provider
+							value={{ active: this.props.activeCourse, list: this.props.courses }}>
 							<SelectDrawer
-								courses={this.props.courses}
 								backup={this.props.backup}
 								sortKey={this.props.sortKey}
 								open={!this.props.activeCourse}
@@ -131,7 +134,6 @@ class App extends React.Component<AppProps, AppState> {
 								search={this.props.search}
 							/>
 							<Grid
-								courses={this.props.courses}
 								open={!!this.props.activeCourse}
 								openDetail={this.setActive}
 								scrollTo={this.scrollTo}
@@ -156,7 +158,7 @@ class App extends React.Component<AppProps, AppState> {
 								rmp={this.props.rmp}
 							/>
 							{/* <BottomTabs /> */}
-						</ActiveCourseContext.Provider>
+						</CourseContext.Provider>
 					</div>
 				</ThemeProvider>
 			</div>

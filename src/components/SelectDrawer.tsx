@@ -23,7 +23,6 @@ import { Filter, Course, CourseType, FilterDomain } from '../store/course';
 import { isMobileOnly, MobileOnlyView } from 'react-device-detect';
 
 export interface SelectDrawerProps {
-	courses: Course[];
 	backup: Course[];
 	sortKey: CourseType;
 	open: boolean;

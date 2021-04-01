@@ -6,7 +6,7 @@ import Card from '@material-ui/core/Card';
 import Drawer from '@material-ui/core/Drawer';
 import Fab from '@material-ui/core/Fab';
 
-import { ActiveCourseContext } from '../App';
+import { CourseContext } from '../App';
 import DescCard from './Cards/DescCard';
 import EnrollCard from './Cards/EnrollCard';
 import GradesCard from './Cards/GradesCard';
@@ -45,13 +45,13 @@ const FloatButton = styled(Fab)`
 `;
 
 const CourseDrawer: React.FC<CourseDrawerProps> = ({ tracking, ...props }) => {
-	const course = useContext(ActiveCourseContext);
+	const activeCourse = useContext(CourseContext).active;
 	const theme = useContext(ThemeContext);
 
 	return (
 		<Drawer
 			anchor={isMobileOnly ? 'bottom' : 'right'}
-			open={!!course}
+			open={!!activeCourse}
 			variant="persistent"
 			elevation={1}
 			PaperProps={{
@@ -78,7 +78,7 @@ const CourseDrawer: React.FC<CourseDrawerProps> = ({ tracking, ...props }) => {
 				<NotchedOutline width={52} title={'Details'}>
 					<DescCard
 						basketCourses={props.basketCourses}
-						courseData={course}
+						courseData={activeCourse}
 						tracking={tracking.length ? tracking[0] : null}
 						addBasket={props.addBasket}
 						removeBasket={props.removeBasket}
@@ -95,10 +95,13 @@ const CourseDrawer: React.FC<CourseDrawerProps> = ({ tracking, ...props }) => {
 					/>
 				</NotchedOutline>
 			</Card>
-			{course && tracking.length && tracking[0]?.sections.length && (
+			{activeCourse && tracking.length && tracking[0]?.sections.length && (
 				<Card className="styleCard">
 					<NotchedOutline width={66} title={'Sections'}>
-						<SectionCard section={tracking[0].sections} setting={course.settings?.slice(1) ?? []} />
+						<SectionCard
+							section={tracking[0].sections}
+							setting={activeCourse.settings?.slice(1) ?? []}
+						/>
 					</NotchedOutline>
 				</Card>
 			)}
@@ -112,7 +115,8 @@ const CourseDrawer: React.FC<CourseDrawerProps> = ({ tracking, ...props }) => {
 							<ProfCard
 								rmp={props.rmp}
 								name={
-									(course?.instructor?.first + ' ' + course?.instructor?.last).trim() || 'STAFF'
+									(activeCourse?.instructor?.first + ' ' + activeCourse?.instructor?.last).trim() ||
+									'STAFF'
 								}
 							/>
 						</NotchedOutline>
@@ -128,7 +132,11 @@ const CourseDrawer: React.FC<CourseDrawerProps> = ({ tracking, ...props }) => {
 				<span className="third">
 					<Card className="styleCard">
 						<NotchedOutline width={66} title={'Location'}>
-							<LocCard location={course?.settings?.length ? course.settings[0].location : 'TBA'} />
+							<LocCard
+								location={
+									activeCourse?.settings?.length ? activeCourse.settings[0].location : 'TBA'
+								}
+							/>
 						</NotchedOutline>
 					</Card>
 				</span>

@@ -6,7 +6,7 @@ import CardContent from '@material-ui/core/CardContent';
 import Divider from '@material-ui/core/Divider';
 import Typography from '@material-ui/core/Typography';
 
-import { ActiveCourseContext } from '../../App';
+import { CourseContext } from '../../App';
 import { Course, CourseEnrollment } from '../../models/course.model';
 import { isMobileOnly } from 'react-device-detect';
 
@@ -20,7 +20,7 @@ export interface ClassCardProps {
 
 const ClassCard: React.FC<ClassCardProps> = ({ width, courseData, ...props }) => {
 	const [tracking, setTracking] = useState(props.tracking);
-	const activeCourse = useContext(ActiveCourseContext);
+	const activeCourse = useContext(CourseContext).active;
 
 	const margin = { x: 0.25, y: 0.15 };
 	return (

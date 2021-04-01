@@ -5,7 +5,7 @@ import Drawer from '@material-ui/core/Drawer';
 import Typography from '@material-ui/core/Typography';
 
 import ClassCard from './ClassCard';
-import { ActiveCourseContext } from '../../App';
+import { CourseContext } from '../../App';
 import { Course, CourseEnrollment } from '../../models/course.model';
 import { CourseEpics } from '../../store/course';
 
