@@ -4,7 +4,7 @@ import styled, { ThemeContext } from 'styled-components';
 import Button from '@material-ui/core/Button';
 import Card from '@material-ui/core/Card';
 import Drawer from '@material-ui/core/Drawer';
-import Fab from '@material-ui/core/Fab';
+import Close from '@material-ui/icons/CloseRounded';
 
 import { CourseContext } from '../App';
 import DescCard from './Cards/DescCard';
@@ -46,14 +46,15 @@ const InlineStyledCard = styled(StyledCard).attrs((p: { n?: number }) => ({ n: p
 	display: inline-block;
 `;
 
-const Spacer = styled.div`
-	margin-top: 30px;
-`;
-
-const FloatButton = styled(Fab)`
-	position: sticky !important;
-	bottom: 25px;
-	left: 85%;
+const DrawerHeader = styled.div`
+	position: sticky;
+	top: 0;
+	width: auto;
+	display: flex;
+	justify-content: space-between;
+	padding: 0.25rem 0.5rem;
+	z-index: ${p => p.theme.cardHeightPlus1};
+	background-color: ${p => p.theme.cardBlue};
 `;
 
 const CourseDrawer: React.FC<CourseDrawerProps> = ({ tracking, ...props }) => {
@@ -69,13 +70,14 @@ const CourseDrawer: React.FC<CourseDrawerProps> = ({ tracking, ...props }) => {
 			PaperProps={{
 				style: {
 					width: isMobileOnly ? '100%' : `${(100 - theme.selectDrawerWidth) / 2}%`,
-					height: isMobileOnly ? '50%' : undefined,
+					height: isMobileOnly ? '50%' : `calc(100% - ${theme.topLinerHeight})`,
+					marginTop: isMobileOnly ? 0 : theme.topLinerHeight,
 				},
 			}}>
 			{isMobileOnly ? (
 				<Button
 					fullWidth
-					onClick={e => props.closeDetail()}
+					onClick={props.closeDetail}
 					style={{
 						backgroundColor: 'aliceblue',
 						position: 'sticky',
@@ -84,7 +86,21 @@ const CourseDrawer: React.FC<CourseDrawerProps> = ({ tracking, ...props }) => {
 					<Typography>{'Close'}</Typography>
 				</Button>
 			) : (
-				<Spacer />
+				<DrawerHeader>
+					<Typography variant="h5" style={{ display: 'inline-block' }}>
+						Course Details
+					</Typography>
+					<Button
+						onClick={props.closeDetail}
+						style={{
+							padding: '3px',
+							height: 'fit-content',
+							minWidth: 'fit-content',
+							marginRight: '1rem',
+						}}>
+						<Close fontSize="large" />
+					</Button>
+				</DrawerHeader>
 			)}
 			<StyledCard>
 				<NotchedOutline width={52} title={'Details'}>
@@ -145,7 +161,6 @@ const CourseDrawer: React.FC<CourseDrawerProps> = ({ tracking, ...props }) => {
 					</NotchedOutline>
 				</InlineStyledCard>
 			</div>
-			{/* <FloatButton onClick={props.closeDetail}>BACK</FloatButton> */}
 		</Drawer>
 	);
 };

@@ -75,7 +75,10 @@ export const CourseContext = createContext({ active: null, list: [] } as {
 });
 const theme = {
 	topLinerHeight: '2.5rem',
-	selectDrawerWidth: 12.5,
+	topLinerBlue: '#5d92dd',
+	selectDrawerWidth: 12.5, // %
+	cardHeightPlus1: 1201,
+	cardBlue: '#92c2ff',
 };
 
 class App extends React.Component<AppProps, AppState> {

@@ -1,5 +1,7 @@
 import React, { useState, useContext } from 'react';
 
+import styled, { ThemeContext } from 'styled-components';
+
 import Card from '@material-ui/core/Card';
 import CardActionArea from '@material-ui/core/CardActionArea';
 import CardContent from '@material-ui/core/CardContent';
@@ -21,6 +23,7 @@ export interface ClassCardProps {
 const ClassCard: React.FC<ClassCardProps> = ({ width, courseData, ...props }) => {
 	const [tracking, setTracking] = useState(props.tracking);
 	const activeCourse = useContext(CourseContext).active;
+	const theme = useContext(ThemeContext);
 
 	const margin = { x: 0.25, y: 0.15 };
 	return (
@@ -32,7 +35,8 @@ const ClassCard: React.FC<ClassCardProps> = ({ width, courseData, ...props }) =>
 			}}>
 			<CardActionArea
 				style={{
-					backgroundColor: activeCourse?.number === courseData.number ? '#92c2ff' : 'transparent',
+					backgroundColor:
+						activeCourse?.number === courseData.number ? theme.cardBlue : 'transparent',
 				}}
 				onClick={e => props.openDetail(courseData, props.row)}>
 				<CardContent>

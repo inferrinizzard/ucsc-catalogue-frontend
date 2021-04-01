@@ -8,8 +8,8 @@ import Typography from '@material-ui/core/Typography';
 
 const TopBar = styled.div`
 	width: 100%;
-	background: #5d92dd;
-	z-index: 1201;
+	background: ${p => p.theme.topLinerBlue};
+	z-index: ${p => p.theme.cardHeightPlus1};
 	position: fixed;
 	top: 0;
 	height: ${p => p.theme.topLinerHeight};
