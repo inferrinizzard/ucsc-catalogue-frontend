@@ -66,6 +66,26 @@ const initialState: CourseState = {
 	bookmarks: [],
 };
 //#region actions
+export const DummyCourse: Course = {
+	code: '',
+	classSection: '',
+	name: '',
+	description: '',
+	type: '',
+	credit: -1,
+	ge: [],
+	prerequisites: null,
+	combinedSections: [],
+	sections: [],
+	number: 0,
+	settings: null,
+	capacity: null,
+	instructor: null,
+	subject: '',
+	subjectCode: '',
+	level: '',
+};
+
 enum ActionTypes {
 	FETCH_API = 'fetch',
 	FETCH_API_SUCCESS = 'fetch-success',
@@ -146,10 +166,10 @@ export const removeFilterAction = (filter: Filter): RemoveFilterAction => ({
 
 interface SetActiveAction extends Action {
 	type: ActionTypes.SET_ACTIVE;
-	course: Course | null;
+	course: Course;
 	quarter: string;
 }
-export const setActiveAction = (course: Course | null, quarter: string): SetActiveAction => ({
+export const setActiveAction = (course: Course, quarter: string): SetActiveAction => ({
 	type: ActionTypes.SET_ACTIVE,
 	course,
 	quarter,
@@ -291,7 +311,7 @@ export default function courseReducer(
 			}
 			return state;
 		case ActionTypes.SET_ACTIVE:
-			return { ...state, fetchTracking: true };
+			return { ...state, activeCourse: { ...DummyCourse, ...action.course }, fetchTracking: true };
 		case ActionTypes.CLOSE_ACTIVE:
 			return {
 				...state,
@@ -396,33 +416,23 @@ const fetchCoursesEpic: Epic<CourseActions> = (action$, state$) =>
 			),
 			curStart: await API.fetchDate(action.quarter),
 		})),
-		map(courses =>
-			fetchSuccessAction(courses['courses'], courses['prevStart'], courses['curStart'])
-		)
+		map(courses => fetchSuccessAction(courses.courses, courses.prevStart, courses.curStart))
 	);
 
 const trackCourseEpic: Epic<CourseActions> = (action$, state$) =>
 	action$.ofType(ActionTypes.SET_ACTIVE).pipe(
 		map(action => action as SetActiveAction),
-		switchMap(async action => {
-			const course = { ...action.course } as Course;
-			course['fullName'] = action.course
-				? await API.fetchName(action.course.number, action.quarter)
-				: '';
-			const tracking: CourseEnrollment[] = action.course
-				? await API.tracking(action.course.number, action.quarter)
-				: [];
-			const rmp: professorRating =
-				action.course && action.course.instructor
-					? await API.rmp(
-							await API.getProfId(
-								action.course.instructor['first'] + action.course.instructor['last']
-							)
-					  )
-					: ({} as professorRating);
-			return { tracking, course, rmp };
-		}),
-		map(data => activeSuccessAction(data['tracking'], data['course'], data['rmp']))
+		switchMap(async ({ course: course$, quarter: quarter$ }) => ({
+			course: await API.fetchName(course$.number, quarter$).then(fullName => ({
+				...course$,
+				fullName,
+			})),
+			tracking: await API.tracking(course$.number, quarter$),
+			rmp: course$.instructor
+				? await API.getProfId(course$.instructor.first + course$.instructor.last).then(API.rmp)
+				: ({} as professorRating),
+		})),
+		map(data => activeSuccessAction(data.tracking, data.course, data.rmp))
 	);
 const bookmarkEpic: Epic<CourseActions> = (action$, state$) =>
 	action$.ofType(ActionTypes.ADD_BOOKMARK, ActionTypes.REMOVE_BOOKMARK).pipe(

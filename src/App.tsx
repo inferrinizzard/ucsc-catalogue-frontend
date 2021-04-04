@@ -54,7 +54,7 @@ interface PropsToDispatch {
 	removeFilter: (f: Filter) => void;
 	sort: (n: CourseType) => void;
 	search: (name: string) => void;
-	setActive: (c: Course | null, q: string) => void;
+	setActive: (c: Course, q: string) => void;
 	closeActive: () => void;
 	addBookmark: (c: Course) => void;
 	removeBookmark: (c: Course) => void;
@@ -92,7 +92,7 @@ class App extends React.Component<AppProps, AppState> {
 	};
 
 	//#region prop functions
-	setActive = (course: Course | null, row?: number) => {
+	setActive = (course: Course, row?: number) => {
 		if (row) this.setState({ scrollIndex: row });
 		this.props.setActive(course, this.props.quarter.toString());
 	};
