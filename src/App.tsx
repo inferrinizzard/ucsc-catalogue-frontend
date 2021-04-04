@@ -45,6 +45,7 @@ interface PropsFromStore {
 	curStart: Date;
 	rmp: professorRating;
 	bookmarks: Course[];
+	loading: boolean;
 }
 
 interface PropsToDispatch {
@@ -136,6 +137,7 @@ class App extends React.Component<AppProps, AppState> {
 								search={this.props.search}
 							/>
 							<Grid
+								loading={this.props.loading}
 								open={!!this.props.activeCourse}
 								openDetail={this.setActive}
 								scrollTo={this.scrollTo}
@@ -179,6 +181,7 @@ const mapStateToProps = (state: ReduxState): PropsFromStore => ({
 	curStart: state.course.curStart,
 	rmp: state.course.rmp,
 	bookmarks: state.course.bookmarks,
+	loading: state.course.loading,
 });
 const mapDispatchToProps = (dispatch: Dispatch<ReduxAction>): PropsToDispatch => ({
 	loadQuarter: quarter => dispatch(fetchAction(quarter)),

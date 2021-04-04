@@ -16,6 +16,7 @@ export interface GridProps {
 	scrollIndex: number;
 	scrollTo: (row: number) => void;
 	open: boolean;
+	loading: boolean;
 }
 
 const GridContainer = styled.div<Pick<GridProps, 'open'>>`
