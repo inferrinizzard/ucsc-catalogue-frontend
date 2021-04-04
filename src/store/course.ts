@@ -66,25 +66,6 @@ const initialState: CourseState = {
 	bookmarks: [],
 };
 //#region actions
-export const DummyCourse: Course = {
-	code: '',
-	classSection: '',
-	name: '',
-	description: '',
-	type: '',
-	credit: -1,
-	ge: [],
-	prerequisites: null,
-	combinedSections: [],
-	sections: [],
-	number: 0,
-	settings: null,
-	capacity: null,
-	instructor: null,
-	subject: '',
-	subjectCode: '',
-	level: '',
-};
 
 enum ActionTypes {
 	FETCH_API = 'fetch',
@@ -311,7 +292,11 @@ export default function courseReducer(
 			}
 			return state;
 		case ActionTypes.SET_ACTIVE:
-			return { ...state, activeCourse: { ...DummyCourse, ...action.course }, fetchTracking: true };
+			return {
+				...state,
+				activeCourse: { ...action.course, fullName: 'DUMMY' },
+				fetchTracking: true,
+			};
 		case ActionTypes.CLOSE_ACTIVE:
 			return {
 				...state,
