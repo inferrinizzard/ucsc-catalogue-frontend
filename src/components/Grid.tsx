@@ -2,6 +2,7 @@ import React, { useContext } from 'react';
 import styled from 'styled-components';
 import toPX from 'to-px';
 
+import Skeleton from '@material-ui/lab/Skeleton';
 import { AutoSizer } from 'react-virtualized/dist/es/AutoSizer';
 import { List, ListRowProps } from 'react-virtualized/dist/es/List';
 
@@ -30,12 +31,14 @@ const GridContainer = styled.div<Pick<GridProps, 'open'>>`
 const Grid: React.FC<GridProps> = props => {
 	const courses = useContext(CourseContext).list;
 
+	const DummyArray = new Array(100).fill(0).map((_, i) => i);
+
 	return (
 		<GridContainer open={props.open}>
 			<AutoSizer>
 				{({ height, width }: { height: number; width: number }) => {
 					const columns = isMobileOnly ? 2 : props.open ? 4 : 8;
-					const rows = Math.ceil(courses.length / columns);
+					const rows = props.loading ? 10 : Math.ceil(courses.length / columns);
 					const cardWidth = 100 / columns,
 						cardHeight = 6;
 					return (
@@ -50,21 +53,34 @@ const Grid: React.FC<GridProps> = props => {
 							style={{ outline: 'none' }}
 							rowRenderer={({ index, key, style }: ListRowProps) => {
 								const fromIndex: number = index * columns;
-								const toIndex: number = Math.min(fromIndex + columns, courses.length);
+								const toIndex: number = Math.min(
+									fromIndex + columns,
+									props.loading ? DummyArray.length : courses.length
+								);
 								return (
 									<div key={key} style={{ ...style, padding: '0 0.5rem' }}>
-										{courses.slice(fromIndex, toIndex).map((course, i) => (
-											<ClassCard
-												key={course.subjectCode + '_' + i}
-												row={index}
-												courseData={course}
-												width={cardWidth}
-												openDetail={(course, row) => {
-													props.openDetail(course, row);
-													row && props.scrollTo(row);
-												}}
-											/>
-										))}
+										{props.loading
+											? DummyArray.slice(fromIndex, toIndex).map(i => (
+													<Skeleton
+														key={i}
+														variant={'rect'}
+														width={`calc(${cardWidth}% - 0.5rem)`}
+														height={cardHeight - 0.3 + 'rem'}
+														style={{ margin: '0.25rem 0.15rem', display: 'inline-block' }}
+													/>
+											  ))
+											: courses.slice(fromIndex, toIndex).map((course, i) => (
+													<ClassCard
+														key={course.subjectCode + '_' + i}
+														row={index}
+														courseData={course}
+														width={cardWidth}
+														openDetail={(course, row) => {
+															props.openDetail(course, row);
+															row && props.scrollTo(row);
+														}}
+													/>
+											  ))}
 									</div>
 								);
 							}}
