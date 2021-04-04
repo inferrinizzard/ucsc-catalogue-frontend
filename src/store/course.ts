@@ -304,7 +304,7 @@ export default function courseReducer(
 		case ActionTypes.ACTIVE_SUCCESS:
 			return {
 				...state,
-				tracking: { fetching: action.data.length > 0, data: action.data },
+				tracking: { fetching: false, data: action.data },
 				activeCourse: action.course,
 				rmp: action.rmp,
 			};

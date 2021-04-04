@@ -12,13 +12,14 @@ import KeyboardArrowDownRounded from '@material-ui/icons/KeyboardArrowDownRounde
 import Typography from '@material-ui/core/Typography';
 import Bookmark from '@material-ui/icons/Bookmark';
 import BookmarkBorder from '@material-ui/icons/BookmarkBorder';
+import Skeleton from '@material-ui/lab/Skeleton';
 
 import { Course, CourseEnrollment } from '../../models/course.model';
 
 export interface DescCardProps {
 	basketCourses: Course[];
 	courseData: Course | null;
-	tracking: CourseEnrollment | null;
+	tracking: { fetching: boolean; data: CourseEnrollment | null };
 	addBasket: (c: Course) => void;
 	removeBasket: (c: Course) => void;
 }
@@ -30,7 +31,11 @@ const TextBlock = styled(Typography)`
 	width: 50%;
 `;
 
-const DescCard: React.FC<DescCardProps> = ({ courseData: course, tracking, ...props }) => {
+const DescCard: React.FC<DescCardProps> = ({
+	courseData: course,
+	tracking: { fetching: fetchTracking, data: tracking },
+	...props
+}) => {
 	let inBasket = course && props.basketCourses.some(cur => cur.number === course!.number);
 	return (
 		<React.Fragment>
@@ -53,7 +58,7 @@ const DescCard: React.FC<DescCardProps> = ({ courseData: course, tracking, ...pr
 			{course && (
 				<CardContent>
 					<TextBlock variant="body2">
-						{'Date and Time: ' +
+						{'Day and Time: ' +
 							(course.settings?.length
 								? course.settings[0].day.map(d => d.substring(0, 2)).join('') +
 								  ' ' +
@@ -62,25 +67,23 @@ const DescCard: React.FC<DescCardProps> = ({ courseData: course, tracking, ...pr
 								  course.settings[0].time.end
 								: 'TBA')}
 					</TextBlock>
-					<TextBlock variant="body2">{'Class type: ' + course.type}</TextBlock>
+					<TextBlock variant="body2">{'Class Type: ' + course.type}</TextBlock>
 					<div />
 					<TextBlock variant="body2">
-						{
-							'GE: ' + (course.ge.length ? course.ge.join(' ') : 'N/a')
-							// 	+
-							// ', ' +
-							// 'Credits: ' +
-							// course.credit
-						}
+						{'GE: ' + (course.ge.length ? course.ge.join(' ') : 'N/a')}
 					</TextBlock>
 					<TextBlock variant="body2">{'Course Number: ' + course.number}</TextBlock>
 					<div />
 					<TextBlock variant="body2">
-						{'Number Enrolled: ' +
+						{'Number Enrolled: '}
+						{fetchTracking && <Skeleton width={'5rem'} style={{ display: 'inline-block' }} />}
+						{!fetchTracking &&
 							(tracking ? tracking.enrolled + '/' + tracking.capacity : 'Unavailable')}
 					</TextBlock>
 					<TextBlock variant="body2">
-						{'Number Waitlist: ' +
+						{'Number Waitlisted: '}
+						{fetchTracking && <Skeleton width={'5rem'} style={{ display: 'inline-block' }} />}
+						{!fetchTracking &&
 							(tracking ? tracking.waitlistTotal + '/' + tracking.waitlistCapacity : 'Unavailable')}
 					</TextBlock>
 					<div />

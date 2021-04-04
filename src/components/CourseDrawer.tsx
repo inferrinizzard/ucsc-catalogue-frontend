@@ -107,7 +107,10 @@ const CourseDrawer: React.FC<CourseDrawerProps> = ({ tracking, ...props }) => {
 					<DescCard
 						basketCourses={props.basketCourses}
 						courseData={activeCourse}
-						tracking={tracking.data.length ? tracking.data[0] : null}
+						tracking={{
+							fetching: tracking.fetching,
+							data: tracking.data.length ? tracking.data[0] : null,
+						}}
 						addBasket={props.addBasket}
 						removeBasket={props.removeBasket}
 					/>
