@@ -10,7 +10,6 @@ import q from '../components/Data/quarters.json';
 
 export interface CourseState {
 	loading: boolean;
-	fetchTracking: boolean;
 	filters: FilterList<FilterDomain, CourseType>;
 	sort: CourseType;
 	courses: Course[];
@@ -18,7 +17,7 @@ export interface CourseState {
 	backup: Course[];
 	activeCourse: Course | null;
 	quarter: number;
-	tracking: CourseEnrollment[];
+	tracking: { fetching: boolean; data: CourseEnrollment[] };
 	prevStart: Date;
 	curStart: Date;
 	search: string;
@@ -28,7 +27,7 @@ export interface CourseState {
 //#region define types
 export type CourseType = keyof Course;
 export { Course } from '../models/course.model';
-export type Filter = { type: CourseType; name: string };
+export type Filter = { type: FilterDomain; name: string };
 export enum FilterDomain {
 	subject = 'subject',
 	level = 'level',
@@ -45,7 +44,6 @@ export declare type FilterList<
 //#endregion
 const initialState: CourseState = {
 	loading: true,
-	fetchTracking: false,
 	filters: {
 		subject: [],
 		level: [],
@@ -58,7 +56,7 @@ const initialState: CourseState = {
 	backup: [],
 	activeCourse: null,
 	quarter: q[q[0].code.toString().endsWith('4') ? 1 : 0].code,
-	tracking: [],
+	tracking: { fetching: false, data: [] },
 	prevStart: new Date(0),
 	curStart: new Date(0),
 	search: '',
@@ -66,6 +64,7 @@ const initialState: CourseState = {
 	bookmarks: [],
 };
 //#region actions
+
 enum ActionTypes {
 	FETCH_API = 'fetch',
 	FETCH_API_SUCCESS = 'fetch-success',
@@ -146,10 +145,10 @@ export const removeFilterAction = (filter: Filter): RemoveFilterAction => ({
 
 interface SetActiveAction extends Action {
 	type: ActionTypes.SET_ACTIVE;
-	course: Course | null;
+	course: Course;
 	quarter: string;
 }
-export const setActiveAction = (course: Course | null, quarter: string): SetActiveAction => ({
+export const setActiveAction = (course: Course, quarter: string): SetActiveAction => ({
 	type: ActionTypes.SET_ACTIVE,
 	course,
 	quarter,
@@ -291,19 +290,21 @@ export default function courseReducer(
 			}
 			return state;
 		case ActionTypes.SET_ACTIVE:
-			return { ...state, fetchTracking: true };
+			return {
+				...state,
+				activeCourse: { ...action.course, fullName: 'DUMMY' },
+				tracking: { fetching: true, data: [] },
+			};
 		case ActionTypes.CLOSE_ACTIVE:
 			return {
 				...state,
 				activeCourse: null,
-				tracking: [],
-				fetchTracking: false,
+				tracking: { fetching: false, data: [] },
 			};
 		case ActionTypes.ACTIVE_SUCCESS:
 			return {
 				...state,
-				fetchTracking: false,
-				tracking: action.data,
+				tracking: { fetching: false, data: action.data },
 				activeCourse: action.course,
 				rmp: action.rmp,
 			};
@@ -325,8 +326,7 @@ const Sort = (courses: Course[], sort: CourseType): Course[] =>
 	[...courses].sort((a: Course, b: Course) => InnerSort(a, b, sort));
 
 const InnerSort = (a: Course, b: Course, sort: CourseType): number => {
-	const left = a[sort];
-	const right = b[sort];
+	const [left, right] = [a[sort], b[sort]];
 	if (left && right) {
 		if (left > right) return 1;
 		if (left < right) return -1;
@@ -336,12 +336,10 @@ const InnerSort = (a: Course, b: Course, sort: CourseType): number => {
 
 const Search = (courses: Course[], search: string): Course[] =>
 	search
-		? courses.filter(
-				f =>
-					f.name &&
-					[f.subjectCode, f.name.toUpperCase(), f.subject + ' ' + f.code].some(crit =>
-						crit.includes(search)
-					)
+		? courses.filter(f =>
+				[f.subjectCode, f.name?.toUpperCase(), f.subject + ' ' + f.code].some(crit =>
+					crit.includes(search)
+				)
 		  )
 		: courses;
 
@@ -367,8 +365,10 @@ const Filter = (
 	// see if a course passes a single filter
 	const SingleFilter = (course: Course, filter: Filter): boolean =>
 		course[filter.type] instanceof Array
-			? (course[filter.type] as Array<any>).includes(filter.name)
-			: course[filter.type] === filter.name;
+			? (course[filter.type] as Course['ge' | 'combinedSections'])!.includes(filter.name)
+			: // | 'sections'
+			  // | 'settings'
+			  course[filter.type] === filter.name;
 
 	// see if the course satisfies 1 or more filters (OR conditioning)
 	const CourseFilterOR = (course: Course, filters: Filter[]): boolean =>
@@ -376,13 +376,9 @@ const Filter = (
 
 	let processing = [...courses]; // copy into processing
 
-	Object.keys(filterListObj).forEach(_key => {
-		const key = _key as CourseType;
-		const filters: Filter[] = filterListObj[key].map(x => ({
-			type: key,
-			name: x,
-		}));
-		if (!filters.length) return;
+	Object.entries(filterListObj).forEach(([type, _filters]) => {
+		if (!_filters.length) return;
+		const filters: Filter[] = _filters.map(f => ({ type: type as FilterDomain, name: f }));
 
 		// for each iteration, update processing
 		processing = processing.filter(course => CourseFilterOR(course, filters));
@@ -401,33 +397,23 @@ const fetchCoursesEpic: Epic<CourseActions> = (action$, state$) =>
 			),
 			curStart: await API.fetchDate(action.quarter),
 		})),
-		map(courses =>
-			fetchSuccessAction(courses['courses'], courses['prevStart'], courses['curStart'])
-		)
+		map(courses => fetchSuccessAction(courses.courses, courses.prevStart, courses.curStart))
 	);
 
 const trackCourseEpic: Epic<CourseActions> = (action$, state$) =>
 	action$.ofType(ActionTypes.SET_ACTIVE).pipe(
 		map(action => action as SetActiveAction),
-		switchMap(async action => {
-			const course: Course = { ...action.course } as Course;
-			course['fullName'] = action.course
-				? await API.fetchName(action.course.number, action.quarter)
-				: '';
-			const tracking: CourseEnrollment[] = action.course
-				? await API.tracking(action.course.number, action.quarter)
-				: ([] as CourseEnrollment[]);
-			const rmp: professorRating =
-				action.course && action.course.instructor
-					? await API.rmp(
-							await API.getProfId(
-								action.course.instructor['first'] + action.course.instructor['last']
-							)
-					  )
-					: ({} as professorRating);
-			return { tracking: tracking, course: course, rmp: rmp };
-		}),
-		map(data => activeSuccessAction(data['tracking'], data['course'], data['rmp']))
+		switchMap(async ({ course: course$, quarter: quarter$ }) => ({
+			course: await API.fetchName(course$.number, quarter$).then(fullName => ({
+				...course$,
+				fullName,
+			})),
+			tracking: await API.tracking(course$.number, quarter$),
+			rmp: course$.instructor
+				? await API.getProfId(course$.instructor.first + course$.instructor.last).then(API.rmp)
+				: ({} as professorRating),
+		})),
+		map(data => activeSuccessAction(data.tracking, data.course, data.rmp))
 	);
 const bookmarkEpic: Epic<CourseActions> = (action$, state$) =>
 	action$.ofType(ActionTypes.ADD_BOOKMARK, ActionTypes.REMOVE_BOOKMARK).pipe(

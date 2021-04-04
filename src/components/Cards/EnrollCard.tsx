@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 
 import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
@@ -21,7 +21,7 @@ export interface EnrollCardProps {
 	quarter: number;
 }
 
-const EnrollCard: React.SFC<EnrollCardProps> = props => {
+const EnrollCard: React.FC<EnrollCardProps> = props => {
 	if (!props.tracking.length) {
 		return (
 			<React.Fragment>
@@ -73,7 +73,6 @@ const EnrollCard: React.SFC<EnrollCardProps> = props => {
 	);
 	let secondPass = datePlus(firstPass, 8);
 	let quarterStart = props.curStart;
-	console.log(quarterStart.toDateString());
 
 	return (
 		<React.Fragment>

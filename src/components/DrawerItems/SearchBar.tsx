@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 
 import TextField from '@material-ui/core/TextField';
 import SearchRounded from '@material-ui/icons/SearchRounded';
@@ -9,19 +9,16 @@ export interface SearchBarProps {
 	search: (name: string) => void;
 }
 
-const SearchBar: React.SFC<SearchBarProps> = props => {
+const SearchBar: React.FC<SearchBarProps> = ({ search }) => {
 	return (
 		<TextField
 			variant="outlined"
 			label="Search"
 			placeholder="Search class by name"
-			onChange={event => props.search(event.target.value.toUpperCase())}
+			onChange={e => search(e.target.value.toUpperCase())}
 			InputProps={{
 				endAdornment: <SearchRounded />,
-				style: {
-					paddingRight: '6px',
-					width: isMobileOnly ? '80vw' : undefined,
-				},
+				style: { paddingRight: '6px', width: isMobileOnly ? '80vw' : undefined },
 			}}
 			style={{
 				padding: '0 .15em .15em',
