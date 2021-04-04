@@ -66,10 +66,10 @@ const Grid: React.FC<GridProps> = props => {
 														variant={'rect'}
 														width={`calc(${cardWidth}% - 0.5rem)`}
 														height={cardHeight - 0.3 + 'rem'}
-														style={{ margin: '0.25rem 0.15rem', display: 'inline-block' }}
+														style={{ margin: '0.25rem 0.25rem', display: 'inline-block' }}
 														animation={{
 															type: 'pulse',
-															stagger: index * 0.1 + j * 0.05,
+															stagger: index * 0.2 + j * 0.1,
 															duration: '3s',
 														}}
 													/>
