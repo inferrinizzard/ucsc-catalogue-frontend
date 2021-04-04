@@ -67,7 +67,7 @@ export interface AppState {
 	scrollIndex: number;
 }
 
-const quarter: number = q[q[0].code.toString().endsWith('4') ? 1 : 0].code;
+const quarter: number = q.find(_q => !_q.code.toString().endsWith('4'))!.code;
 
 export const CourseContext = createContext({ active: null, list: [] } as {
 	active: Course | null;

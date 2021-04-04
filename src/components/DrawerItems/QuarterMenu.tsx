@@ -20,7 +20,9 @@ const quarters: Term[] = quarterData;
 
 const QuarterMenu: React.FC<QuarterMenuProps> = ({ changeQuarter }) => {
 	const [anchor, setAnchor] = useState(null as HTMLElement | null);
-	const [activeQuarter, setQuarter] = useState(quarters[0].name); // replace with prop from app / route-based prop
+	const [activeQuarter, setQuarter] = useState(
+		quarters.find(q => !q.code.toString().endsWith('4'))!.name
+	); // replace with prop from app / route-based prop
 
 	const ITEM_HEIGHT = 48;
 
