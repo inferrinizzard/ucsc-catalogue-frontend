@@ -7,6 +7,7 @@ import { List, ListRowProps } from 'react-virtualized/dist/es/List';
 
 import { CourseContext } from '../App';
 import ClassCard from './DrawerItems/ClassCard';
+import Skeleton from './Cards/Skeleton';
 import { Course } from '../models/course.model';
 
 import { isMobileOnly } from 'react-device-detect';
@@ -30,12 +31,14 @@ const GridContainer = styled.div<Pick<GridProps, 'open'>>`
 const Grid: React.FC<GridProps> = props => {
 	const courses = useContext(CourseContext).list;
 
+	const DummyArray = new Array(100).fill(0).map((_, i) => i);
+
 	return (
 		<GridContainer open={props.open}>
 			<AutoSizer>
 				{({ height, width }: { height: number; width: number }) => {
 					const columns = isMobileOnly ? 2 : props.open ? 4 : 8;
-					const rows = Math.ceil(courses.length / columns);
+					const rows = props.loading ? 10 : Math.ceil(courses.length / columns);
 					const cardWidth = 100 / columns,
 						cardHeight = 6;
 					return (
@@ -50,21 +53,39 @@ const Grid: React.FC<GridProps> = props => {
 							style={{ outline: 'none' }}
 							rowRenderer={({ index, key, style }: ListRowProps) => {
 								const fromIndex: number = index * columns;
-								const toIndex: number = Math.min(fromIndex + columns, courses.length);
+								const toIndex: number = Math.min(
+									fromIndex + columns,
+									props.loading ? DummyArray.length : courses.length
+								);
 								return (
 									<div key={key} style={{ ...style, padding: '0 0.5rem' }}>
-										{courses.slice(fromIndex, toIndex).map((course, i) => (
-											<ClassCard
-												key={course.subjectCode + '_' + i}
-												row={index}
-												courseData={course}
-												width={cardWidth}
-												openDetail={(course, row) => {
-													props.openDetail(course, row);
-													row && props.scrollTo(row);
-												}}
-											/>
-										))}
+										{props.loading
+											? DummyArray.slice(fromIndex, toIndex).map((i, j) => (
+													<Skeleton
+														key={i}
+														variant={'rect'}
+														width={`calc(${cardWidth}% - 0.5rem)`}
+														height={cardHeight - 0.3 + 'rem'}
+														style={{ margin: '0.25rem 0.25rem', display: 'inline-block' }}
+														animation={{
+															type: 'pulse',
+															stagger: index * 0.2 + j * 0.1,
+															duration: '3s',
+														}}
+													/>
+											  ))
+											: courses.slice(fromIndex, toIndex).map((course, i) => (
+													<ClassCard
+														key={course.subjectCode + '_' + i}
+														row={index}
+														courseData={course}
+														width={cardWidth}
+														openDetail={(course, row) => {
+															props.openDetail(course, row);
+															row && props.scrollTo(row);
+														}}
+													/>
+											  ))}
 									</div>
 								);
 							}}
