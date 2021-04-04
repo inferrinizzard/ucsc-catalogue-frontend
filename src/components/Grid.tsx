@@ -2,12 +2,12 @@ import React, { useContext } from 'react';
 import styled from 'styled-components';
 import toPX from 'to-px';
 
-import Skeleton from '@material-ui/lab/Skeleton';
 import { AutoSizer } from 'react-virtualized/dist/es/AutoSizer';
 import { List, ListRowProps } from 'react-virtualized/dist/es/List';
 
 import { CourseContext } from '../App';
 import ClassCard from './DrawerItems/ClassCard';
+import Skeleton from './Cards/Skeleton';
 import { Course } from '../models/course.model';
 
 import { isMobileOnly } from 'react-device-detect';
@@ -60,13 +60,18 @@ const Grid: React.FC<GridProps> = props => {
 								return (
 									<div key={key} style={{ ...style, padding: '0 0.5rem' }}>
 										{props.loading
-											? DummyArray.slice(fromIndex, toIndex).map(i => (
+											? DummyArray.slice(fromIndex, toIndex).map((i, j) => (
 													<Skeleton
 														key={i}
 														variant={'rect'}
 														width={`calc(${cardWidth}% - 0.5rem)`}
 														height={cardHeight - 0.3 + 'rem'}
 														style={{ margin: '0.25rem 0.15rem', display: 'inline-block' }}
+														animation={{
+															type: 'pulse',
+															stagger: index * 0.1 + j * 0.05,
+															duration: '3s',
+														}}
 													/>
 											  ))
 											: courses.slice(fromIndex, toIndex).map((course, i) => (

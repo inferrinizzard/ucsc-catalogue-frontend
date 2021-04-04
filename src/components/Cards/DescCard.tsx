@@ -12,8 +12,8 @@ import KeyboardArrowDownRounded from '@material-ui/icons/KeyboardArrowDownRounde
 import Typography from '@material-ui/core/Typography';
 import Bookmark from '@material-ui/icons/Bookmark';
 import BookmarkBorder from '@material-ui/icons/BookmarkBorder';
-import Skeleton from '@material-ui/lab/Skeleton';
 
+import Skeleton from './Skeleton';
 import { Course, CourseEnrollment } from '../../models/course.model';
 
 export interface DescCardProps {

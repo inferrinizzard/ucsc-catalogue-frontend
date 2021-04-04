@@ -4,7 +4,6 @@ import styled, { ThemeContext } from 'styled-components';
 import Button from '@material-ui/core/Button';
 import Card from '@material-ui/core/Card';
 import Drawer from '@material-ui/core/Drawer';
-import Skeleton from '@material-ui/lab/Skeleton';
 import Close from '@material-ui/icons/CloseRounded';
 
 import { CourseContext } from '../App';
@@ -15,6 +14,7 @@ import ProfCard from './Cards/ProfCard';
 import MajorCard from './Cards/MajorCard';
 import LocCard from './Cards/LocCard';
 import SectionCard from './Cards/SectionCard';
+import Skeleton from './Cards/Skeleton';
 import NotchedOutline from './DrawerItems/NotchedOutline';
 
 import { isMobileOnly } from 'react-device-detect';
