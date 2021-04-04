@@ -40,10 +40,9 @@ interface PropsFromStore {
 	sortKey: CourseType;
 	activeCourse: Course | null;
 	quarter: number;
-	tracking: CourseEnrollment[];
+	tracking: { fetching: boolean; data: CourseEnrollment[] };
 	prevStart: Date;
 	curStart: Date;
-	loading: boolean;
 	rmp: professorRating;
 	bookmarks: Course[];
 }
@@ -145,7 +144,7 @@ class App extends React.Component<AppProps, AppState> {
 							<Basket
 								courses={this.props.bookmarks}
 								openDetail={this.setActive}
-								tracking={this.props.tracking}
+								tracking={this.props.tracking.data}
 								activeOpen={!!this.props.activeCourse}
 							/>
 							<CourseDrawer
@@ -157,7 +156,6 @@ class App extends React.Component<AppProps, AppState> {
 								prevStart={this.props.prevStart}
 								curStart={this.props.curStart}
 								quarter={this.props.quarter}
-								loading={this.props.loading}
 								rmp={this.props.rmp}
 							/>
 							{/* <BottomTabs /> */}
@@ -179,7 +177,6 @@ const mapStateToProps = (state: ReduxState): PropsFromStore => ({
 	tracking: state.course.tracking,
 	prevStart: state.course.prevStart,
 	curStart: state.course.curStart,
-	loading: state.course.fetchTracking,
 	rmp: state.course.rmp,
 	bookmarks: state.course.bookmarks,
 });

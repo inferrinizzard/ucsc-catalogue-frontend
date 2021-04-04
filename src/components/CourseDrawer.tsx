@@ -26,11 +26,10 @@ export interface CourseDrawerProps {
 	removeBasket: (c: Course) => void;
 	basketCourses: Course[];
 	closeDetail: () => void;
-	tracking: CourseEnrollment[];
+	tracking: { fetching: boolean; data: CourseEnrollment[] };
 	prevStart: Date;
 	curStart: Date;
 	quarter: number;
-	loading: boolean;
 	rmp: professorRating;
 }
 
@@ -107,7 +106,7 @@ const CourseDrawer: React.FC<CourseDrawerProps> = ({ tracking, ...props }) => {
 					<DescCard
 						basketCourses={props.basketCourses}
 						courseData={activeCourse}
-						tracking={tracking.length ? tracking[0] : null}
+						tracking={tracking.data.length ? tracking.data[0] : null}
 						addBasket={props.addBasket}
 						removeBasket={props.removeBasket}
 					/>
@@ -116,19 +115,19 @@ const CourseDrawer: React.FC<CourseDrawerProps> = ({ tracking, ...props }) => {
 			<StyledCard>
 				<NotchedOutline width={74} title={'Enrollment'}>
 					<EnrollCard
-						tracking={tracking}
+						tracking={tracking.data}
 						prevStart={props.prevStart}
 						curStart={props.curStart}
 						quarter={props.quarter}
 					/>
 				</NotchedOutline>
 			</StyledCard>
-			{activeCourse && tracking.length && tracking[0]?.sections.length && (
+			{tracking.data.length && tracking.data[0]?.sections.length && (
 				<StyledCard>
 					<NotchedOutline width={66} title={'Sections'}>
 						<SectionCard
-							section={tracking[0].sections}
-							setting={activeCourse.settings?.slice(1) ?? []}
+							section={tracking.data[0].sections}
+							setting={activeCourse!.settings?.slice(1) ?? []}
 						/>
 					</NotchedOutline>
 				</StyledCard>

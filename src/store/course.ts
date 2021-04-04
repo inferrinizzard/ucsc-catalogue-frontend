@@ -10,7 +10,6 @@ import q from '../components/Data/quarters.json';
 
 export interface CourseState {
 	loading: boolean;
-	fetchTracking: boolean;
 	filters: FilterList<FilterDomain, CourseType>;
 	sort: CourseType;
 	courses: Course[];
@@ -18,7 +17,7 @@ export interface CourseState {
 	backup: Course[];
 	activeCourse: Course | null;
 	quarter: number;
-	tracking: CourseEnrollment[];
+	tracking: { fetching: boolean; data: CourseEnrollment[] };
 	prevStart: Date;
 	curStart: Date;
 	search: string;
@@ -45,7 +44,6 @@ export declare type FilterList<
 //#endregion
 const initialState: CourseState = {
 	loading: true,
-	fetchTracking: false,
 	filters: {
 		subject: [],
 		level: [],
@@ -58,7 +56,7 @@ const initialState: CourseState = {
 	backup: [],
 	activeCourse: null,
 	quarter: q[q[0].code.toString().endsWith('4') ? 1 : 0].code,
-	tracking: [],
+	tracking: { fetching: false, data: [] },
 	prevStart: new Date(0),
 	curStart: new Date(0),
 	search: '',
@@ -295,20 +293,18 @@ export default function courseReducer(
 			return {
 				...state,
 				activeCourse: { ...action.course, fullName: 'DUMMY' },
-				fetchTracking: true,
+				tracking: { fetching: true, data: [] },
 			};
 		case ActionTypes.CLOSE_ACTIVE:
 			return {
 				...state,
 				activeCourse: null,
-				tracking: [],
-				fetchTracking: false,
+				tracking: { fetching: false, data: [] },
 			};
 		case ActionTypes.ACTIVE_SUCCESS:
 			return {
 				...state,
-				fetchTracking: false,
-				tracking: action.data,
+				tracking: { fetching: action.data.length > 0, data: action.data },
 				activeCourse: action.course,
 				rmp: action.rmp,
 			};
