@@ -4,6 +4,7 @@ import styled, { ThemeContext } from 'styled-components';
 import Button from '@material-ui/core/Button';
 import Card from '@material-ui/core/Card';
 import Drawer from '@material-ui/core/Drawer';
+import Skeleton from '@material-ui/lab/Skeleton';
 import Close from '@material-ui/icons/CloseRounded';
 
 import { CourseContext } from '../App';
@@ -114,23 +115,35 @@ const CourseDrawer: React.FC<CourseDrawerProps> = ({ tracking, ...props }) => {
 			</StyledCard>
 			<StyledCard>
 				<NotchedOutline width={74} title={'Enrollment'}>
-					<EnrollCard
-						tracking={tracking.data}
-						prevStart={props.prevStart}
-						curStart={props.curStart}
-						quarter={props.quarter}
-					/>
+					{tracking.fetching && <Skeleton variant="rect" />}{' '}
+					{!tracking.fetching && (
+						<EnrollCard
+							tracking={tracking.data}
+							prevStart={props.prevStart}
+							curStart={props.curStart}
+							quarter={props.quarter}
+						/>
+					)}
 				</NotchedOutline>
 			</StyledCard>
-			{tracking.data.length && tracking.data[0]?.sections.length && (
+			{tracking.fetching ? (
 				<StyledCard>
 					<NotchedOutline width={66} title={'Sections'}>
-						<SectionCard
-							section={tracking.data[0].sections}
-							setting={activeCourse!.settings?.slice(1) ?? []}
-						/>
+						<Skeleton variant="rect" height={50} />
 					</NotchedOutline>
 				</StyledCard>
+			) : (
+				tracking.data.length &&
+				tracking.data[0]?.sections.length > 0 && (
+					<StyledCard>
+						<NotchedOutline width={66} title={'Sections'}>
+							<SectionCard
+								section={tracking.data[0].sections}
+								setting={activeCourse!.settings?.slice(1) ?? []}
+							/>
+						</NotchedOutline>
+					</StyledCard>
+				)
 			)}
 			<StyledCard>
 				<NotchedOutline width={50} title={'Grades'} inner={<GradesCard />} />
