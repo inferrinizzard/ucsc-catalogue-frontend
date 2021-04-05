@@ -79,7 +79,21 @@ export interface trackingApiData {
 	}[];
 }
 
-export interface trackingApiResponse {
+export interface TrackingApiResponse<T> {
 	ok: boolean;
-	results: trackingApiData[];
+	results: T[];
+}
+
+export interface RmpApiResponse {
+	// 	Response {type: "cors", url: "https://andromeda.miragespace.net/slugsurvival/data/fetch/rmp/stats/691015.json", redirected: false, status: 200, ok: true, …}
+	// body: (...)
+	// bodyUsed: true
+	// headers: Headers {}
+	// ok: true
+	// redirected: false
+	// status: 200
+	// statusText: ""
+	// type: "cors"
+	// url: "https://andromeda.miragespace.net/slugsurvival/data/fetch/rmp/stats/691015.json"
+	// __proto__: Response
 }

@@ -410,7 +410,9 @@ const trackCourseEpic: Epic<CourseActions> = (action$, state$) =>
 			})),
 			tracking: await API.tracking(course$.number, quarter$),
 			rmp: course$.instructor
-				? await API.getProfId(course$.instructor.first + course$.instructor.last).then(API.rmp)
+				? await API.getProfId(course$.instructor.first + course$.instructor.last).then(res =>
+						API.rmp(res)
+				  )
 				: ({} as professorRating),
 		})),
 		map(data => activeSuccessAction(data.tracking, data.course, data.rmp))
