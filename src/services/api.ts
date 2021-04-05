@@ -95,12 +95,17 @@ class _API {
 		);
 	}
 
-	public getQuarter = () => {};
-	// 		.then(quarters => quarters.find(q => q.start < current));
-
-	public async courses(termId: string | number): Promise<model.Course[]> {
+	public async getQuarter() {
+		const current = new Date();
 		await this.ready;
-		if (!(+termId in this.terms)) return [];
+		const [latest] = Object.entries(this.terms).find(([_, { date }]) => date.end > current) ?? [-1];
+		// check here later for enrollment times and default to spring over summer ?
+		return +latest;
+	}
+
+	public async courses(termId: number): Promise<model.Course[]> {
+		await this.ready;
+		if (!(termId in this.terms)) return [];
 		return Promise.all([
 			ky
 				.get(`${this.endpoint}/data/fetch/terms/${termId.toString()}.json`)
@@ -132,7 +137,7 @@ class _API {
 		termId: string
 	): Promise<model.CourseEnrollment[]> {
 		await this.ready;
-		if (!(+termId in this.terms)) return [];
+		if (!(termId in this.terms)) return [];
 		return (ky
 			.get(`${this.endpoint}/tracking/fetch?termId=${termId}&courseNum=${courseNum}`)
 			.json() as Promise<ApiResponseModel.TrackingApiResponse<ApiResponseModel.trackingApiData>>)
@@ -175,7 +180,7 @@ class _API {
 			.then(s => s.substr(s.lastIndexOf(';') + 1).trim());
 	}
 
-	public getDates = (term: string | number) => this.ready.then(() => this.terms[+term].date);
+	public getDates = (term: number) => this.ready.then(() => this.terms[+term].date);
 
 	public async getProfId(name: string): Promise<number> {
 		if (name === '') return -1;

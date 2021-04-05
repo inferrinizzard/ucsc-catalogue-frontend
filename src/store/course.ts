@@ -391,7 +391,7 @@ const fetchCoursesEpic: Epic<CourseActions> = (action$, state$) =>
 	action$.ofType(ActionTypes.FETCH_API).pipe(
 		map(action => action as FetchAction),
 		switchMap(async action => {
-			const q = action.quarter;
+			const q = action.quarter || (await API.getQuarter()); // read from routing later or pass routed q as action param
 			return {
 				courses: await API.courses(q),
 				prevStart: (await API.getDates(q.toString().endsWith('8') ? q - 6 : q - 2)).start,
