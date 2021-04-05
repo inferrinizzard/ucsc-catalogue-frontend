@@ -390,13 +390,14 @@ const Filter = (
 const fetchCoursesEpic: Epic<CourseActions> = (action$, state$) =>
 	action$.ofType(ActionTypes.FETCH_API).pipe(
 		map(action => action as FetchAction),
-		switchMap(async action => ({
-			courses: await API.courses(action.quarter),
-			prevStart: await API.fetchDate(
-				action.quarter.toString().endsWith('8') ? action.quarter - 6 : action.quarter - 2
-			),
-			curStart: await API.fetchDate(action.quarter),
-		})),
+		switchMap(async action => {
+			const q = action.quarter;
+			return {
+				courses: await API.courses(q),
+				prevStart: (await API.getDates(q.toString().endsWith('8') ? q - 6 : q - 2)).start,
+				curStart: (await API.getDates(q)).start,
+			};
+		}),
 		map(courses => fetchSuccessAction(courses.courses, courses.prevStart, courses.curStart))
 	);
 

@@ -84,6 +84,15 @@ export interface TrackingApiResponse<T> {
 	results: T[];
 }
 
+export interface AvailableTermsResponse {
+	code: number | string;
+	name: string;
+	date: {
+		start: string;
+		end: string;
+	};
+}
+
 export interface RmpApiResponse {
 	// 	Response {type: "cors", url: "https://andromeda.miragespace.net/slugsurvival/data/fetch/rmp/stats/691015.json", redirected: false, status: 200, ok: true, …}
 	// body: (...)
