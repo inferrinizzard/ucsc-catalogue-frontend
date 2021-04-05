@@ -19,7 +19,7 @@ import NotchedOutline from './DrawerItems/NotchedOutline';
 
 import { isMobileOnly } from 'react-device-detect';
 
-import { Course, CourseEnrollment, professorRating } from '../models/course.model';
+import { Course, CourseEnrollment, professorRating, Quarter } from '../models/course.model';
 import { Typography } from '@material-ui/core';
 
 export interface CourseDrawerProps {
@@ -28,9 +28,7 @@ export interface CourseDrawerProps {
 	basketCourses: Course[];
 	closeDetail: () => void;
 	tracking: { fetching: boolean; data: CourseEnrollment[] };
-	prevStart: Date;
-	curStart: Date;
-	quarter: number;
+	quarter: Quarter;
 	rmp: professorRating;
 }
 
@@ -119,14 +117,7 @@ const CourseDrawer: React.FC<CourseDrawerProps> = ({ tracking, ...props }) => {
 			<StyledCard>
 				<NotchedOutline width={74} title={'Enrollment'}>
 					{tracking.fetching && <Skeleton variant="rect" />}{' '}
-					{!tracking.fetching && (
-						<EnrollCard
-							tracking={tracking.data}
-							prevStart={props.prevStart}
-							curStart={props.curStart}
-							quarter={props.quarter}
-						/>
-					)}
+					{!tracking.fetching && <EnrollCard tracking={tracking.data} quarter={props.quarter} />}
 				</NotchedOutline>
 			</StyledCard>
 			{tracking.fetching ? (

@@ -17,6 +17,11 @@ import q from './components/Data/quarters.json';
 
 import { Course, CourseEnrollment, professorRating } from './models/course.model';
 import {
+	CourseState,
+	Filter,
+	FilterList,
+	FilterDomain,
+	CourseType,
 	fetchAction,
 	sortAction,
 	searchAction,
@@ -24,10 +29,6 @@ import {
 	closeActiveAction,
 	addFilterAction,
 	removeFilterAction,
-	Filter,
-	FilterList,
-	FilterDomain,
-	CourseType,
 	addBookmarkAction,
 	removeBookmarkAction,
 	loadBookmarkAction,
@@ -39,10 +40,8 @@ interface PropsFromStore {
 	filters: FilterList<FilterDomain, CourseType>;
 	sortKey: CourseType;
 	activeCourse: Course | null;
-	quarter: number;
+	quarter: CourseState['quarter'];
 	tracking: { fetching: boolean; data: CourseEnrollment[] };
-	prevStart: Date;
-	curStart: Date;
 	rmp: professorRating;
 	bookmarks: Course[];
 	loading: boolean;
@@ -155,8 +154,6 @@ class App extends React.Component<AppProps, AppState> {
 								basketCourses={this.props.bookmarks}
 								closeDetail={this.props.closeActive}
 								tracking={this.props.tracking}
-								prevStart={this.props.prevStart}
-								curStart={this.props.curStart}
 								quarter={this.props.quarter}
 								rmp={this.props.rmp}
 							/>
@@ -177,8 +174,6 @@ const mapStateToProps = (state: ReduxState): PropsFromStore => ({
 	activeCourse: state.course.activeCourse,
 	quarter: state.course.quarter,
 	tracking: state.course.tracking,
-	prevStart: state.course.prevStart,
-	curStart: state.course.curStart,
 	rmp: state.course.rmp,
 	bookmarks: state.course.bookmarks,
 	loading: state.course.loading,

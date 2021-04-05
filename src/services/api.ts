@@ -75,7 +75,7 @@ function convertTracking(rawResults: ApiResponseModel.trackingApiData[]): model.
 
 class _API {
 	private endpoint = 'https://andromeda.miragespace.net/slugsurvival';
-	private terms = {} as { [code: number]: { name: string; date: { start: Date; end: Date } } };
+	private terms = {} as { [code: number]: { name: string; date: { start: Date; end: Date } } }; // need to expose this in course script to trickle down to QuarterMenu, maybe store in Store ?
 	private ready: Promise<any>;
 
 	constructor() {
@@ -102,6 +102,8 @@ class _API {
 		// check here later for enrollment times and default to spring over summer ?
 		return +latest;
 	}
+
+	public getQuarterName = (termId: number) => this.ready.then(() => this.terms[termId].name);
 
 	public async courses(termId: number): Promise<model.Course[]> {
 		await this.ready;

@@ -2,9 +2,9 @@ import { Action } from 'redux';
 import { Epic, combineEpics } from 'redux-observable';
 import { map } from 'rxjs/internal/operators/map';
 import { switchMap } from 'rxjs/internal/operators/switchMap';
-import { tap, ignoreElements } from 'rxjs/operators';
+import { tap, ignoreElements, startWith } from 'rxjs/operators';
 
-import { Course, CourseEnrollment, professorRating } from '../models/course.model';
+import { Course, CourseEnrollment, professorRating, Quarter } from '../models/course.model';
 import API from '../services/api';
 import q from '../components/Data/quarters.json';
 
@@ -16,10 +16,8 @@ export interface CourseState {
 	filtered: Course[];
 	backup: Course[];
 	activeCourse: Course | null;
-	quarter: number;
+	quarter: Quarter;
 	tracking: { fetching: boolean; data: CourseEnrollment[] };
-	prevStart: Date;
-	curStart: Date;
 	search: string;
 	rmp: professorRating;
 	bookmarks: Course[];
@@ -55,10 +53,8 @@ const initialState: CourseState = {
 	filtered: [],
 	backup: [],
 	activeCourse: null,
-	quarter: q[q[0].code.toString().endsWith('4') ? 1 : 0].code,
+	quarter: { code: -1, name: '', start: new Date(0), prevStart: new Date(0) },
 	tracking: { fetching: false, data: [] },
-	prevStart: new Date(0),
-	curStart: new Date(0),
 	search: '',
 	rmp: {} as professorRating,
 	bookmarks: [],
@@ -93,18 +89,12 @@ export const fetchAction = (quarter: number): FetchAction => ({
 interface FetchSuccessAction extends Action {
 	type: ActionTypes.FETCH_API_SUCCESS;
 	data: Course[];
-	prevStart: Date;
-	curStart: Date;
+	quarterData: Quarter;
 }
-export const fetchSuccessAction = (
-	data: Course[],
-	prevStart: Date,
-	curStart: Date
-): FetchSuccessAction => ({
+export const fetchSuccessAction = (data: Course[], quarterData: Quarter): FetchSuccessAction => ({
 	type: ActionTypes.FETCH_API_SUCCESS,
 	data,
-	prevStart,
-	curStart,
+	quarterData,
 });
 
 interface SortAction extends Action {
@@ -234,14 +224,13 @@ export default function courseReducer(
 ): CourseState {
 	switch (action.type) {
 		case ActionTypes.FETCH_API:
-			return { ...state, loading: true, quarter: action.quarter };
+			return { ...state, loading: true, quarter: { ...state.quarter, code: action.quarter } };
 		case ActionTypes.FETCH_API_SUCCESS:
 			let sortedCourses: Course[] = Sort(action.data, state.sort);
 			return {
 				...state,
 				loading: false,
-				prevStart: action.prevStart,
-				curStart: action.curStart,
+				quarter: action.quarterData,
 				filtered: sortedCourses,
 				courses: sortedCourses,
 				backup: sortedCourses,
@@ -394,11 +383,15 @@ const fetchCoursesEpic: Epic<CourseActions> = (action$, state$) =>
 			const q = action.quarter || (await API.getQuarter()); // read from routing later or pass routed q as action param
 			return {
 				courses: await API.courses(q),
-				prevStart: (await API.getDates(q.toString().endsWith('8') ? q - 6 : q - 2)).start,
-				curStart: (await API.getDates(q)).start,
+				quarterData: {
+					code: q,
+					name: await API.getQuarterName(q),
+					start: (await API.getDates(q)).start,
+					prevStart: (await API.getDates(q.toString().endsWith('8') ? q - 6 : q - 2)).start,
+				},
 			};
 		}),
-		map(courses => fetchSuccessAction(courses.courses, courses.prevStart, courses.curStart))
+		map(courses => fetchSuccessAction(courses.courses, courses.quarterData))
 	);
 
 const trackCourseEpic: Epic<CourseActions> = (action$, state$) =>
