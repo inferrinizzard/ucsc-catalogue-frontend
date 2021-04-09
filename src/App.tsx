@@ -88,36 +88,6 @@ const theme = {
 	cardBlue: '#92c2ff',
 };
 
-class Routing {
-	quarter = 0;
-	activeCourse = '';
-	// sort = '';
-	// search = '';
-	// filter = [];
-
-	quarterPath = (q: number, path: string) =>
-		this.quarter
-			? path.replace(/q=[0-9]{4}/g, `q=${(this.quarter = q)}`)
-			: `q=${(this.quarter = q)}`;
-
-	coursePath = (subjectCode: string, path: string) => {
-		const urlSubjectCode = subjectCode.replace(/\s|_/g, '');
-		return this.activeCourse
-			? path.replace(/c=.*(?=\/?)/g, `c=${(this.activeCourse = urlSubjectCode)}`)
-			: `q=${this.quarter}/c=${(this.activeCourse = urlSubjectCode)}`;
-	};
-
-	// buildSearch = () => {
-	// 	let searchArgs: string[] = [];
-	// 	if (this.filter) searchArgs.push(`filter=${this.filter.join('+')}`);
-	// 	if (this.sort) searchArgs.push(`sort=${this.sort}`);
-	// 	if (this.search) searchArgs.push(`search=${this.search}`);
-
-	// 	return searchArgs.length ? '?' + searchArgs.join('&') : '';
-	// };
-}
-
-const slicePath = (path: string, r: RegExp | string) => path.match(r)?.shift()?.slice(2);
 const quarterPath = (q: number, path: string) =>
 	path.includes('q=') ? path.replace(/q=[0-9]{4}/g, `q=${q}`) : `q=${q}`;
 const coursePath = (courseId: string | number, path: string) =>
@@ -131,20 +101,9 @@ class App extends React.Component<AppProps, AppState> {
 		scrollIndex: 0,
 	};
 
-	// routing = new Routing();
-
 	componentDidMount = () => {
-		const quarter = +(slicePath(this.props.pathname, /q=[0-9]{4}/g) ?? 0);
+		const quarter = +(this.props.pathname.match(/q=[0-9]{4}/g)?.shift()?.slice(2) ?? 0); // prettier-ignore
 		this.props.loadQuarter(quarter, quarterPath(quarter, this.props.pathname));
-		// if (this.props.pathname.includes('c=')) {
-		// 	const courseId = +(slicePath(this.props.pathname, /c=[0-9]+/g) ?? '');
-		// 	const activeCourse = this.props.backup.find(c => c.number == courseId);
-		// 	console.log(courseId, activeCourse);
-		// 	activeCourse
-		// 		? this.setActive(activeCourse)
-		// 		: this.props.closeActive(removeCoursePath(this.props.pathname));
-		// }
-
 		// this.props.loadBookmark();
 	};
 
