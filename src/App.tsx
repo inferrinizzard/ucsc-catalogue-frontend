@@ -15,8 +15,13 @@ import BottomTabs from './components/DrawerItems/BottomTabs';
 
 import q from './components/Data/quarters.json';
 
-import { Course, CourseEnrollment, professorRating } from './models/course.model';
+import { Course, CourseEnrollment, professorRating, Quarter } from './models/course.model';
 import {
+	AvailableTermData,
+	Filter,
+	FilterList,
+	FilterDomain,
+	CourseType,
 	fetchAction,
 	sortAction,
 	searchAction,
@@ -24,10 +29,6 @@ import {
 	closeActiveAction,
 	addFilterAction,
 	removeFilterAction,
-	Filter,
-	FilterList,
-	FilterDomain,
-	CourseType,
 	addBookmarkAction,
 	removeBookmarkAction,
 	loadBookmarkAction,
@@ -39,10 +40,9 @@ interface PropsFromStore {
 	filters: FilterList<FilterDomain, CourseType>;
 	sortKey: CourseType;
 	activeCourse: Course | null;
-	quarter: number;
+	quarter: Quarter;
+	availableTerms: AvailableTermData;
 	tracking: { fetching: boolean; data: CourseEnrollment[] };
-	prevStart: Date;
-	curStart: Date;
 	rmp: professorRating;
 	bookmarks: Course[];
 	loading: boolean;
@@ -72,6 +72,10 @@ const quarter: number = q.find(_q => !_q.code.toString().endsWith('4'))!.code;
 export const CourseContext = createContext({ active: null, list: [] } as {
 	active: Course | null;
 	list: Course[];
+});
+export const QuarterContext = createContext({ active: null, terms: {} } as {
+	active: Quarter | null;
+	terms: AvailableTermData;
 });
 const theme = {
 	topLinerHeight: '2.5rem',
@@ -122,45 +126,45 @@ class App extends React.Component<AppProps, AppState> {
 						}}>
 						<CourseContext.Provider
 							value={{ active: this.props.activeCourse, list: this.props.courses }}>
-							<SelectDrawer
-								backup={this.props.backup}
-								sortKey={this.props.sortKey}
-								open={!this.props.activeCourse}
-								sort={this.props.sort}
-								activeFilters={this.condenseFilter(this.props.filters)}
-								addFilter={this.props.addFilter}
-								removeFilter={this.props.removeFilter}
-								clearFilters={() =>
-									this.condenseFilter(this.props.filters).forEach(this.props.removeFilter)
-								}
-								changeQuarter={this.props.loadQuarter}
-								search={this.props.search}
-							/>
-							<Grid
-								loading={this.props.loading}
-								open={!!this.props.activeCourse}
-								openDetail={this.setActive}
-								scrollTo={this.scrollTo}
-								scrollIndex={this.state.scrollIndex}
-							/>
-							<Basket
-								courses={this.props.bookmarks}
-								openDetail={this.setActive}
-								tracking={this.props.tracking.data}
-								activeOpen={!!this.props.activeCourse}
-							/>
-							<CourseDrawer
-								addBasket={this.props.addBookmark}
-								removeBasket={this.props.removeBookmark}
-								basketCourses={this.props.bookmarks}
-								closeDetail={this.props.closeActive}
-								tracking={this.props.tracking}
-								prevStart={this.props.prevStart}
-								curStart={this.props.curStart}
-								quarter={this.props.quarter}
-								rmp={this.props.rmp}
-							/>
-							{/* <BottomTabs /> */}
+							<QuarterContext.Provider
+								value={{ active: this.props.quarter, terms: this.props.availableTerms }}>
+								<SelectDrawer
+									backup={this.props.backup}
+									sortKey={this.props.sortKey}
+									open={!this.props.activeCourse}
+									sort={this.props.sort}
+									activeFilters={this.condenseFilter(this.props.filters)}
+									addFilter={this.props.addFilter}
+									removeFilter={this.props.removeFilter}
+									clearFilters={() =>
+										this.condenseFilter(this.props.filters).forEach(this.props.removeFilter)
+									}
+									changeQuarter={this.props.loadQuarter}
+									search={this.props.search}
+								/>
+								<Grid
+									loading={this.props.loading}
+									open={!!this.props.activeCourse}
+									openDetail={this.setActive}
+									scrollTo={this.scrollTo}
+									scrollIndex={this.state.scrollIndex}
+								/>
+								<Basket
+									courses={this.props.bookmarks}
+									openDetail={this.setActive}
+									tracking={this.props.tracking.data}
+									activeOpen={!!this.props.activeCourse}
+								/>
+								<CourseDrawer
+									addBasket={this.props.addBookmark}
+									removeBasket={this.props.removeBookmark}
+									basketCourses={this.props.bookmarks}
+									closeDetail={this.props.closeActive}
+									tracking={this.props.tracking}
+									rmp={this.props.rmp}
+								/>
+								{/* <BottomTabs /> */}
+							</QuarterContext.Provider>
 						</CourseContext.Provider>
 					</div>
 				</ThemeProvider>
@@ -176,9 +180,8 @@ const mapStateToProps = (state: ReduxState): PropsFromStore => ({
 	sortKey: state.course.sort,
 	activeCourse: state.course.activeCourse,
 	quarter: state.course.quarter,
+	availableTerms: state.course.availableTerms,
 	tracking: state.course.tracking,
-	prevStart: state.course.prevStart,
-	curStart: state.course.curStart,
 	rmp: state.course.rmp,
 	bookmarks: state.course.bookmarks,
 	loading: state.course.loading,

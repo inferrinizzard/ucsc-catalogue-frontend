@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 
 import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
@@ -11,31 +11,30 @@ import createPlotlyComponent from 'react-plotly.js/factory';
 const Plot = createPlotlyComponent(Plotly);
 
 import { CourseEnrollment } from '../../models/course.model';
+import { QuarterContext } from '../../App';
 
 import { isMobileOnly } from 'react-device-detect';
 
 export interface EnrollCardProps {
 	tracking: CourseEnrollment[];
-	prevStart: Date;
-	curStart: Date;
-	quarter: number;
 }
 
-const EnrollCard: React.FC<EnrollCardProps> = props => {
-	if (!props.tracking.length) {
+const EnrollCard: React.FC<EnrollCardProps> = ({ tracking: _tracking }) => {
+	const { code: termId, start, prevStart } = useContext(QuarterContext).active!;
+	if (!_tracking.length) {
 		return (
 			<React.Fragment>
 				<CardHeader
 					title={
 						'Tracking Data' +
-						(!props.quarter.toString().endsWith('4') ? ' not yet ' : ' Un') +
+						(!termId.toString().endsWith('4') ? ' not yet ' : ' Un') +
 						'available for this term'
 					}
 				/>
 			</React.Fragment>
 		);
 	}
-	const tracking = props.tracking.reduce((data, cur) => {
+	const tracking = _tracking.reduce((data, cur) => {
 		let temp = datePlus(cur.date, 1);
 		const next = data[data.length - 1];
 		if (
@@ -67,12 +66,9 @@ const EnrollCard: React.FC<EnrollCardProps> = props => {
 		  )
 		: 0;
 
-	let firstPass = datePlus(
-		props.prevStart,
-		props.prevStart.getDate() + (props.prevStart.getMonth() === 8 ? 49 : 50)
-	);
+	let firstPass = datePlus(prevStart, prevStart.getDate() + (prevStart.getMonth() === 8 ? 49 : 50));
 	let secondPass = datePlus(firstPass, 8);
-	let quarterStart = props.curStart;
+	let quarterStart = start;
 
 	return (
 		<React.Fragment>

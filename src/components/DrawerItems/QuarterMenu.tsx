@@ -1,28 +1,21 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import Fade from '@material-ui/core/Fade';
 import Menu from '@material-ui/core/Menu';
-
 import MenuItem from '@material-ui/core/MenuItem';
 
-import { CourseType } from '../../store/course';
-import { Term } from '../../models/course.model';
-import quarterData from '../Data/quarters.json';
+import { QuarterContext } from '../../App';
 
 export interface QuarterMenuProps {
 	changeQuarter: (n: number) => void;
 }
 
-const quarters: Term[] = quarterData;
-
 const QuarterMenu: React.FC<QuarterMenuProps> = ({ changeQuarter }) => {
 	const [anchor, setAnchor] = useState(null as HTMLElement | null);
-	const [activeQuarter, setQuarter] = useState(
-		quarters.find(q => !q.code.toString().endsWith('4'))!.name
-	); // replace with prop from app / route-based prop
+	const { active, terms } = useContext(QuarterContext); // replace with prop from app / route-based prop
 
 	const ITEM_HEIGHT = 48;
 
@@ -37,7 +30,7 @@ const QuarterMenu: React.FC<QuarterMenuProps> = ({ changeQuarter }) => {
 					onClick={e => setAnchor(e.currentTarget)}
 					style={{ padding: '8px' }}>
 					<ListItemText
-						primary={activeQuarter}
+						primary={active!.name}
 						style={{ padding: 0 }}
 						primaryTypographyProps={{
 							style: {
@@ -60,12 +53,12 @@ const QuarterMenu: React.FC<QuarterMenuProps> = ({ changeQuarter }) => {
 				TransitionComponent={Fade}
 				onBackdropClick={e => setAnchor(null)}
 				PaperProps={{ style: { maxHeight: ITEM_HEIGHT * 4.5 } }}>
-				{quarters.map(q => (
+				{Object.entries(terms).map(([code, { name }]) => (
 					<MenuItem
-						key={q.name}
-						selected={q.name === activeQuarter}
-						onClick={e => (changeQuarter(q.code), setQuarter(q.name), setAnchor(null))}>
-						{q.name}
+						key={name}
+						selected={name === active!.name}
+						onClick={e => (changeQuarter(+code), setAnchor(null))}>
+						{name}
 					</MenuItem>
 				))}
 			</Menu>
