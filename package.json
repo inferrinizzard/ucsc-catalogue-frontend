@@ -1,6 +1,6 @@
 {
 	"name": "ucsc-catalog-frontend",
-	"version": "1.1.0",
+	"version": "1.2.0",
 	"description": "slugstayalive",
 	"main": "index.js",
 	"scripts": {
@@ -24,6 +24,9 @@
 		"url": "https://github.com/inferrinizzard/ucsc-catalog-frontend/issues"
 	},
 	"homepage": "https://github.com/inferrinizzard/ucsc-catalog-frontend#readme",
+	"engines": {
+		"node": ">=0.12"
+	},
 	"devDependencies": {
 		"@types/react": "^17.0.3",
 		"@types/react-content-loader": "^4.0.0",
@@ -52,6 +55,7 @@
 		"@material-ui/core": "^4.11.1",
 		"@material-ui/icons": "^3.0.2",
 		"@material-ui/lab": "^4.0.0-alpha.57",
+		"connected-react-router": "^6.9.1",
 		"css-loader": "^1.0.1",
 		"ky": "^0.27.0",
 		"memoize-one": "^5.1.1",

@@ -18,11 +18,11 @@ export interface ProfCardProps {
 }
 
 const ProfCard: React.FC<ProfCardProps> = ({ name, rmp }) => {
-	const stars = (num: number) => {
+	const stars = (num: number, key: string) => {
 		let result: JSX.Element[] = [] as JSX.Element[];
-		for (let i = 0; i < Math.floor(num); i++) result.push(<StarRounded key={'a' + i} />);
-		num - Math.floor(num) >= 0.5 && result.push(<StarHalfRounded key={'b'} />);
-		for (let i = result.length; i < 5; i++) result.push(<StarBorderRounded key={'c' + i} />);
+		for (let i = 0; i < Math.floor(num); i++) result.push(<StarRounded key={`${key}-a${i}`} />);
+		num - Math.floor(num) >= 0.5 && result.push(<StarHalfRounded key={`${key}-b`} />);
+		for (let i = result.length; i < 5; i++) result.push(<StarBorderRounded key={`${key}-c${i}`} />);
 		return <>{result}</>;
 	};
 
@@ -32,12 +32,12 @@ const ProfCard: React.FC<ProfCardProps> = ({ name, rmp }) => {
 			<Divider />
 			{rmp.clarity ? (
 				<CardContent>
-					{Object.entries(rmp).map(([name, rating]) => (
+					{Object.entries(rmp).map(([key, rating]) => (
 						<>
-							<Typography key={name}>
-								{`${name[0].toUpperCase() + name.slice(1)} - (${rating.toFixed(2)})`}
+							<Typography key={key}>
+								{`${key[0].toUpperCase() + key.slice(1)} - (${rating.toFixed(2)})`}
 							</Typography>
-							{stars(rating)}
+							{stars(rating, key)}
 						</>
 					))}
 				</CardContent>
