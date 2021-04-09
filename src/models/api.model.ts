@@ -93,7 +93,7 @@ export interface AvailableTermsResponse {
 	};
 }
 
-type AvailableTerm = Omit<AvailableTermsResponse, 'data'> & { date: { start: Date; end: Date } };
+type AvailableTerm = Omit<AvailableTermsResponse, 'date'> & { start: Date; end: Date };
 
 export type AvailableTermData = { [code: number]: AvailableTerm };
 

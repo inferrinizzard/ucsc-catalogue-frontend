@@ -79,10 +79,12 @@ class _API {
 	public quarter = {
 		getLatestQuarter: (terms: ApiResponseModel.AvailableTermData) => {
 			const current = new Date();
-			const latest = Object.keys(terms).find(code => terms[+code].date.end > current) ?? -1;
+			const latest = Object.keys(terms).find(code => terms[+code].end > current) ?? -1;
 			// check here later for enrollment times and default to spring over summer ?
 			return +latest;
 		},
+		getPrev: (id: number) => id - (id.toString().endsWith('8') ? 4 : 2),
+		getNext: (id: number) => id + (id.toString().endsWith('4') ? 4 : 2),
 	};
 
 	public getAvailableTerms(): Promise<ApiResponseModel.AvailableTermData> {
@@ -93,7 +95,11 @@ class _API {
 				terms.reduce(
 					(acc, { code, date, name }) => ({
 						...acc,
-						[+code]: { name, date: { start: Date.parse(date.start), end: Date.parse(date.end) } },
+						[+code]: {
+							name,
+							start: new Date(Date.parse(date.start)),
+							end: new Date(Date.parse(date.end)),
+						},
 					}),
 					{}
 				),

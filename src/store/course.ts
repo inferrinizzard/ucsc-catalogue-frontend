@@ -1,13 +1,16 @@
 import { Action } from 'redux';
 import { Epic, combineEpics } from 'redux-observable';
+
+import { tap, ignoreElements } from 'rxjs/operators';
 import { map } from 'rxjs/internal/operators/map';
+import { mergeMap } from 'rxjs/internal/operators/mergeMap';
 import { switchMap } from 'rxjs/internal/operators/switchMap';
-import { tap, ignoreElements, startWith } from 'rxjs/operators';
+
+import { RouterAction, push } from 'connected-react-router';
 
 import { Course, CourseEnrollment, professorRating, Quarter } from '../models/course.model';
 import { AvailableTermData } from '../models/api.model';
 import API from '../services/api';
-import q from '../components/Data/quarters.json';
 
 export interface CourseState {
 	loading: boolean;
@@ -146,12 +149,10 @@ export const removeFilterAction = (filter: Filter): RemoveFilterAction => ({
 interface SetActiveAction extends Action {
 	type: ActionTypes.SET_ACTIVE;
 	course: Course;
-	quarter: string;
 }
-export const setActiveAction = (course: Course, quarter: string): SetActiveAction => ({
+export const setActiveAction = (course: Course): SetActiveAction => ({
 	type: ActionTypes.SET_ACTIVE,
 	course,
-	quarter,
 });
 
 interface CloseActiveAction extends Action {
@@ -387,41 +388,60 @@ const Filter = (
 	return sort ? Sort(processing, sort) : processing;
 };
 //#endregion
-const fetchCoursesEpic: Epic<CourseActions> = (action$, state$) =>
+const fetchCoursesEpic: Epic<CourseActions | RouterAction> = (action$, state$) =>
 	action$.ofType(ActionTypes.FETCH_API).pipe(
 		map(action => action as FetchAction),
 		switchMap(async action => {
 			const availableTerms = await API.getAvailableTerms();
-			const q = action.quarter || API.quarter.getLatestQuarter(availableTerms); // read from routing later or pass routed q as action param
+			const q = action.quarter || API.quarter.getLatestQuarter(availableTerms);
+			const courses = await API.courses(q);
+
+			const path = state$.value.router.location.pathname;
+			const active = path.includes('c=') ? +(path.match(/c=[0-9]+/g)?.shift()?.slice(2) ?? '') : ''; // prettier-ignore
+
 			return {
-				courses: await API.courses(q),
+				courses,
 				availableTerms,
 				quarterData: {
 					code: q,
 					name: availableTerms[q].name,
-					...availableTerms[q].date,
-					prevStart: availableTerms[q - (q.toString().endsWith('8') ? 6 : 2)].date.start,
+					start: availableTerms[q].start,
+					end: availableTerms[q].end,
+					prevStart: availableTerms[API.quarter.getPrev(q)].start,
+				},
+				initial: !action.quarter,
+				active: {
+					number: active,
+					path: active ? '/' + active : '',
+					course: courses.find(c => c.number === active),
 				},
 			};
 		}),
-		map(courses => fetchSuccessAction(courses.courses, courses.quarterData, courses.availableTerms))
+		mergeMap(courses => [
+			fetchSuccessAction(courses.courses, courses.quarterData, courses.availableTerms),
+			...(courses.initial ? [push(`/q=${courses.quarterData.code}${courses.active.path}`)] : []),
+			...(courses.active.course ? [setActiveAction(courses.active.course)] : []),
+		])
 	);
 
 const trackCourseEpic: Epic<CourseActions> = (action$, state$) =>
 	action$.ofType(ActionTypes.SET_ACTIVE).pipe(
 		map(action => action as SetActiveAction),
-		switchMap(async ({ course: course$, quarter: quarter$ }) => ({
-			course: await API.fetchName(course$.number, quarter$).then(fullName => ({
-				...course$,
-				fullName,
-			})),
-			tracking: await API.tracking(course$.number, quarter$),
-			rmp: course$.instructor
-				? await API.getProfId(course$.instructor.first + course$.instructor.last).then(res =>
-						API.rmp(res)
-				  )
-				: ({} as professorRating),
-		})),
+		switchMap(async ({ course: course$ }) => {
+			const quarter = state$.value.course.quarter.code;
+			return {
+				course: await API.fetchName(course$.number, quarter).then(fullName => ({
+					...course$,
+					fullName,
+				})),
+				tracking: await API.tracking(course$.number, quarter),
+				rmp: course$.instructor
+					? await API.getProfId(course$.instructor.first + course$.instructor.last).then(res =>
+							API.rmp(res)
+					  )
+					: ({} as professorRating),
+			};
+		}),
 		map(data => activeSuccessAction(data.tracking, data.course, data.rmp))
 	);
 const bookmarkEpic: Epic<CourseActions> = (action$, state$) =>
