@@ -26,7 +26,8 @@ export interface CourseState {
 }
 //#region define types
 export type CourseType = keyof Course;
-export { Course } from '../models/course.model';
+export { Course, Quarter } from '../models/course.model';
+export { AvailableTermData } from '../models/api.model';
 export type Filter = { type: FilterDomain; name: string };
 export enum FilterDomain {
 	subject = 'subject',

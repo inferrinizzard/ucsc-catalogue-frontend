@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 
 import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
@@ -10,19 +10,17 @@ import Plotly from 'plotly.js-basic-dist';
 import createPlotlyComponent from 'react-plotly.js/factory';
 const Plot = createPlotlyComponent(Plotly);
 
-import { CourseEnrollment, Quarter } from '../../models/course.model';
+import { CourseEnrollment } from '../../models/course.model';
+import { QuarterContext } from '../../App';
 
 import { isMobileOnly } from 'react-device-detect';
 
 export interface EnrollCardProps {
 	tracking: CourseEnrollment[];
-	quarter: Quarter;
 }
 
-const EnrollCard: React.FC<EnrollCardProps> = ({
-	tracking: _tracking,
-	quarter: { code: termId, start, prevStart },
-}) => {
+const EnrollCard: React.FC<EnrollCardProps> = ({ tracking: _tracking }) => {
+	const { code: termId, start, prevStart } = useContext(QuarterContext).active!;
 	if (!_tracking.length) {
 		return (
 			<React.Fragment>
