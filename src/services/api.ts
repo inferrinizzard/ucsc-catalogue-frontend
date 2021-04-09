@@ -68,25 +68,60 @@ function convertTracking(rawResults: ApiResponseModel.trackingApiData[]): model.
 	}));
 }
 
+// function processDates(dates: ApiResponseModel.AvailableTerm['date'] | null) {
+// 	if (!dates) return { start: null, end: null };
+// 	return Object.entries(dates).reduce((acc, [name, d]) => ({ ...acc, [name]: Date.parse(d) }), {});
+// }
+
 class _API {
 	private endpoint = 'https://andromeda.miragespace.net/slugsurvival';
-	public async courses(termId: string | number): Promise<model.Course[]> {
-		const [termsData, coursesData] = await Promise.all([
+
+	public quarter = {
+		getLatestQuarter: (terms: ApiResponseModel.AvailableTermData) => {
+			const current = new Date();
+			const latest = Object.keys(terms).find(code => terms[+code].date.end > current) ?? -1;
+			// check here later for enrollment times and default to spring over summer ?
+			return +latest;
+		},
+	};
+
+	public getAvailableTerms(): Promise<ApiResponseModel.AvailableTermData> {
+		return (ky.get(`${this.endpoint}/data/fetch/terms.json`).json() as Promise<
+			ApiResponseModel.AvailableTermsResponse[]
+		>).then(
+			terms =>
+				terms.reduce(
+					(acc, { code, date, name }) => ({
+						...acc,
+						[+code]: { name, date: { start: Date.parse(date.start), end: Date.parse(date.end) } },
+					}),
+					{}
+				),
+			rej => (
+				console.error('Error fetching available terms from Andromeda Endpoint, is the host down ?'), // alert here later
+				{}
+			)
+		);
+	}
+
+	public courses(termId: number): Promise<model.Course[]> {
+		return Promise.all([
 			ky
 				.get(`${this.endpoint}/data/fetch/terms/${termId.toString()}.json`)
 				.json() as Promise<ApiResponseModel.TermsApiResponse>,
 			ky
 				.get(`${this.endpoint}/data/fetch/courses/${termId.toString()}.json`)
 				.json() as Promise<ApiResponseModel.CoursesApiResponse>,
-		]);
-		return Object.entries(termsData).reduce<model.Course[]>(
-			(prev, [subject, rawTermCourses]) => [
-				...prev,
-				...rawTermCourses
-					.filter(x => coursesData[x.num])
-					.map(x => convertAndMergeCourse(subject, x, coursesData[x.num])),
-			],
-			[]
+		]).then(([termsData, coursesData]) =>
+			Object.entries(termsData).reduce<model.Course[]>(
+				(prev, [subject, rawTermCourses]) => [
+					...prev,
+					...rawTermCourses
+						.filter(c => coursesData[c.num])
+						.map(c => convertAndMergeCourse(subject, c, coursesData[c.num])),
+				],
+				[]
+			)
 		);
 	}
 	// public async latestStatus(
@@ -96,46 +131,18 @@ class _API {
 
 	// https://andromeda.miragespace.net/slugsurvival/tracking/latestOne?termId=:termCode&courseNum=:courseNum
 
-	private trackingAvailableTerms?: (number | string)[];
-	private async trackingAvailable(termId: string): Promise<boolean> {
-		if (!this.trackingAvailableTerms) {
-			const res = (await ky.get(`${this.endpoint}/tracking/available`).json()) as {
-				ok: boolean;
-				results: number[];
-			};
-			if (!res.ok) {
-				throw new Error('Error fetching tracking available terms');
-			}
-			this.trackingAvailableTerms = res.results;
-		}
-		return this.trackingAvailableTerms!.map(x => `${x}`).includes(termId);
+	public tracking(courseNum: number | string, termId: string): Promise<model.CourseEnrollment[]> {
+		return (ky
+			.get(`${this.endpoint}/tracking/fetch?termId=${termId}&courseNum=${courseNum}`)
+			.json() as Promise<ApiResponseModel.TrackingApiResponse<ApiResponseModel.trackingApiData>>)
+			.then(res => convertTracking(res.results))
+			.catch(
+				() => (
+					console.error(new Error('Error fetching tracking data for course: ' + courseNum)), []
+				)
+			);
 	}
 
-	public async tracking(
-		courseNum: number | string,
-		termId: string
-	): Promise<model.CourseEnrollment[]> {
-		const available: boolean =
-			// await this.trackingAvailable(termId);
-			((await ky.get(`${this.endpoint}/tracking/available`).json()) as {
-				ok: boolean;
-				results: number[];
-			}).results
-				.toString()
-				.includes(termId);
-		// if (!(await this.trackingAvailable(termId))) {
-		// if (!available) {
-		//   console.log('not available');
-		//   return [];
-		// }
-		const res = (await ky
-			.get(`${this.endpoint}/tracking/fetch?termId=${termId}&courseNum=${courseNum}`)
-			.json()) as { ok: boolean; results: ApiResponseModel.trackingApiData[] };
-		if (available && !res.ok) {
-			throw new Error('Error fetching tracking data');
-		}
-		return convertTracking(available ? res.results : []);
-	}
 	public async fetchName(course: number | string, quarter: number | string): Promise<string> {
 		// broken, 403 forbidden, switch to ky
 		return fetch(
@@ -168,49 +175,39 @@ class _API {
 			.then(s => s.substr(s.lastIndexOf(';') + 1).trim());
 	}
 
-	public async fetchDate(term: string | number): Promise<Date> {
-		return new Date(
-			await ky
-				.get(this.endpoint + '/data/fetch/terms.json')
-				.then(x => x.text())
-				.then(s => s.substr(s.indexOf(term.toString()) + 40, 8))
-		);
-	}
-
 	public async getProfId(name: string): Promise<number> {
 		if (name === '') return -1;
-		const idString: string = await ky
-			.get(this.endpoint + '/data/fetch/rmp.json')
-			.then(x => x.text());
-		return idString.includes(name)
-			? parseInt(idString.substr(idString.indexOf(name) + name.length + 3, 6))
-			: 0;
+		return ky
+			.get(`${this.endpoint}/data/fetch/rmp.json`)
+			.then(res => res.text())
+			.then(idString =>
+				idString.includes(name) ? +idString.substr(idString.indexOf(name) + name.length + 3, 6) : 0
+			);
 	}
 
 	public async rmp(profId: number): Promise<model.professorRating> {
 		if (profId <= 0) return {} as model.professorRating;
-		const rawString: string = await ky
-			.get(this.endpoint + '/data/fetch/rmp/stats/' + profId + '.json')
-			.catch(x => (x.ok ? x : ''))
-			.then(x => (x ? x.text() : ''));
-		if (!rawString) return {} as model.professorRating;
-		const d: number = +rawString.substring(
-			rawString.indexOf('easy') + 6,
-			rawString.indexOf('clarity') - 2
-		);
-		const c: number = +rawString.substring(
-			rawString.indexOf('clarity') + 9,
-			rawString.indexOf('overall') - 2
-		);
-		const o: number = +rawString.substring(
-			rawString.indexOf('overall') + 9,
-			rawString.indexOf('quality') - 2
-		);
-		return {
-			difficulty: d,
-			clarity: c,
-			overall: o,
-		} as model.professorRating;
+		return ky
+			.get(`${this.endpoint}/data/fetch/rmp/stats/${profId}.json`)
+			.then(res => (res.ok && res.status === 200 ? res.text() : ''))
+			.then(rawString =>
+				rawString
+					? {
+							difficulty: +rawString.substring(
+								rawString.indexOf('easy') + 6,
+								rawString.indexOf('clarity') - 2
+							),
+							clarity: +rawString.substring(
+								rawString.indexOf('clarity') + 9,
+								rawString.indexOf('overall') - 2
+							),
+							overall: +rawString.substring(
+								rawString.indexOf('overall') + 9,
+								rawString.indexOf('quality') - 2
+							),
+					  }
+					: ({} as model.professorRating)
+			);
 	}
 }
 

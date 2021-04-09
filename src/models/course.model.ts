@@ -48,6 +48,14 @@ export interface Course {
 	level: CourseLevel;
 }
 
+export interface Quarter {
+	code: number;
+	name: string;
+	start: Date;
+	end: Date;
+	prevStart: Date;
+}
+
 export type EnrollmentStatus = 'Wait List' | 'Open' | 'Closed' | string;
 export type CourseLevel = 'Lower Div' | 'Upper Div' | 'Graduate' | string;
 

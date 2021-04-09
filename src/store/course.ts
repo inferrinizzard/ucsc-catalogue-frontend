@@ -2,9 +2,10 @@ import { Action } from 'redux';
 import { Epic, combineEpics } from 'redux-observable';
 import { map } from 'rxjs/internal/operators/map';
 import { switchMap } from 'rxjs/internal/operators/switchMap';
-import { tap, ignoreElements } from 'rxjs/operators';
+import { tap, ignoreElements, startWith } from 'rxjs/operators';
 
-import { Course, CourseEnrollment, professorRating } from '../models/course.model';
+import { Course, CourseEnrollment, professorRating, Quarter } from '../models/course.model';
+import { AvailableTermData } from '../models/api.model';
 import API from '../services/api';
 import q from '../components/Data/quarters.json';
 
@@ -16,17 +17,17 @@ export interface CourseState {
 	filtered: Course[];
 	backup: Course[];
 	activeCourse: Course | null;
-	quarter: number;
+	quarter: Quarter;
+	availableTerms: AvailableTermData;
 	tracking: { fetching: boolean; data: CourseEnrollment[] };
-	prevStart: Date;
-	curStart: Date;
 	search: string;
 	rmp: professorRating;
 	bookmarks: Course[];
 }
 //#region define types
 export type CourseType = keyof Course;
-export { Course } from '../models/course.model';
+export { Course, Quarter } from '../models/course.model';
+export { AvailableTermData } from '../models/api.model';
 export type Filter = { type: FilterDomain; name: string };
 export enum FilterDomain {
 	subject = 'subject',
@@ -55,10 +56,9 @@ const initialState: CourseState = {
 	filtered: [],
 	backup: [],
 	activeCourse: null,
-	quarter: q[q[0].code.toString().endsWith('4') ? 1 : 0].code,
+	quarter: { code: -1, name: '', start: new Date(0), end: new Date(0), prevStart: new Date(0) },
+	availableTerms: {},
 	tracking: { fetching: false, data: [] },
-	prevStart: new Date(0),
-	curStart: new Date(0),
 	search: '',
 	rmp: {} as professorRating,
 	bookmarks: [],
@@ -93,18 +93,18 @@ export const fetchAction = (quarter: number): FetchAction => ({
 interface FetchSuccessAction extends Action {
 	type: ActionTypes.FETCH_API_SUCCESS;
 	data: Course[];
-	prevStart: Date;
-	curStart: Date;
+	quarterData: Quarter;
+	availableTerms: AvailableTermData;
 }
 export const fetchSuccessAction = (
 	data: Course[],
-	prevStart: Date,
-	curStart: Date
+	quarterData: Quarter,
+	availableTerms: AvailableTermData
 ): FetchSuccessAction => ({
 	type: ActionTypes.FETCH_API_SUCCESS,
 	data,
-	prevStart,
-	curStart,
+	quarterData,
+	availableTerms,
 });
 
 interface SortAction extends Action {
@@ -234,14 +234,14 @@ export default function courseReducer(
 ): CourseState {
 	switch (action.type) {
 		case ActionTypes.FETCH_API:
-			return { ...state, loading: true, quarter: action.quarter };
+			return { ...state, loading: true, quarter: { ...state.quarter, code: action.quarter } };
 		case ActionTypes.FETCH_API_SUCCESS:
 			let sortedCourses: Course[] = Sort(action.data, state.sort);
 			return {
 				...state,
 				loading: false,
-				prevStart: action.prevStart,
-				curStart: action.curStart,
+				quarter: action.quarterData,
+				availableTerms: action.availableTerms,
 				filtered: sortedCourses,
 				courses: sortedCourses,
 				backup: sortedCourses,
@@ -390,14 +390,21 @@ const Filter = (
 const fetchCoursesEpic: Epic<CourseActions> = (action$, state$) =>
 	action$.ofType(ActionTypes.FETCH_API).pipe(
 		map(action => action as FetchAction),
-		switchMap(async action => ({
-			courses: await API.courses(action.quarter),
-			prevStart: await API.fetchDate(
-				action.quarter.toString().endsWith('8') ? action.quarter - 6 : action.quarter - 2
-			),
-			curStart: await API.fetchDate(action.quarter),
-		})),
-		map(courses => fetchSuccessAction(courses.courses, courses.prevStart, courses.curStart))
+		switchMap(async action => {
+			const availableTerms = await API.getAvailableTerms();
+			const q = action.quarter || API.quarter.getLatestQuarter(availableTerms); // read from routing later or pass routed q as action param
+			return {
+				courses: await API.courses(q),
+				availableTerms,
+				quarterData: {
+					code: q,
+					name: availableTerms[q].name,
+					...availableTerms[q].date,
+					prevStart: availableTerms[q - (q.toString().endsWith('8') ? 6 : 2)].date.start,
+				},
+			};
+		}),
+		map(courses => fetchSuccessAction(courses.courses, courses.quarterData, courses.availableTerms))
 	);
 
 const trackCourseEpic: Epic<CourseActions> = (action$, state$) =>
@@ -410,7 +417,9 @@ const trackCourseEpic: Epic<CourseActions> = (action$, state$) =>
 			})),
 			tracking: await API.tracking(course$.number, quarter$),
 			rmp: course$.instructor
-				? await API.getProfId(course$.instructor.first + course$.instructor.last).then(API.rmp)
+				? await API.getProfId(course$.instructor.first + course$.instructor.last).then(res =>
+						API.rmp(res)
+				  )
 				: ({} as professorRating),
 		})),
 		map(data => activeSuccessAction(data.tracking, data.course, data.rmp))

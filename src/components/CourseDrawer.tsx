@@ -28,9 +28,6 @@ export interface CourseDrawerProps {
 	basketCourses: Course[];
 	closeDetail: () => void;
 	tracking: { fetching: boolean; data: CourseEnrollment[] };
-	prevStart: Date;
-	curStart: Date;
-	quarter: number;
 	rmp: professorRating;
 }
 
@@ -119,14 +116,7 @@ const CourseDrawer: React.FC<CourseDrawerProps> = ({ tracking, ...props }) => {
 			<StyledCard>
 				<NotchedOutline width={74} title={'Enrollment'}>
 					{tracking.fetching && <Skeleton variant="rect" />}{' '}
-					{!tracking.fetching && (
-						<EnrollCard
-							tracking={tracking.data}
-							prevStart={props.prevStart}
-							curStart={props.curStart}
-							quarter={props.quarter}
-						/>
-					)}
+					{!tracking.fetching && <EnrollCard tracking={tracking.data} />}
 				</NotchedOutline>
 			</StyledCard>
 			{tracking.fetching ? (
