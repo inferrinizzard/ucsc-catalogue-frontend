@@ -15,7 +15,7 @@ export interface QuarterMenuProps {
 
 const QuarterMenu: React.FC<QuarterMenuProps> = ({ changeQuarter }) => {
 	const [anchor, setAnchor] = useState(null as HTMLElement | null);
-	const { active, terms } = useContext(QuarterContext); // replace with prop from app / route-based prop
+	const { active, terms } = useContext(QuarterContext);
 
 	const ITEM_HEIGHT = 48;
 

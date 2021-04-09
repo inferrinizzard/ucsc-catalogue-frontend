@@ -1,13 +1,16 @@
 import { Action } from 'redux';
 import { Epic, combineEpics } from 'redux-observable';
+
+import { tap, ignoreElements } from 'rxjs/operators';
 import { map } from 'rxjs/internal/operators/map';
+import { mergeMap } from 'rxjs/internal/operators/mergeMap';
 import { switchMap } from 'rxjs/internal/operators/switchMap';
-import { tap, ignoreElements, startWith } from 'rxjs/operators';
+
+import { RouterAction, push } from 'connected-react-router';
 
 import { Course, CourseEnrollment, professorRating, Quarter } from '../models/course.model';
 import { AvailableTermData } from '../models/api.model';
 import API from '../services/api';
-import q from '../components/Data/quarters.json';
 
 export interface CourseState {
 	loading: boolean;
@@ -387,14 +390,19 @@ const Filter = (
 	return sort ? Sort(processing, sort) : processing;
 };
 //#endregion
-const fetchCoursesEpic: Epic<CourseActions> = (action$, state$) =>
+const fetchCoursesEpic: Epic<CourseActions | RouterAction> = (action$, state$) =>
 	action$.ofType(ActionTypes.FETCH_API).pipe(
 		map(action => action as FetchAction),
 		switchMap(async action => {
 			const availableTerms = await API.getAvailableTerms();
-			const q = action.quarter || API.quarter.getLatestQuarter(availableTerms); // read from routing later or pass routed q as action param
+			const q = action.quarter || API.quarter.getLatestQuarter(availableTerms);
+			const courses = await API.courses(q);
+
+			const path = state$.value.router.location.pathname;
+			const active = path.includes('c=') ? +(path.match(/c=[0-9]+/g)?.shift()?.slice(2) ?? '') : ''; // prettier-ignore
+
 			return {
-				courses: await API.courses(q),
+				courses,
 				availableTerms,
 				quarterData: {
 					code: q,
@@ -402,9 +410,23 @@ const fetchCoursesEpic: Epic<CourseActions> = (action$, state$) =>
 					...availableTerms[q].date,
 					prevStart: availableTerms[q - (q.toString().endsWith('8') ? 6 : 2)].date.start,
 				},
+				initial: !action.quarter,
+				active: {
+					number: active,
+					path: active ? '/' + active : '',
+					course: courses.find(c => c.number === active),
+				},
 			};
 		}),
-		map(courses => fetchSuccessAction(courses.courses, courses.quarterData, courses.availableTerms))
+		mergeMap(courses =>
+			(x => (console.log(x), x))([
+				fetchSuccessAction(courses.courses, courses.quarterData, courses.availableTerms),
+				...(courses.initial ? [push(`/q=${courses.quarterData.code}${courses.active.path}`)] : []),
+				...(courses.active.course
+					? [setActiveAction(courses.active.course, courses.quarterData.code.toString())]
+					: []),
+			])
+		)
 	);
 
 const trackCourseEpic: Epic<CourseActions> = (action$, state$) =>

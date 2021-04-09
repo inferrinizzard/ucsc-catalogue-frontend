@@ -4,6 +4,10 @@ import { Dispatch } from 'redux';
 import { connect } from 'react-redux';
 import { ReduxState, ReduxAction } from './store';
 
+import { Route, Switch } from 'react-router-dom';
+import { ConnectedRouter, push, replace } from 'connected-react-router';
+import { history } from './store/index';
+
 import { ThemeProvider } from 'styled-components';
 
 import Grid from './components/Grid';
@@ -12,8 +16,6 @@ import SelectDrawer from './components/SelectDrawer';
 import CourseDrawer from './components/CourseDrawer';
 import TopLiner from './components/DrawerItems/TopLiner';
 import BottomTabs from './components/DrawerItems/BottomTabs';
-
-import q from './components/Data/quarters.json';
 
 import { Course, CourseEnrollment, professorRating, Quarter } from './models/course.model';
 import {
@@ -46,16 +48,19 @@ interface PropsFromStore {
 	rmp: professorRating;
 	bookmarks: Course[];
 	loading: boolean;
+	pathname: string;
+	search: string;
+	hash: string;
 }
 
 interface PropsToDispatch {
-	loadQuarter: (q: number) => void;
+	loadQuarter: (q: number, path: string) => void;
 	addFilter: (f: Filter) => void;
 	removeFilter: (f: Filter) => void;
 	sort: (n: CourseType) => void;
 	search: (name: string) => void;
-	setActive: (c: Course, q: string) => void;
-	closeActive: () => void;
+	setActive: (c: Course, q: string, path: string) => void;
+	closeActive: (path: string) => void;
 	addBookmark: (c: Course) => void;
 	removeBookmark: (c: Course) => void;
 	loadBookmark: () => void;
@@ -66,8 +71,6 @@ type AppProps = PropsFromStore & PropsToDispatch;
 export interface AppState {
 	scrollIndex: number;
 }
-
-const quarter: number = q.find(_q => !_q.code.toString().endsWith('4'))!.code;
 
 export const CourseContext = createContext({ active: null, list: [] } as {
 	active: Course | null;
@@ -85,20 +88,33 @@ const theme = {
 	cardBlue: '#92c2ff',
 };
 
+const quarterPath = (q: number, path: string) =>
+	path.includes('q=') ? path.replace(/q=[0-9]{4}/g, `q=${q}`) : `q=${q}`;
+const coursePath = (courseId: string | number, path: string) =>
+	path.includes('c=')
+		? path.replace(/c=[0-9]+(?=\/?)/g, `c=${courseId}`)
+		: (path.endsWith('/') ? path.slice(0, -1) : path) + `/c=${courseId}`;
+const removeCoursePath = (path: string) => path.substring(0, path.indexOf('c=') - 1);
+
 class App extends React.Component<AppProps, AppState> {
 	state = {
 		scrollIndex: 0,
 	};
 
 	componentDidMount = () => {
-		this.props.loadQuarter(quarter);
+		const quarter = +(this.props.pathname.match(/q=[0-9]{4}/g)?.shift()?.slice(2) ?? 0); // prettier-ignore
+		this.props.loadQuarter(quarter, quarterPath(quarter, this.props.pathname));
 		// this.props.loadBookmark();
 	};
 
 	//#region prop functions
 	setActive = (course: Course, row?: number) => {
 		if (row) this.setState({ scrollIndex: row });
-		this.props.setActive(course, this.props.quarter.toString());
+		this.props.setActive(
+			course,
+			this.props.quarter.toString(),
+			coursePath(course.number, this.props.pathname)
+		);
 	};
 
 	scrollTo = (row: number) =>
@@ -128,42 +144,50 @@ class App extends React.Component<AppProps, AppState> {
 							value={{ active: this.props.activeCourse, list: this.props.courses }}>
 							<QuarterContext.Provider
 								value={{ active: this.props.quarter, terms: this.props.availableTerms }}>
-								<SelectDrawer
-									backup={this.props.backup}
-									sortKey={this.props.sortKey}
-									open={!this.props.activeCourse}
-									sort={this.props.sort}
-									activeFilters={this.condenseFilter(this.props.filters)}
-									addFilter={this.props.addFilter}
-									removeFilter={this.props.removeFilter}
-									clearFilters={() =>
-										this.condenseFilter(this.props.filters).forEach(this.props.removeFilter)
-									}
-									changeQuarter={this.props.loadQuarter}
-									search={this.props.search}
-								/>
-								<Grid
-									loading={this.props.loading}
-									open={!!this.props.activeCourse}
-									openDetail={this.setActive}
-									scrollTo={this.scrollTo}
-									scrollIndex={this.state.scrollIndex}
-								/>
-								<Basket
-									courses={this.props.bookmarks}
-									openDetail={this.setActive}
-									tracking={this.props.tracking.data}
-									activeOpen={!!this.props.activeCourse}
-								/>
-								<CourseDrawer
-									addBasket={this.props.addBookmark}
-									removeBasket={this.props.removeBookmark}
-									basketCourses={this.props.bookmarks}
-									closeDetail={this.props.closeActive}
-									tracking={this.props.tracking}
-									rmp={this.props.rmp}
-								/>
-								{/* <BottomTabs /> */}
+								<ConnectedRouter history={history}>
+									<>
+										<SelectDrawer
+											backup={this.props.backup}
+											sortKey={this.props.sortKey}
+											open={!this.props.activeCourse}
+											sort={this.props.sort}
+											activeFilters={this.condenseFilter(this.props.filters)}
+											addFilter={this.props.addFilter}
+											removeFilter={this.props.removeFilter}
+											clearFilters={() =>
+												this.condenseFilter(this.props.filters).forEach(this.props.removeFilter)
+											}
+											changeQuarter={q =>
+												this.props.loadQuarter(q, quarterPath(q, this.props.pathname))
+											}
+											search={this.props.search}
+										/>
+										<Grid
+											loading={this.props.loading}
+											open={!!this.props.activeCourse}
+											openDetail={this.setActive}
+											scrollTo={this.scrollTo}
+											scrollIndex={this.state.scrollIndex}
+										/>
+										<Basket
+											courses={this.props.bookmarks}
+											openDetail={this.setActive}
+											tracking={this.props.tracking.data}
+											activeOpen={!!this.props.activeCourse}
+										/>
+										<CourseDrawer
+											addBasket={this.props.addBookmark}
+											removeBasket={this.props.removeBookmark}
+											basketCourses={this.props.bookmarks}
+											closeDetail={() =>
+												this.props.closeActive(removeCoursePath(this.props.pathname))
+											}
+											tracking={this.props.tracking}
+											rmp={this.props.rmp}
+										/>
+										{/* <BottomTabs /> */}
+									</>
+								</ConnectedRouter>
 							</QuarterContext.Provider>
 						</CourseContext.Provider>
 					</div>
@@ -185,13 +209,18 @@ const mapStateToProps = (state: ReduxState): PropsFromStore => ({
 	rmp: state.course.rmp,
 	bookmarks: state.course.bookmarks,
 	loading: state.course.loading,
+	pathname: state.router.location.pathname,
+	search: state.router.location.search,
+	hash: state.router.location.hash,
 });
 const mapDispatchToProps = (dispatch: Dispatch<ReduxAction>): PropsToDispatch => ({
-	loadQuarter: quarter => dispatch(fetchAction(quarter)),
+	loadQuarter: (quarter, path) => (dispatch(fetchAction(quarter)), dispatch(push(path))),
 	sort: key => dispatch(sortAction(key)),
 	search: name => dispatch(searchAction(name)),
-	setActive: (course, quarter) => dispatch(setActiveAction(course, quarter)),
-	closeActive: () => dispatch(closeActiveAction()),
+	setActive: (course, quarter, path) => (
+		dispatch(setActiveAction(course, quarter)), dispatch(push(path))
+	),
+	closeActive: path => (dispatch(closeActiveAction()), dispatch(push(path))),
 	addFilter: type => dispatch(addFilterAction(type)),
 	removeFilter: type => dispatch(removeFilterAction(type)),
 	addBookmark: course => dispatch(addBookmarkAction(course)),
