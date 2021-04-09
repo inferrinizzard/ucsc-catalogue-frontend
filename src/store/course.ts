@@ -407,8 +407,9 @@ const fetchCoursesEpic: Epic<CourseActions | RouterAction> = (action$, state$) =
 				quarterData: {
 					code: q,
 					name: availableTerms[q].name,
-					...availableTerms[q].date,
-					prevStart: availableTerms[q - (q.toString().endsWith('8') ? 6 : 2)].date.start,
+					start: availableTerms[q].start,
+					end: availableTerms[q].end,
+					prevStart: availableTerms[API.quarter.getPrev(q)].start,
 				},
 				initial: !action.quarter,
 				active: {
