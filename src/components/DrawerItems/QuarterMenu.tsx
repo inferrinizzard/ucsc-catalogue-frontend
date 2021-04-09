@@ -34,7 +34,6 @@ const QuarterMenu: React.FC<QuarterMenuProps> = ({ changeQuarter }) => {
 						style={{ padding: 0 }}
 						primaryTypographyProps={{
 							style: {
-								font: 'Roboto',
 								width: '100%',
 								lineHeight: 1.75,
 								fontWeight: 400,
