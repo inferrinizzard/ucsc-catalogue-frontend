@@ -149,12 +149,10 @@ export const removeFilterAction = (filter: Filter): RemoveFilterAction => ({
 interface SetActiveAction extends Action {
 	type: ActionTypes.SET_ACTIVE;
 	course: Course;
-	quarter: string;
 }
-export const setActiveAction = (course: Course, quarter: string): SetActiveAction => ({
+export const setActiveAction = (course: Course): SetActiveAction => ({
 	type: ActionTypes.SET_ACTIVE,
 	course,
-	quarter,
 });
 
 interface CloseActiveAction extends Action {
@@ -419,32 +417,31 @@ const fetchCoursesEpic: Epic<CourseActions | RouterAction> = (action$, state$) =
 				},
 			};
 		}),
-		mergeMap(courses =>
-			(x => (console.log(x), x))([
-				fetchSuccessAction(courses.courses, courses.quarterData, courses.availableTerms),
-				...(courses.initial ? [push(`/q=${courses.quarterData.code}${courses.active.path}`)] : []),
-				...(courses.active.course
-					? [setActiveAction(courses.active.course, courses.quarterData.code.toString())]
-					: []),
-			])
-		)
+		mergeMap(courses => [
+			fetchSuccessAction(courses.courses, courses.quarterData, courses.availableTerms),
+			...(courses.initial ? [push(`/q=${courses.quarterData.code}${courses.active.path}`)] : []),
+			...(courses.active.course ? [setActiveAction(courses.active.course)] : []),
+		])
 	);
 
 const trackCourseEpic: Epic<CourseActions> = (action$, state$) =>
 	action$.ofType(ActionTypes.SET_ACTIVE).pipe(
 		map(action => action as SetActiveAction),
-		switchMap(async ({ course: course$, quarter: quarter$ }) => ({
-			course: await API.fetchName(course$.number, quarter$).then(fullName => ({
-				...course$,
-				fullName,
-			})),
-			tracking: await API.tracking(course$.number, quarter$),
-			rmp: course$.instructor
-				? await API.getProfId(course$.instructor.first + course$.instructor.last).then(res =>
-						API.rmp(res)
-				  )
-				: ({} as professorRating),
-		})),
+		switchMap(async ({ course: course$ }) => {
+			const quarter = state$.value.course.quarter.code;
+			return {
+				course: await API.fetchName(course$.number, quarter).then(fullName => ({
+					...course$,
+					fullName,
+				})),
+				tracking: await API.tracking(course$.number, quarter),
+				rmp: course$.instructor
+					? await API.getProfId(course$.instructor.first + course$.instructor.last).then(res =>
+							API.rmp(res)
+					  )
+					: ({} as professorRating),
+			};
+		}),
 		map(data => activeSuccessAction(data.tracking, data.course, data.rmp))
 	);
 const bookmarkEpic: Epic<CourseActions> = (action$, state$) =>

@@ -59,7 +59,7 @@ interface PropsToDispatch {
 	removeFilter: (f: Filter) => void;
 	sort: (n: CourseType) => void;
 	search: (name: string) => void;
-	setActive: (c: Course, q: string, path: string) => void;
+	setActive: (c: Course, path: string) => void;
 	closeActive: (path: string) => void;
 	addBookmark: (c: Course) => void;
 	removeBookmark: (c: Course) => void;
@@ -110,11 +110,7 @@ class App extends React.Component<AppProps, AppState> {
 	//#region prop functions
 	setActive = (course: Course, row?: number) => {
 		if (row) this.setState({ scrollIndex: row });
-		this.props.setActive(
-			course,
-			this.props.quarter.toString(),
-			coursePath(course.number, this.props.pathname)
-		);
+		this.props.setActive(course, coursePath(course.number, this.props.pathname));
 	};
 
 	scrollTo = (row: number) =>
@@ -217,9 +213,7 @@ const mapDispatchToProps = (dispatch: Dispatch<ReduxAction>): PropsToDispatch =>
 	loadQuarter: (quarter, path) => (dispatch(fetchAction(quarter)), dispatch(push(path))),
 	sort: key => dispatch(sortAction(key)),
 	search: name => dispatch(searchAction(name)),
-	setActive: (course, quarter, path) => (
-		dispatch(setActiveAction(course, quarter)), dispatch(push(path))
-	),
+	setActive: (course, path) => (dispatch(setActiveAction(course)), dispatch(push(path))),
 	closeActive: path => (dispatch(closeActiveAction()), dispatch(push(path))),
 	addFilter: type => dispatch(addFilterAction(type)),
 	removeFilter: type => dispatch(removeFilterAction(type)),
