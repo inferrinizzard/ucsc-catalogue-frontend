@@ -93,6 +93,10 @@ export interface AvailableTermsResponse {
 	};
 }
 
+type AvailableTerm = Omit<AvailableTermsResponse, 'data'> & { date: { start: Date; end: Date } };
+
+export type AvailableTermData = { [code: number]: AvailableTerm };
+
 export interface RmpApiResponse {
 	// 	Response {type: "cors", url: "https://andromeda.miragespace.net/slugsurvival/data/fetch/rmp/stats/691015.json", redirected: false, status: 200, ok: true, …}
 	// body: (...)

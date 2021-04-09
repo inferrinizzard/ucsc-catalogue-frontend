@@ -75,39 +75,36 @@ function convertTracking(rawResults: ApiResponseModel.trackingApiData[]): model.
 
 class _API {
 	private endpoint = 'https://andromeda.miragespace.net/slugsurvival';
-	private terms = {} as { [code: number]: { name: string; date: { start: Date; end: Date } } }; // need to expose this in course script to trickle down to QuarterMenu, maybe store in Store ?
-	private ready: Promise<any>;
 
-	constructor() {
-		this.ready = (ky.get(`${this.endpoint}/data/fetch/terms.json`).json() as Promise<
+	public quarter = {
+		getLatestQuarter: (terms: ApiResponseModel.AvailableTermData) => {
+			const current = new Date();
+			const latest = Object.keys(terms).find(code => terms[+code].date.end > current) ?? -1;
+			// check here later for enrollment times and default to spring over summer ?
+			return +latest;
+		},
+	};
+
+	public getAvailableTerms(): Promise<ApiResponseModel.AvailableTermData> {
+		return (ky.get(`${this.endpoint}/data/fetch/terms.json`).json() as Promise<
 			ApiResponseModel.AvailableTermsResponse[]
 		>).then(
 			terms =>
-				(this.terms = terms.reduce(
+				terms.reduce(
 					(acc, { code, date, name }) => ({
 						...acc,
 						[+code]: { name, date: { start: Date.parse(date.start), end: Date.parse(date.end) } },
 					}),
 					{}
-				)),
-			rej =>
-				console.error('Error fetching available terms from Andromeda Endpoint, is the host down ?') // alert here later
+				),
+			rej => (
+				console.error('Error fetching available terms from Andromeda Endpoint, is the host down ?'), // alert here later
+				{}
+			)
 		);
 	}
 
-	public async getQuarter() {
-		const current = new Date();
-		await this.ready;
-		const [latest] = Object.entries(this.terms).find(([_, { date }]) => date.end > current) ?? [-1];
-		// check here later for enrollment times and default to spring over summer ?
-		return +latest;
-	}
-
-	public getQuarterName = (termId: number) => this.ready.then(() => this.terms[termId].name);
-
-	public async courses(termId: number): Promise<model.Course[]> {
-		await this.ready;
-		if (!(termId in this.terms)) return [];
+	public courses(termId: number): Promise<model.Course[]> {
 		return Promise.all([
 			ky
 				.get(`${this.endpoint}/data/fetch/terms/${termId.toString()}.json`)
@@ -134,12 +131,7 @@ class _API {
 
 	// https://andromeda.miragespace.net/slugsurvival/tracking/latestOne?termId=:termCode&courseNum=:courseNum
 
-	public async tracking(
-		courseNum: number | string,
-		termId: string
-	): Promise<model.CourseEnrollment[]> {
-		await this.ready;
-		if (!(termId in this.terms)) return [];
+	public tracking(courseNum: number | string, termId: string): Promise<model.CourseEnrollment[]> {
 		return (ky
 			.get(`${this.endpoint}/tracking/fetch?termId=${termId}&courseNum=${courseNum}`)
 			.json() as Promise<ApiResponseModel.TrackingApiResponse<ApiResponseModel.trackingApiData>>)
@@ -150,6 +142,7 @@ class _API {
 				)
 			);
 	}
+
 	public async fetchName(course: number | string, quarter: number | string): Promise<string> {
 		// broken, 403 forbidden, switch to ky
 		return fetch(
@@ -181,8 +174,6 @@ class _API {
 			)
 			.then(s => s.substr(s.lastIndexOf(';') + 1).trim());
 	}
-
-	public getDates = (term: number) => this.ready.then(() => this.terms[+term].date);
 
 	public async getProfId(name: string): Promise<number> {
 		if (name === '') return -1;

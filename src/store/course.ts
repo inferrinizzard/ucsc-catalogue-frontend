@@ -5,6 +5,7 @@ import { switchMap } from 'rxjs/internal/operators/switchMap';
 import { tap, ignoreElements, startWith } from 'rxjs/operators';
 
 import { Course, CourseEnrollment, professorRating, Quarter } from '../models/course.model';
+import { AvailableTermData } from '../models/api.model';
 import API from '../services/api';
 import q from '../components/Data/quarters.json';
 
@@ -17,6 +18,7 @@ export interface CourseState {
 	backup: Course[];
 	activeCourse: Course | null;
 	quarter: Quarter;
+	availableTerms: AvailableTermData;
 	tracking: { fetching: boolean; data: CourseEnrollment[] };
 	search: string;
 	rmp: professorRating;
@@ -53,7 +55,8 @@ const initialState: CourseState = {
 	filtered: [],
 	backup: [],
 	activeCourse: null,
-	quarter: { code: -1, name: '', start: new Date(0), prevStart: new Date(0) },
+	quarter: { code: -1, name: '', start: new Date(0), end: new Date(0), prevStart: new Date(0) },
+	availableTerms: {},
 	tracking: { fetching: false, data: [] },
 	search: '',
 	rmp: {} as professorRating,
@@ -90,11 +93,17 @@ interface FetchSuccessAction extends Action {
 	type: ActionTypes.FETCH_API_SUCCESS;
 	data: Course[];
 	quarterData: Quarter;
+	availableTerms: AvailableTermData;
 }
-export const fetchSuccessAction = (data: Course[], quarterData: Quarter): FetchSuccessAction => ({
+export const fetchSuccessAction = (
+	data: Course[],
+	quarterData: Quarter,
+	availableTerms: AvailableTermData
+): FetchSuccessAction => ({
 	type: ActionTypes.FETCH_API_SUCCESS,
 	data,
 	quarterData,
+	availableTerms,
 });
 
 interface SortAction extends Action {
@@ -231,6 +240,7 @@ export default function courseReducer(
 				...state,
 				loading: false,
 				quarter: action.quarterData,
+				availableTerms: action.availableTerms,
 				filtered: sortedCourses,
 				courses: sortedCourses,
 				backup: sortedCourses,
@@ -380,18 +390,20 @@ const fetchCoursesEpic: Epic<CourseActions> = (action$, state$) =>
 	action$.ofType(ActionTypes.FETCH_API).pipe(
 		map(action => action as FetchAction),
 		switchMap(async action => {
-			const q = action.quarter || (await API.getQuarter()); // read from routing later or pass routed q as action param
+			const availableTerms = await API.getAvailableTerms();
+			const q = action.quarter || API.quarter.getLatestQuarter(availableTerms); // read from routing later or pass routed q as action param
 			return {
 				courses: await API.courses(q),
+				availableTerms,
 				quarterData: {
 					code: q,
-					name: await API.getQuarterName(q),
-					start: (await API.getDates(q)).start,
-					prevStart: (await API.getDates(q.toString().endsWith('8') ? q - 6 : q - 2)).start,
+					name: availableTerms[q].name,
+					...availableTerms[q].date,
+					prevStart: availableTerms[q - (q.toString().endsWith('8') ? 6 : 2)].date.start,
 				},
 			};
 		}),
-		map(courses => fetchSuccessAction(courses.courses, courses.quarterData))
+		map(courses => fetchSuccessAction(courses.courses, courses.quarterData, courses.availableTerms))
 	);
 
 const trackCourseEpic: Epic<CourseActions> = (action$, state$) =>

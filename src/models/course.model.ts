@@ -52,6 +52,7 @@ export interface Quarter {
 	code: number;
 	name: string;
 	start: Date;
+	end: Date;
 	prevStart: Date;
 }
 
