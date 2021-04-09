@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import { ReduxState, ReduxAction } from './store';
 
 import { Route, Switch } from 'react-router-dom';
-import { ConnectedRouter, push } from 'connected-react-router';
+import { ConnectedRouter, push, replace } from 'connected-react-router';
 import { history } from './store/index';
 
 import { ThemeProvider } from 'styled-components';
@@ -59,8 +59,8 @@ interface PropsToDispatch {
 	removeFilter: (f: Filter) => void;
 	sort: (n: CourseType) => void;
 	search: (name: string) => void;
-	setActive: (c: Course, q: string) => void;
-	closeActive: () => void;
+	setActive: (c: Course, q: string, path: string) => void;
+	closeActive: (path: string) => void;
 	addBookmark: (c: Course) => void;
 	removeBookmark: (c: Course) => void;
 	loadBookmark: () => void;
@@ -88,24 +88,74 @@ const theme = {
 	cardBlue: '#92c2ff',
 };
 
+class Routing {
+	quarter = 0;
+	activeCourse = '';
+	// sort = '';
+	// search = '';
+	// filter = [];
+
+	quarterPath = (q: number, path: string) =>
+		this.quarter
+			? path.replace(/q=[0-9]{4}/g, `q=${(this.quarter = q)}`)
+			: `q=${(this.quarter = q)}`;
+
+	coursePath = (subjectCode: string, path: string) => {
+		const urlSubjectCode = subjectCode.replace(/\s|_/g, '');
+		return this.activeCourse
+			? path.replace(/c=.*(?=\/?)/g, `c=${(this.activeCourse = urlSubjectCode)}`)
+			: `q=${this.quarter}/c=${(this.activeCourse = urlSubjectCode)}`;
+	};
+
+	// buildSearch = () => {
+	// 	let searchArgs: string[] = [];
+	// 	if (this.filter) searchArgs.push(`filter=${this.filter.join('+')}`);
+	// 	if (this.sort) searchArgs.push(`sort=${this.sort}`);
+	// 	if (this.search) searchArgs.push(`search=${this.search}`);
+
+	// 	return searchArgs.length ? '?' + searchArgs.join('&') : '';
+	// };
+}
+
+const slicePath = (path: string, r: RegExp | string) => path.match(r)?.shift()?.slice(2);
 const quarterPath = (q: number, path: string) =>
-	path.includes('q') ? path.replace(/q=[0-9]{4}/g, `q=${q}`) : `q=${q}`;
+	path.includes('q=') ? path.replace(/q=[0-9]{4}/g, `q=${q}`) : `q=${q}`;
+const coursePath = (courseId: string | number, path: string) =>
+	path.includes('c=')
+		? path.replace(/c=[0-9]+(?=\/?)/g, `c=${courseId}`)
+		: (path.endsWith('/') ? path.slice(0, -1) : path) + `/c=${courseId}`;
+const removeCoursePath = (path: string) => path.substring(0, path.indexOf('c=') - 1);
 
 class App extends React.Component<AppProps, AppState> {
 	state = {
 		scrollIndex: 0,
 	};
 
+	// routing = new Routing();
+
 	componentDidMount = () => {
-		const quarter = +(this.props.pathname.match(/(?!q=)[0-9]{4}/g)?.shift() ?? 0);
+		const quarter = +(slicePath(this.props.pathname, /q=[0-9]{4}/g) ?? 0);
 		this.props.loadQuarter(quarter, quarterPath(quarter, this.props.pathname));
+		// if (this.props.pathname.includes('c=')) {
+		// 	const courseId = +(slicePath(this.props.pathname, /c=[0-9]+/g) ?? '');
+		// 	const activeCourse = this.props.backup.find(c => c.number == courseId);
+		// 	console.log(courseId, activeCourse);
+		// 	activeCourse
+		// 		? this.setActive(activeCourse)
+		// 		: this.props.closeActive(removeCoursePath(this.props.pathname));
+		// }
+
 		// this.props.loadBookmark();
 	};
 
 	//#region prop functions
 	setActive = (course: Course, row?: number) => {
 		if (row) this.setState({ scrollIndex: row });
-		this.props.setActive(course, this.props.quarter.toString());
+		this.props.setActive(
+			course,
+			this.props.quarter.toString(),
+			coursePath(course.number, this.props.pathname)
+		);
 	};
 
 	scrollTo = (row: number) =>
@@ -170,7 +220,9 @@ class App extends React.Component<AppProps, AppState> {
 											addBasket={this.props.addBookmark}
 											removeBasket={this.props.removeBookmark}
 											basketCourses={this.props.bookmarks}
-											closeDetail={this.props.closeActive}
+											closeDetail={() =>
+												this.props.closeActive(removeCoursePath(this.props.pathname))
+											}
 											tracking={this.props.tracking}
 											rmp={this.props.rmp}
 										/>
@@ -206,8 +258,10 @@ const mapDispatchToProps = (dispatch: Dispatch<ReduxAction>): PropsToDispatch =>
 	loadQuarter: (quarter, path) => (dispatch(fetchAction(quarter)), dispatch(push(path))),
 	sort: key => dispatch(sortAction(key)),
 	search: name => dispatch(searchAction(name)),
-	setActive: (course, quarter) => dispatch(setActiveAction(course, quarter)),
-	closeActive: () => dispatch(closeActiveAction()),
+	setActive: (course, quarter, path) => (
+		dispatch(setActiveAction(course, quarter)), dispatch(push(path))
+	),
+	closeActive: path => (dispatch(closeActiveAction()), dispatch(push(path))),
 	addFilter: type => dispatch(addFilterAction(type)),
 	removeFilter: type => dispatch(removeFilterAction(type)),
 	addBookmark: course => dispatch(addBookmarkAction(course)),
