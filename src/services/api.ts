@@ -188,7 +188,8 @@ class _API {
 			.then(res => res.text())
 			.then(idString =>
 				idString.includes(name) ? +idString.substr(idString.indexOf(name) + name.length + 3, 6) : 0
-			);
+			)
+			.catch(rej => (console.error(rej), 0));
 	}
 
 	public async rmp(profId: number): Promise<model.professorRating> {
@@ -213,7 +214,8 @@ class _API {
 							),
 					  }
 					: ({} as model.professorRating)
-			);
+			)
+			.catch(rej => (console.error(rej), {} as model.professorRating));
 	}
 }
 
