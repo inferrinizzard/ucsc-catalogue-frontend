@@ -38,6 +38,7 @@
 		"@types/redux-logger": "^3.0.8",
 		"@types/styled-components": "^5.1.9",
 		"copy-webpack-plugin": "^8.1.0",
+		"favicons": "^6.2.1",
 		"favicons-webpack-plugin": "^5.0.2",
 		"file-loader": "^6.2.0",
 		"html-webpack-plugin": "^5.3.1",

@@ -12,7 +12,7 @@ const TopBar = styled.div`
 	z-index: ${p => p.theme.cardHeightPlus1};
 	position: fixed;
 	top: 0;
-	height: ${p => p.theme.topLinerHeight};
+	min-height: ${p => p.theme.topLinerHeight};
 `;
 
 export interface TopLinerProps {}

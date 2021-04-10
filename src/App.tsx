@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import { ReduxState, ReduxAction } from './store';
 
 import { Route, Switch } from 'react-router-dom';
-import { ConnectedRouter, push, replace } from 'connected-react-router';
+import { ConnectedRouter, push, replace, RouterState } from 'connected-react-router';
 import { history } from './store/index';
 
 import { ThemeProvider } from 'styled-components';
@@ -48,9 +48,7 @@ interface PropsFromStore {
 	rmp: professorRating;
 	bookmarks: Course[];
 	loading: boolean;
-	pathname: string;
-	search: string;
-	hash: string;
+	location: RouterState['location'];
 }
 
 interface PropsToDispatch {
@@ -58,7 +56,7 @@ interface PropsToDispatch {
 	addFilter: (f: Filter) => void;
 	removeFilter: (f: Filter) => void;
 	sort: (n: CourseType) => void;
-	search: (name: string) => void;
+	search: (name: string, path: string) => void;
 	setActive: (c: Course, path: string) => void;
 	closeActive: (path: string) => void;
 	addBookmark: (c: Course) => void;
@@ -102,15 +100,19 @@ class App extends React.Component<AppProps, AppState> {
 	};
 
 	componentDidMount = () => {
-		const quarter = +(this.props.pathname.match(/q=[0-9]{4}/g)?.shift()?.slice(2) ?? 0); // prettier-ignore
-		this.props.loadQuarter(quarter, quarterPath(quarter, this.props.pathname));
+		const quarter = +(this.props.location.pathname.match(/q=[0-9]{4}/g)?.shift()?.slice(2) ?? 0); // prettier-ignore
+		this.props.loadQuarter(quarter, quarterPath(quarter, this.props.location.pathname));
 		// this.props.loadBookmark();
 	};
 
 	//#region prop functions
 	setActive = (course: Course, row?: number) => {
 		if (row) this.setState({ scrollIndex: row });
-		this.props.setActive(course, coursePath(course.number, this.props.pathname));
+		console.log(this.props.location.search);
+		this.props.setActive(
+			course,
+			coursePath(course.number, this.props.location.pathname) + this.props.location.search
+		);
 	};
 
 	scrollTo = (row: number) =>
@@ -154,9 +156,16 @@ class App extends React.Component<AppProps, AppState> {
 												this.condenseFilter(this.props.filters).forEach(this.props.removeFilter)
 											}
 											changeQuarter={q =>
-												this.props.loadQuarter(q, quarterPath(q, this.props.pathname))
+												this.props.loadQuarter(q, quarterPath(q, this.props.location.pathname))
 											}
-											search={this.props.search}
+											search={s =>
+												this.props.search(
+													s,
+													s
+														? `${this.props.location.pathname}?search=${s}`
+														: this.props.location.pathname
+												)
+											}
 										/>
 										<Grid
 											loading={this.props.loading}
@@ -176,7 +185,10 @@ class App extends React.Component<AppProps, AppState> {
 											removeBasket={this.props.removeBookmark}
 											basketCourses={this.props.bookmarks}
 											closeDetail={() =>
-												this.props.closeActive(removeCoursePath(this.props.pathname))
+												this.props.closeActive(
+													removeCoursePath(this.props.location.pathname) +
+														this.props.location.search
+												)
 											}
 											tracking={this.props.tracking}
 											rmp={this.props.rmp}
@@ -205,14 +217,12 @@ const mapStateToProps = (state: ReduxState): PropsFromStore => ({
 	rmp: state.course.rmp,
 	bookmarks: state.course.bookmarks,
 	loading: state.course.loading,
-	pathname: state.router.location.pathname,
-	search: state.router.location.search,
-	hash: state.router.location.hash,
+	location: state.router.location,
 });
 const mapDispatchToProps = (dispatch: Dispatch<ReduxAction>): PropsToDispatch => ({
 	loadQuarter: (quarter, path) => (dispatch(fetchAction(quarter)), dispatch(push(path))),
 	sort: key => dispatch(sortAction(key)),
-	search: name => dispatch(searchAction(name)),
+	search: (name, path) => (dispatch(searchAction(name)), dispatch(replace(path))),
 	setActive: (course, path) => (dispatch(setActiveAction(course)), dispatch(push(path))),
 	closeActive: path => (dispatch(closeActiveAction()), dispatch(push(path))),
 	addFilter: type => dispatch(addFilterAction(type)),
