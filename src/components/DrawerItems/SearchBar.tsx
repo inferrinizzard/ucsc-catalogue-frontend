@@ -15,7 +15,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ search }) => {
 			variant="outlined"
 			label="Search"
 			placeholder="Search class by name"
-			onChange={e => search(e.target.value.toUpperCase())}
+			onChange={e => search(e.target.value.toUpperCase().trim())}
 			InputProps={{
 				endAdornment: <SearchRounded />,
 				style: { paddingRight: '6px', width: isMobileOnly ? '80vw' : undefined },
