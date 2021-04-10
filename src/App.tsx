@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import { ReduxState, ReduxAction } from './store';
 
 import { Route, Switch } from 'react-router-dom';
-import { ConnectedRouter, push, replace } from 'connected-react-router';
+import { ConnectedRouter, push, replace, RouterState } from 'connected-react-router';
 import { history } from './store/index';
 
 import { ThemeProvider } from 'styled-components';
@@ -48,9 +48,7 @@ interface PropsFromStore {
 	rmp: professorRating;
 	bookmarks: Course[];
 	loading: boolean;
-	pathname: string;
-	search: string;
-	hash: string;
+	location: RouterState['location'];
 }
 
 interface PropsToDispatch {
@@ -102,15 +100,15 @@ class App extends React.Component<AppProps, AppState> {
 	};
 
 	componentDidMount = () => {
-		const quarter = +(this.props.pathname.match(/q=[0-9]{4}/g)?.shift()?.slice(2) ?? 0); // prettier-ignore
-		this.props.loadQuarter(quarter, quarterPath(quarter, this.props.pathname));
+		const quarter = +(this.props.location.pathname.match(/q=[0-9]{4}/g)?.shift()?.slice(2) ?? 0); // prettier-ignore
+		this.props.loadQuarter(quarter, quarterPath(quarter, this.props.location.pathname));
 		// this.props.loadBookmark();
 	};
 
 	//#region prop functions
 	setActive = (course: Course, row?: number) => {
 		if (row) this.setState({ scrollIndex: row });
-		this.props.setActive(course, coursePath(course.number, this.props.pathname));
+		this.props.setActive(course, coursePath(course.number, this.props.location.pathname));
 	};
 
 	scrollTo = (row: number) =>
@@ -154,7 +152,7 @@ class App extends React.Component<AppProps, AppState> {
 												this.condenseFilter(this.props.filters).forEach(this.props.removeFilter)
 											}
 											changeQuarter={q =>
-												this.props.loadQuarter(q, quarterPath(q, this.props.pathname))
+												this.props.loadQuarter(q, quarterPath(q, this.props.location.pathname))
 											}
 											search={this.props.search}
 										/>
@@ -176,7 +174,7 @@ class App extends React.Component<AppProps, AppState> {
 											removeBasket={this.props.removeBookmark}
 											basketCourses={this.props.bookmarks}
 											closeDetail={() =>
-												this.props.closeActive(removeCoursePath(this.props.pathname))
+												this.props.closeActive(removeCoursePath(this.props.location.pathname))
 											}
 											tracking={this.props.tracking}
 											rmp={this.props.rmp}
@@ -205,9 +203,7 @@ const mapStateToProps = (state: ReduxState): PropsFromStore => ({
 	rmp: state.course.rmp,
 	bookmarks: state.course.bookmarks,
 	loading: state.course.loading,
-	pathname: state.router.location.pathname,
-	search: state.router.location.search,
-	hash: state.router.location.hash,
+	location: state.router.location,
 });
 const mapDispatchToProps = (dispatch: Dispatch<ReduxAction>): PropsToDispatch => ({
 	loadQuarter: (quarter, path) => (dispatch(fetchAction(quarter)), dispatch(push(path))),
