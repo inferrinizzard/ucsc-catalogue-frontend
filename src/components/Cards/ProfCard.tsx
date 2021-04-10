@@ -33,12 +33,12 @@ const ProfCard: React.FC<ProfCardProps> = ({ name, rmp }) => {
 			{rmp.clarity ? (
 				<CardContent>
 					{Object.entries(rmp).map(([key, rating]) => (
-						<>
-							<Typography key={key}>
+						<React.Fragment key={key}>
+							<Typography>
 								{`${key[0].toUpperCase() + key.slice(1)} - (${rating.toFixed(2)})`}
 							</Typography>
 							{stars(rating, key)}
-						</>
+						</React.Fragment>
 					))}
 				</CardContent>
 			) : (
