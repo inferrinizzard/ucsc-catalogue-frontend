@@ -427,20 +427,17 @@ const fetchCoursesEpic: Epic<CourseActions | RouterAction> = (action$, state$) =
 const trackCourseEpic: Epic<CourseActions> = (action$, state$) =>
 	action$.ofType(ActionTypes.SET_ACTIVE).pipe(
 		map(action => action as SetActiveAction),
-		switchMap(async ({ course: course$ }) => {
+		switchMap(({ course: course$ }) => {
 			const quarter = state$.value.course.quarter.code;
-			return {
-				course: await API.fetchName(course$.number, quarter).then(fullName => ({
-					...course$,
-					fullName,
-				})),
-				tracking: await API.tracking(course$.number, quarter),
-				rmp: course$.instructor
-					? await API.getProfId(course$.instructor.first + course$.instructor.last).then(res =>
+			return Promise.all([
+				API.fetchName(course$.number, quarter).then(fullName => ({ ...course$, fullName })),
+				API.tracking(course$.number, quarter),
+				course$.instructor
+					? API.getProfId(course$.instructor.first + course$.instructor.last).then(res =>
 							API.rmp(res)
 					  )
 					: ({} as professorRating),
-			};
+			]).then(([course, tracking, rmp]) => ({ course, tracking, rmp }));
 		}),
 		map(data => activeSuccessAction(data.tracking, data.course, data.rmp))
 	);
