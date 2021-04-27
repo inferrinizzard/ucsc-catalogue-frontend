@@ -36,7 +36,7 @@ export interface SelectDrawerProps {
 }
 export interface SelectDrawerState {
 	basket: Course[];
-	available: boolean;
+	mobileOpen: boolean;
 }
 
 const Section = styled(Card)`
@@ -51,7 +51,7 @@ const catMap: Record<FilterDomain, { name: string; desc: string }[]> = filterDat
 
 const SelectDrawer: React.FC<SelectDrawerProps> = props => {
 	// const [basket, setBasket] = useState([]);
-	const [available, setAvailable] = useState(!isMobileOnly);
+	const [mobileOpen, setMobileOpen] = useState(!isMobileOnly);
 
 	const theme = useContext(ThemeContext);
 
@@ -84,29 +84,23 @@ const SelectDrawer: React.FC<SelectDrawerProps> = props => {
 					top: theme.topLinerHeight,
 					padding: isMobileOnly ? '0.25em 0' : '0.25em',
 					width: isMobileOnly ? '100%' : theme.selectDrawerWidth + '%',
-					height: available ? undefined : '15vw',
-					flexDirection: available ? undefined : 'row',
+					height: mobileOpen ? undefined : '15vw',
+					flexDirection: mobileOpen ? undefined : 'row',
 					whiteSpace: 'nowrap',
 				},
 			}}>
-			<SearchBar search={props.search} />
-			<MobileOnlyView
-				style={{
-					// width: 'fit-content',
-					// display: 'inline',
-					// marginTop: '3px',
-					position: 'absolute',
-					top: 7,
-					right: 7,
-				}}>
-				<NotchedOutline>
-					<IconButton onClick={e => setAvailable(!available)} style={{ padding: '15px' }}>
-						{available && <Clear style={{ transform: 'scale(1.25)' }} />}
-						{!available && <FilterList style={{ transform: 'scale(1.25)' }} />}
-					</IconButton>
-				</NotchedOutline>
-			</MobileOnlyView>
-			{available && (
+			<div style={{ display: 'flex', justifyContent: 'space-evenly', width: '100%' }}>
+				<SearchBar search={props.search} />
+				<MobileOnlyView style={{ display: 'inline-block' }}>
+					<NotchedOutline>
+						<IconButton onClick={e => setMobileOpen(!mobileOpen)} style={{ padding: '15px' }}>
+							{mobileOpen && <Clear style={{ transform: 'scale(1.25)' }} />}
+							{!mobileOpen && <FilterList style={{ transform: 'scale(1.25)' }} />}
+						</IconButton>
+					</NotchedOutline>
+				</MobileOnlyView>
+			</div>
+			{mobileOpen && (
 				<React.Fragment>
 					<Section style={{ display: 'block' }}>
 						<NotchedOutline width={50} title="Sorting">
