@@ -67,38 +67,25 @@ const CourseDrawer: React.FC<CourseDrawerProps> = ({ tracking, ...props }) => {
 			PaperProps={{
 				style: {
 					width: isMobileOnly ? '100%' : `${(100 - theme.selectDrawerWidth) / 2}%`,
-					height: isMobileOnly ? '50%' : `calc(100% - ${theme.topLinerHeight})`,
+					height: `calc(100% - ${theme.topLinerHeight})`,
 					marginTop: isMobileOnly ? 0 : theme.topLinerHeight,
 				},
 			}}>
-			{isMobileOnly ? (
+			<DrawerHeader>
+				<Typography variant={isMobileOnly ? 'h6' : 'h5'} style={{ display: 'inline-block' }}>
+					Course Details
+				</Typography>
 				<Button
-					fullWidth
 					onClick={props.closeDetail}
 					style={{
-						backgroundColor: 'aliceblue',
-						position: 'sticky',
-						top: 0,
+						padding: '3px',
+						height: 'fit-content',
+						minWidth: 'fit-content',
+						marginRight: '1rem',
 					}}>
-					<Typography>{'Close'}</Typography>
+					<Close fontSize={isMobileOnly ? 'default' : 'large'} />
 				</Button>
-			) : (
-				<DrawerHeader>
-					<Typography variant="h5" style={{ display: 'inline-block' }}>
-						Course Details
-					</Typography>
-					<Button
-						onClick={props.closeDetail}
-						style={{
-							padding: '3px',
-							height: 'fit-content',
-							minWidth: 'fit-content',
-							marginRight: '1rem',
-						}}>
-						<Close fontSize="large" />
-					</Button>
-				</DrawerHeader>
-			)}
+			</DrawerHeader>
 			<StyledCard>
 				<NotchedOutline width={52} title={'Details'}>
 					<DescCard
@@ -142,7 +129,7 @@ const CourseDrawer: React.FC<CourseDrawerProps> = ({ tracking, ...props }) => {
 				<NotchedOutline width={50} title={'Grades'} inner={<GradesCard />} />
 			</StyledCard>
 			<div>
-				<InlineStyledCard n={3}>
+				<InlineStyledCard n={isMobileOnly ? 1 : 3}>
 					<NotchedOutline width={72} title={'Professor'}>
 						<ProfCard
 							rmp={props.rmp}
@@ -153,12 +140,12 @@ const CourseDrawer: React.FC<CourseDrawerProps> = ({ tracking, ...props }) => {
 						/>
 					</NotchedOutline>
 				</InlineStyledCard>
-				<InlineStyledCard n={3}>
+				<InlineStyledCard n={isMobileOnly ? 1 : 3}>
 					<NotchedOutline width={50} title={'Major'}>
 						<MajorCard />
 					</NotchedOutline>
 				</InlineStyledCard>
-				<InlineStyledCard n={3}>
+				<InlineStyledCard n={isMobileOnly ? 1 : 3}>
 					<NotchedOutline width={66} title={'Location'}>
 						<LocCard
 							location={activeCourse?.settings?.length ? activeCourse.settings[0].location : 'TBA'}

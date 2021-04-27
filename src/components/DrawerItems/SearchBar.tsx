@@ -22,10 +22,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ search }) => {
 			}}
 			style={{
 				padding: '0 .15em .15em',
-				marginTop: '3px',
-				marginLeft: '5px',
-				width: isMobileOnly ? '83vw' : undefined,
-				display: isMobileOnly ? 'inline' : undefined,
+				display: isMobileOnly ? 'inline-block' : undefined,
 			}}
 		/>
 	);
