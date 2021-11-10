@@ -152,7 +152,7 @@ class _API {
 	public async fetchName(course: number | string, quarter: number | string): Promise<string> {
 		// broken, 403 forbidden, switch to ky
 		return fetch(
-			'https://cors-anywhere.herokuapp.com/https://pisa.ucsc.edu/cs9/prd/sr9_2013/index.php',
+			'https://inferrinizzard-cors.herokuapp.com//https://pisa.ucsc.edu/cs9/prd/sr9_2013/index.php',
 			{
 				headers: {
 					'accept':
