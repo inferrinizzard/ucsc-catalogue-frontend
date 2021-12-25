@@ -1,4 +1,6 @@
 [
+	{ "name": "Winter Quarter 2022", "code": 2220 },
+	{ "name": "Fall Quarter 2021", "code": 2218 },
 	{ "name": "Summer Quarter 2021", "code": 2214 },
 	{ "name": "Spring Quarter 2021", "code": 2212 },
 	{ "name": "Winter Quarter 2021", "code": 2210 },
